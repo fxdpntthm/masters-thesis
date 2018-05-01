@@ -117,6 +117,31 @@ We cannot determine when to get rid of the complete bunch.
 hence, when we are folding out of the final recursive but 1 call ie. for Lambda bound variable x
 
 
+\section{Typing rules}
+
+\begin{minipage}{.5\textwidth}
+  \begin{prooftree}
+    \AxiomC{} \RightLabel{$[Id]$}
+    \UnaryInfC{$\langle !A \rangle \vdash !A$}
+    \AxiomC{$[\Gamma], [A] \vdash B$} \RightLabel{$[!\text{--}E]$}
+    \BinaryInfC{$[\Gamma], \langle !A \rangle \vdash B$}
+    \RightLabel{$[\rightspoon \text{--} I]$}
+    \UnaryInfC{$[\Gamma] \vdash !A \rightspoon B$}
+  \end{prooftree}
+\end{minipage}
+\begin{minipage}{.5\textwidth}
+  \begin{prooftree}
+    \AxiomC{$[\Gamma] \vdash !A \rightspoon B $}
+    \AxiomC{$[\Delta] \vdash A$} \RightLabel{$[!\text{--}I]$}
+    \UnaryInfC{$[\Delta] \vdash !A$}
+    \RightLabel{$\rightspoon\text{--}E$}
+    \BinaryInfC{$[\Gamma], [\Delta] \vdash B$}
+  \end{prooftree}
+\end{minipage}
+
+
+
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "Typechecking"
