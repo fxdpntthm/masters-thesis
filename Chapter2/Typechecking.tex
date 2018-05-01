@@ -1,0 +1,123 @@
+\chapter{Implementing Typechecking in Quill}
+
+
+Here is how the naive recursive algorithm works
+
+For Lambda
+\begin{enumerate}
+\item Get the bound variable
+\item Assign a new type for bound variable
+\item assign a new type variable for the body
+\item Evaluate type of the body and assign it to the body type varialbe
+\item return the type as (type of var) -> (type of body)
+\end{enumerate}
+
+Body can be made up of another lambda. In this case the same 5 steps will be triggered
+or it is an application of 2 or more variables
+In case of application 2 new type variable:
+\begin{enumerate}
+\item introduce type variables for left expression and right expression
+    left expression a type $A \rightarrow B$ right expression gets the type $A$
+\item recursively type check both of them
+\item return the type of the complete application as $B$ if the type checking in previous step is successfull
+\end{enumerate}
+
+
+In Quill there are 2 kinds of lambdas:
+\begin{enumerate}
+\item Sharing Lambda $\&$
+\item Separating Lambda $\*$
+\end{enumerate}
+
+This helps specify if the 2 variables are independent or have some sort of sharing between them.
+eg. A sharing pair will be represented as
+\begin{verbatim}
+shPair = \x ->\&y -> \sh -> sh x y
+\end{verbatim}
+This means that x and y may share resources
+
+The other way pair is a sparating pair represented as
+\begin{verbatim}
+sePair = \x -> \*y -> \se -> se x y
+\end{verbatim}
+This means that x and y do not share variables
+
+\section{Typing environment}
+
+The typing environment is a pair of identifier and its type
+
+We need to modify the typing envrionment or typing judgements
+also describes the sharing. There can be many different
+ways of doing it.
+In the current implmenetation we have
+extended the typing environment to hold 2 more things
+a list of list of identifiers, that describes the sharing of variables
+a scope tag that identifies if the variable is global in the complete module or local to the definition.
+
+Global variables can be used anywhere in the compelete file.
+All function names will be defaulted to global scope.
+Local variables can be used only after they have been bound in the typing environment.
+
+% how is the list of list of ids help in identifying sharing
+
+% how do you define a closure
+
+% What do you mean by having a break in the closure
+
+% The used field in the typechecker state
+
+\section{Modification to Typechecking Algorithm}
+
+To incorporate the sharing, we have to modify the typechecking algorithm.
+The main reason to do that is to avoid adding $Un$ predicates to
+shared variables that are not used. Take an example of $fst$ function
+that returns the first argument of a shared pair
+\begin{verbatim}
+fst = \x -> \&y -> x
+\end{verbatim}
+In this case y should not be assigend an $Un$ predicate because
+it is shared with x and x is indeed used.
+
+The type checking algorithm has to be tweeked so that we keep track
+of what all variables are shared and which ones are separate.
+
+When we encounter an Alpha Lambda
+\begin{enumerate}
+\item Get the bound variable
+\item Assign a new type for bound variable
+\item Assign a new type variable for the body
+\item add the variable in a sharing context
+\item Evaluate type of the body and assign it to the body type variable
+\item return the type as (type of var) -> (type of body)
+\end{enumerate}
+
+
+% The main problem is that we do not know when a sharing variable should be kept in scope
+% or removed. In some cases we may need to keep it around for introducing the (>:=) predicates
+% Some cases are 2 types:
+% 1) The variable is used
+% 2) The variable is not used
+
+The type checking calls occur from left to right recursively.
+While going down the recursion we keep on adding variables to the envionment
+We stop recursing at application. where we compute whether we have complete sharing to assign ShFun or SeFun.
+
+While folding out of of the recursion we do 2 things:
+1) keep track of the used variables (including implicitly used variables due to sharing)
+2) generate new goals
+   a) depending on whether the the introduced variable was used
+      or its sharing member was used assign Un predicates and weaken if it is not used at all
+   b) introduce lesser-restricted predicates
+3) Generate new assumptions
+
+We cannot determine when to get rid of the complete bunch.
+\begin{verbatim}
+\z -> \*x -> \&y -> y
+\end{verbatim}
+hence, when we are folding out of the final recursive but 1 call ie. for Lambda bound variable x
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "Typechecking"
+%%% End:

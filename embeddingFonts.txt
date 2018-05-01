@@ -1,0 +1,74 @@
+
+PJ 20160503
+
+Making sure all fonts are embedded appears to be not so
+easy across platforms.  When I compile the ku thesis document,
+I notice the Wingding and symbols are not embedded.
+
+However, this is not a flaw in pdflatex as it currently exists.  It
+was a pdflatex flaw in the past. So far as I can tell, all fonts
+needed in the pdflatex run are embedded.
+
+Except that when a document includes other documents, using
+\includegraphics{} for example, then if those included
+documents are lacking in embedded fonts, then pdflatex
+does not fix that.
+
+In my example document, before 20160503, the fonts were missing
+because they were not embedded in the R plots that are included in the
+example chapters. I had to to go back and re-run the R code to make
+sure the fonts are embedded in the pdf files for the graphs. After
+that, the pdflatex output of the thesis template is fine.
+
+You can check for yourself, Run
+
+$ pdffonts thesis-ku.pdf
+
+If we don't fix the R output files before compiling the thesis itself,
+we are in a somewhat dangerous situation.  People suggest using
+various magic wands to add fonts, but all of them seem to have major
+flaws. They either corrupt the quality of the output or destroy its
+internal structure.
+
+I found ways to embed fonts using ghostscript. This converts document
+over to ps and then back to pdf.
+
+$ pdf2ps  thesis-ku.pdf test.ps
+$ ps2pdf14 -dPDFSettings=/prepress -dEmbedAllFonts=true test.ps
+test.pdf
+
+The bad news.
+1 It destroys internal hyperlinks.
+2 IT DOES NOT embed fonts needed for material in embedded graphs
+(things inserted by \includegraphics, such as PDF produced by R).
+
+
+See: 
+
+http://askubuntu.com/questions/50274/fonts-are-not-embedded-into-a-pdf
+
+In my opinion, this is a bad outcome, should not happen. But
+it does.
+
+As a result, it seems necessary to fix the individual PDF
+graphics files before compiling the larger thesis document.
+
+This reminds me that at one point I had a post-processing script written
+for R Sweave sessions that would embed fonts in all pdf output files. 
+
+The shell script would cycle through all of the R output and embed
+fonts. Enjoy!
+
+for i in *.pdf; do
+base=`basename $i .pdf`;
+basenew="${base}/newtemp.pdf"
+
+##echo "$i base: $base new: $basenew"
+  /usr/bin/gs -o $basenew -dNOPAUSE -dPDFSETTINGS=/prepress -sDEVICE=pdfwrite $i
+
+mv -f $basenew $i
+done;
+
+ 
+Same can be achieved inside R. Each time a PDF is created, embed the
+fonts with the embedFonts() function. See ?embedFonts

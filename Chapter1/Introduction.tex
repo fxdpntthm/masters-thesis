@@ -1,0 +1,85 @@
+\chapter{Outstanding Questions and Design Decisions}
+
+The core calculi does not specify how we want to have sharing.
+There are 2 options:
+\begin{enumerate}
+\item break our environment into 2 parts. Local and global
+  \\the local environment will keep track of the sharing.
+  \\the global environment will keep track of all the global name spaces
+  \\Use a stack model to keep pushing and popping things for the environment.
+  \\Each declaration will trigger a push of a local environment.
+\item Share the x with all the names present in the typing environment
+\item The lambda structure is organized as all lambdas first and then applications
+  So keep pulling all the lambdas and identify what all is sharing then run the AlgorithmM
+\end{enumerate}
+
+Q: How do we implement the sharing H;H right now?
+Designed type environment is a map of identifier to a triple
+\begin{enumerate}
+\item type binding
+\item the other identifiers that it may have sharing with
+\item its scope i.e. global or local depending on whether the variable was declared inside a lambda or it is referencing an externally defined function.
+\end{enumerate}
+
+The complete sharing environment of a variable can be found out using the
+closure function. It goes over all the local identifiers and locates all
+the other identifiers that it has sharing with returning the union.
+
+In case of contraction rule, if the variable shares resourses
+with another variable that remains in scope, then we need not enforce
+unrestricted predicate on it as we can ensure that the resources are
+not lost.
+
+From an implementation prespective, we need to ensure that we can still compute
+the closures correctly before and after the variable is removed
+from the environment. I.e. removing an identifier should not create a
+crack between the resource sharing identifiers.
+
+The main idea is to have intelligence as to when to keep a variable in scope
+and when to remove it from the type environment. All the used ones and
+the ones that are shared with the used variables should be kept
+all the others may be removed.
+
+When ever we are done typechecking a linear lambda, we would remove
+the bound variable and all the variables that are in sharing with it.
+
+
+Here is how the naive recursive algorithm works
+
+For Lambda
+\begin{enumerate}
+\item Get the bound variable
+\item Assign a new type for bound variable
+\item assign a new type variable for the body
+\item Evaluate type of the body and assign it to the body type varialbe
+\item return the type as (type of var) -> (type of body)
+\end{enumerate}
+
+Body can be made up of another lambda. In this case the same 5 steps will be triggered
+or it is an application of 2 or more variables
+In case of application 2 new type variable:
+\begin{enumerate}
+\item introduce type variables for left expression and right expression
+    left expression a type $A \rightarrow B$ right expression gets the type $A$
+\item recursively type check both of them
+\item return the type of the complete application as $B$ if the type checking in previous step is successfull
+\end{enumerate}
+
+
+
+
+
+
+Other outstanding questions:
+What happens for fix point combinators
+What happens for S combinator
+What happens for K combinator
+What happens for Omega?
+
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
