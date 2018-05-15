@@ -22,6 +22,7 @@
 \usepackage{semantic}
 \usepackage{framed}
 \usepackage{minted}
+% \usepackage{amsmath, amssymb}
 
 \doublespacing
 \usepackage[unicode=true,
@@ -41,9 +42,8 @@
   {LyX}}
 %% Because html converters don't know tabularnewline
 \providecommand{\tabularnewline}{\\}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
-
+\newcommand\sepimp{\mathrel{-\mkern-6mu*}}
 
 %used to align decimals in tables according to APA style
 \usepackage{dcolumn}
@@ -60,7 +60,7 @@
 %% It is vital to have 7 entries, even if some are empty for committee and role
 %% I mean, it is vital to leave the empty place holders
 \committee{Dr. J. Garrett Morris}{Dr. Perry Alexandar}{Dr. Andy Gill}{Dr. Prasad Kulkarni}{}{}{}
-\role{Chairperson}{Dr. J. Garrett Morris}{}{}{}{}{}
+\role{Chairperson}{}{}{}{}{}{}
 %AT Most 7 members allowed, last here is blank on purpose to demonstrate
 %flexibility
 
@@ -130,13 +130,14 @@
   We realize that we have 2 kinds of pairs, a sharing pair and a separating pair depending
   on the arrow we use. We try to formalize other structures such as Lists, non-empty lists
   datatypes (recursive and non-recursive) and type classes such as functor, applicative and
-  monads with instances such of each. (do we also do try catch finally here?)
+  monads with specific instances of each. (do we also do try catch finally here?)
 
 
 \begin{acknowledgementslong}
 %%if you want a "quote" environment for acknowledgements,
 %% use acknowledgements instead of acknowledgementslong
-God speed everyone.
+  God speed everyone.
+  TODO TODO TODO DO DO DO DO.
 % I would like to thank all of the little people who made this thesis
 % possible. Sleepy, Dopey, Grumpy, you know who you are.
 
@@ -155,16 +156,10 @@ God speed everyone.
 \include{Chapter2/Datastructure}
 \include{Chapter2/Types}
 
-
-%\include{Chapter1/Ordinal-1}
-
-%\include{Chapter2/Regression-1-guide-1.0}
-
 \global\long\def\bibname{References}
 
 \bibliographystyle{apalike2}
 \bibliography{Biblio/allcites}
-
 
 \appendix
 \include{Appendix1/Appendix1}

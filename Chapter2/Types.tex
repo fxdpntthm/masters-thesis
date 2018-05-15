@@ -8,29 +8,31 @@ We add 2 new type classes to our language
   This expressivity helps us understand how the functions
   use the resources. If the function uses a file handle as a resource
   in a restricted fashion. It would not call duplicate or drop on it.
+  Its return value would contain the reference to the resource
   On the other hand if the file handle is being opened or closed
   by a function, it will have to be in an unrestricted fashion.
 \item All the functions are of class $->$ can potentially have any of the 4 choices
-\begin{verbatim}
-              ShFun   SeFun
+  \begin{lstlisting}
+                  ShFun SeFun
 
-Un             -!&>    -!*>
+    Un            $\overset{!}{\rightarrow}$    $\overset{!}{\sepimp}$
 
-Substructural   -&>     -*>
-\end{verbatim}
-  $-\&>$ implies that the function application is of the sharing type.
+   Substructural   $\rightarrow$     $\sepimp$
+  \end{lstlisting}
+
+  $\rightarrow$ implies that the function application is of the sharing type.
   i.e. the resources used in the function have a may have a sharing closure.
+  represented as $-\&>$
 
-  $-*>$ implies that the function applciation is of a separating type.
-  the resources used do not have anything in common
+  $\sepimp$ implies that the function applciation is of a separating type.
+  the function may not share resources with its arguments
 
-  $-\!\&>$ implies that the function itself can be discarded
+  $\overset{!}{\rightarrow}$ implies that the function itself can be discarded
   or used multiple number of times. i.e. its closure
-  can be duplicated or discarded.
+  can be duplicated or discarded. And the function shares resources with the arguments
 
-  $-!*>$ implies that the function itself can be discarded.
-  This is useful in case of higher order functions. in the monad instance
-  of Maybe, in bind operation
+  $\overset{!}{\sepimp}$ implies that the function itself can be discarded.
+  This is useful in case of higher order functions. 
 
 \begin{minted}{haskell}
 instance Monad (-!*>) Maybe where

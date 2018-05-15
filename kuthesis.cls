@@ -72,7 +72,8 @@
      breaklines=true,  % sets automatic line breaking
      breakindent=2em,
      breakatwhitespace=true,  % sets if automatic breaks should
-     breakautoindent=true
+     breakautoindent=true,
+     mathescape
 }
 %% Could get more aggressive on settings, such as:
 %%[basicstyle={\ttfamily}]
