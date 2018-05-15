@@ -94,17 +94,25 @@
 
 \maketitle
 \begin{abstract}
+  Linear logic promises a way to introduce the efficient resource handling in programs.
+  There have been a number of attempts to make use of linear logic in programming languages.
+  Each method seems to have some flaw and caveats making it too difficult to be useful
+  in real life applications. It has made its way into some parts of programming languages
+  such as garbage collectors and also type systems (Rust and Clean). While the logic
+  is more expressive than intuistionistic logic, there is no
+  practical programming language that allows programmers that leverage it in its fullest degree.
+  In this thesis we redefine the existing Quill type system to incorporate linear logic.
 
-  Complexity of software systems has been increasing forever. Automation of tasks
-  provides consistency, correctness and speed at a much greater degree than humans.
-  complex software systems find their use in various fields ranging from automobiles, aircrafts,
-  financial institutions and even medicine. Higher level programming languages
-  are used to program these software systems and developing them requires
-  adequate understanding of the programming language along with problem domain.
-  Structured programming techniques ensures maintanability and extensibility
-  of the software application. Types and functional programming style helps maintain
-  structure by making it possible to run algorithmic checks to ensure sanity.
-  I have no idea what I am talking about. TODO! get back on track
+  % Complexity of software systems has been increasing forever. Automation of tasks
+  % provides consistency, correctness and speed at a much greater degree than humans.
+  % complex software systems find their use in various fields ranging from automobiles, aircrafts,
+  % financial institutions and even medicine. Higher level programming languages
+  % are used to program these software systems and developing them requires
+  % adequate understanding of the programming language along with problem domain.
+  % Structured programming techniques ensures maintanability and extensibility
+  % of the software application. Types and functional programming style helps maintain
+  % structure by making it possible to run algorithmic checks to ensure sanity.
+  % I have no idea what I am talking about. TODO! get back on track
 
   %  What is quil?
   % Quill is a purely functional language that uses
@@ -113,16 +121,16 @@
   % of a type, define the degree of unrestrictedness of classes
   % and a concept of sharing or separation of closures for functions
 
-  We introduce 2 new types of type constructors of arrow kind: sharing arrow and
+  We introduce 2 new type constructors of arrow class: sharing arrow and
   separating arrow over already existing unrestricted types formalized in
   Quill [\cite{morris_best_2016}]. Sharing arrows imply that the objects may share resources, while separating
   arrows imply that they do not share any resources. For unrestricted types
   sharing and separating does not make any difference as they can be easily
   duplicated or dropped without any adverse implications. So all the existing
-  programs would type check correctly with only difference being everying
-  regarded as unrestricted. This work is similar to bunched implications
-  [\cite{ohearn_resource_1999}, \cite{ohearn_logic_1999}] with the difference being
-  I do not know exactly what. TODO!
+  programs would type check correctly with only difference being everything
+  regarded as unrestricted. This work is similar to bunched implications and
+  $\alpha$Lambda calculus. [\cite{ohearn_resource_1999}, \cite{ohearn_logic_1999}]
+  with the difference being the notion of un-restrictedness of resources.
 
   % What am I trying to doing here?
   % Make Quill work. Write programs in them and check and see
@@ -130,8 +138,7 @@
   We realize that we have 2 kinds of pairs, a sharing pair and a separating pair depending
   on the arrow we use. We try to formalize other structures such as Lists, non-empty lists
   datatypes (recursive and non-recursive) and type classes such as functor, applicative and
-  monads with specific instances of each. (do we also do try catch finally here?)
-
+  monads with specific instances of each.
 
 \begin{acknowledgementslong}
 %%if you want a "quote" environment for acknowledgements,

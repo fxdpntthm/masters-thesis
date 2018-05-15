@@ -106,25 +106,18 @@ qualified types. $\Pi$ and $T$ range over finite set of predicates
 % TODO: points to cover
 % what is linearity
 % restricting weakening and contraction
-
-Girard \cite{girard_linear_1987} invented linear logic,
-where contraction and weakening of logical rules was restricted.
-The idea was that propositions cannot be freely duplicated or
-discarded like in classical logic. This instigates a view of
+Linear logic promises to help cope with the resource and resource control. 
+After Girard \cite{girard_linear_1987} invented linear logic, it has attracted
+quite a lof of attention of computer scientists. It is refinement of classical
+intuistionistic logic.  The idea was that propositions cannot be freely duplicated or
+discarded like in classical logic. In formal terms, the contraction and weakening
+of logical rules are restricted. This instigates a view of
 propositions to behave like resources. In real world software applications,
 resources may not be freely copied or dropped from a program context.
 Program entities like database connections, file handles or even
 in memory shared state are pet peeves for programmers writing
 industry grade software. Linear logic hopes to be a remedy for
 these problems.
-
-It was directly translated to handling of resources by the means of types. There has been
-active research in linear logic and its application s
-in programming languages. The hope being it can elevate
-certain problems such as resource leaks in programs that
-are extremly tough to detect and remediate from a full
-fledged industry grade software. Linear logic is believed
-to posseses the power to
 
 \section{Bunched Implications and $\alpha$ Lambda Calculus}
 $\alpha$ Lambda calculus introduces 2 kinds of arrows due the theory
@@ -135,11 +128,11 @@ and 2 new varieties of bunches $\Gamma; \Delta$ and $\Gamma, \Delta$ where
 the former admits to weakening and contraction but the later does not.
 
 This is where $\alpha$ lambda calculus is introduced. we consider resources
-magic wand?
+magic wand? How does this connect to Linear logic?
 
 
 \section{Linear logic with qualified types: Quill}
-combining linear logic with qualified types in Quill \cite{morris_best_2016}
+Combining linear logic with qualified types in Quill \cite{morris_best_2016}
 
 %%% Local Variables:
 %%% mode: latex
