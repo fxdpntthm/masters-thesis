@@ -1,79 +1,210 @@
-\chapter{Outstanding Questions and Design Decisions}
+\chapter{Background Work}
+% TODO should change title
 
-The core calculi does not specify how we want to have sharing.
-There are 2 options:
-\begin{enumerate}
-\item break our environment into 2 parts. Local and global
-  \\the local environment will keep track of the sharing.
-  \\the global environment will keep track of all the global name spaces
-  \\Use a stack model to keep pushing and popping things for the environment.
-  \\Each declaration will trigger a push of a local environment.
-\item Share the x with all the names present in the typing environment
-\item The lambda structure is organized as all lambdas first and then applications
-  So keep pulling all the lambdas and identify what all is sharing then run the AlgorithmM
-\end{enumerate}
+\section{Type Inference Algorithm}
+Algorithm W [\cite{damas_principal_1982}] and its varient algorithm M [\cite{lee_proofs_1998}]
+are the basis of almost all modern statically typed programming languages. Type inference
+is decidable in the sense, type checking algorithm always completes with a success or failure.
+The algorithms also gurantee a most general typing scheme for an expression in
+the simply typed lambda calculus extended with a polymorphic let construct having a term language
+\begin{flalign*}
+  M, N ::= x: \sigma \mid \lambda x: \tau. M \mid M N \mid \texttt{let}\ x\ \texttt{=}\ M\ \texttt{in}\ N \nonumber
+\end{flalign*}
+and a type language specified by
+\begin{flalign*}
+  \tau    &::= \alpha \mid \iota \mid \tau \rightarrow \tau \nonumber \\
+  \sigma  &::= \tau \mid \forall \alpha. \tau \nonumber
+\end{flalign*}
+where $\alpha$ is a type variable, $\iota$ are primitive types in the language, $\rightarrow$
+is a type constructor and $\sigma$ is a typing scheme.
 
-Q: How do we implement the sharing H;H right now?
-Designed type environment is a map of identifier to a triple
-\begin{enumerate}
-\item type binding
-\item the other identifiers that it may have sharing with
-\item its scope i.e. global or local depending on whether the variable was declared inside a lambda or it is referencing an externally defined function.
-\end{enumerate}
+Robinson's unification algorithm [\cite{robinson_machine-oriented_1965}] plays a key role
+in ensuring that types are well formed. Its purely syntactic approach in creating
+substitutions to unify types keeps the complete process elegent.
+The algorithm works in an interesting way where the types of all well-typed terms can be
+inferred automatically and if types are specified, the same algorithm can be used
+to match the expression term.
 
-The complete sharing environment of a variable can be found out using the
-closure function. It goes over all the local identifiers and locates all
-the other identifiers that it has sharing with returning the union.
+\begin{figure}[h]
+  \begin{framed}
+    % var
+    \begin{minipage}{.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$x: \sigma \in \Gamma$} \RightLabel{$[VAR]$}
+        \UnaryInfC{$\Gamma \vdash x : \sigma $}
+      \end{prooftree}
+    \end{minipage}
+    % let
+    \begin{minipage}{.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Gamma \vdash M : \sigma \ \ \ \ \
+          \Gamma_{x}, x: \sigma \vdash N: \tau$} \RightLabel{$[LET]$}
+        \UnaryInfC{$\Gamma \vdash (\texttt{let}\ x\ \texttt{=}\ M\ \texttt{in}\ N) : \tau$}
+      \end{prooftree}
+    \end{minipage}
 
-In case of contraction rule, if the variable shares resourses
-with another variable that remains in scope, then we need not enforce
-unrestricted predicate on it as we can ensure that the resources are
-not lost.
-
-From an implementation prespective, we need to ensure that we can still compute
-the closures correctly before and after the variable is removed
-from the environment. I.e. removing an identifier should not create a
-crack between the resource sharing identifiers.
-
-The main idea is to have intelligence as to when to keep a variable in scope
-and when to remove it from the type environment. All the used ones and
-the ones that are shared with the used variables should be kept
-all the others may be removed.
-
-When ever we are done typechecking a linear lambda, we would remove
-the bound variable and all the variables that are in sharing with it.
-
-
-Here is how the naive recursive algorithm works
-
-For Lambda
-\begin{enumerate}
-\item Get the bound variable
-\item Assign a new type for bound variable
-\item assign a new type variable for the body
-\item Evaluate type of the body and assign it to the body type varialbe
-\item return the type as (type of var) -> (type of body)
-\end{enumerate}
-
-Body can be made up of another lambda. In this case the same 5 steps will be triggered
-or it is an application of 2 or more variables
-In case of application 2 new type variable:
-\begin{enumerate}
-\item introduce type variables for left expression and right expression
-    left expression a type $A \rightarrow B$ right expression gets the type $A$
-\item recursively type check both of them
-\item return the type of the complete application as $B$ if the type checking in previous step is successfull
-\end{enumerate}
-
-
-
-
+    % -> I
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Gamma_{x}, x: \tau \vdash M : \tau'$} \RightLabel{$[\rightarrow I]$}
+        \UnaryInfC{$\Gamma \vdash \lambda x. M : \tau \rightarrow \tau'$}
+      \end{prooftree}
+    \end{minipage}
+    % -> E
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Gamma \vdash M : \tau \rightarrow \tau' \ \ \ \ \
+          \Gamma \vdash N : \tau$} \RightLabel{$[\rightarrow E]$}
+        \UnaryInfC{$\Gamma \vdash M N : \tau'$}
+      \end{prooftree}
+    \end{minipage}
+  \end{framed}
+\caption{Logic rules for Simply Typed Lambda Calculus}
+\label{fig:stlc-logic}
+\end{figure}
+The logical rules for type inference are shown in \ref{fig:stlc-logic}. $\Gamma$ is the
+context or assumptions in which the expression is typed. The $[VAR]$ rule is tautology or a simple
+lookup of the term variable $x$ in the context $\Gamma$. The $[LET]$ allows creating local
+definitions within an expression term. $[\rightarrow I]$ and $[\rightarrow E]$ are rules
+for typing lambda terms and application respectively.
 
 
-Other outstanding questions:
-What happens for fix point combinators
-What happens for S combinator
-What happens for K combinator
+% This simple type sytem is powerful in its
+% expressivity and can encode a large variety of computations. The type checking algorithm
+% asserts that undefined programs can be be detected statically i.e. without actually
+% running the program or as famously known as ``well typed programs do not go wrong''.
+% This is extremely useful for programmers who are building
+% complex real world softwares. Bad programs can be eleminated instantaneously while
+% being written using a mechanize technique so that the programmer can concentrate on designing the logic
+% rather than fighting undefinedness of the programs. This creates an excellent feedback loop
+% to the programmer while building large software systems. % TODO too generic should it be in introduction?
+% TODO Give examples?
+
+
+\section{Qualified Types}
+Jones [\cite{jones_theory_1994}] proposed incorporating predicates in the type language.
+Predicates are used to build constraints on the domain of the type of a term in the language expression.
+It introduces additional level between polymorphic and monomorphic typing of programs.
+A modification of Milner-Damas algorithm to encorporate predicates ensures that type inference
+is sound and complete. The types that satisfy all the predicates are called qualified types for the term.
+Qualified types are powerful enough to expresses type classes with functional dependencies,
+record types and subtyping [\cite{mark_type_2000}]. The type language is modified to add a new
+construct $\Rightarrow$ for qualified types
+\begin{flalign*}
+  \sigma ::= \tau \mid \forall \alpha. \sigma \mid \pi \Rightarrow \sigma \nonumber
+\end{flalign*}
+$\pi$ is a predicate and $\pi \Rightarrow \sigma$ TODO what does this mean?
+
+\section{Linear Logic}
+% TODO: points to cover
+% what is linearity
+% restricting weakening and contraction
+
+Girard \cite{girard_linear_1987} invented linear logic,
+where contraction and weakening of logical rules was restricted.
+The idea was that propositions cannot be freely duplicated or
+discarded like in classical logic. This instigates a view of
+propositions to behave like resources. In real world software applications,
+resources may not be freely copied or dropped from a program context.
+Program entities like database connections, file handles or even
+in memory shared state are pet peeves for programmers writing
+industry grade software. Linear logic hopes to be a remedy for
+these problems.
+
+
+
+It was directly translated to handling of resources by the means of types. There has been
+active research in linear logic and its application s
+in programming languages. The hope being it can elevate
+certain problems such as resource leaks in programs that
+are extremly tough to detect and remediate from a full
+fledged industry grade software. Linear logic is believed
+to posseses the power to
+
+\section{Bunched Implications}
+This is where $\alpha$ lambda calculus is introduced. we consider resources
+magic wand?
+
+
+\section{Linear logic with qualified types: Quill}
+combining linear logic with qualified types in Quill \cite{morris_best_2016}
+
+% \chapter{Outstanding Questions and Design Decisions}
+
+% The core calculi does not specify how we want to have sharing.
+% There are 2 options: 
+% \begin{enumerate}
+% \item break our environment into 2 parts. Local and global
+%   \\the local environment will keep track of the sharing.
+%   \\the global environment will keep track of all the global name spaces
+%   \\Use a stack model to keep pushing and popping things for the environment.
+%   \\Each declaration will trigger a push of a local environment.
+% \item Share the x with all the names present in the typing environment
+% \item The lambda structure is organized as all lambdas first and then applications
+%   So keep pulling all the lambdas and identify what all is sharing then run the AlgorithmM
+% \end{enumerate}
+
+% Q: How do we implement the sharing H;H right now?
+% Designed type environment is a map of identifier to a triple
+% \begin{enumerate}
+% \item type binding
+% \item the other identifiers that it may have sharing with
+% \item its scope i.e. global or local depending on whether the variable was declared inside a lambda or it is referencing an externally defined function.
+% \end{enumerate}
+
+% The complete sharing environment of a variable can be found out using the
+% closure function. It goes over all the local identifiers and locates all
+% the other identifiers that it has sharing with returning the union.
+
+% In case of contraction rule, if the variable shares resourses
+% with another variable that remains in scope, then we need not enforce
+% unrestricted predicate on it as we can ensure that the resources are
+% not lost.
+
+% From an implementation prespective, we need to ensure that we can still compute
+% the closures correctly before and after the variable is removed
+% from the environment. I.e. removing an identifier should not create a
+% crack between the resource sharing identifiers.
+
+% The main idea is to have intelligence as to when to keep a variable in scope
+% and when to remove it from the type environment. All the used ones and
+% the ones that are shared with the used variables should be kept
+% all the others may be removed.
+
+% When ever we are done typechecking a linear lambda, we would remove
+% the bound variable and all the variables that are in sharing with it.
+
+
+% Here is how the naive recursive algorithm works
+
+% For Lambda
+% \begin{enumerate}
+% \item Get the bound variable
+% \item Assign a new type for bound variable
+% \item assign a new type variable for the body
+% \item Evaluate type of the body and assign it to the body type varialbe
+% \item return the type as (type of var) -> (type of body)
+% \end{enumerate}
+
+% Body can be made up of another lambda. In this case the same 5 steps will be triggered
+% or it is an application of 2 or more variables
+% In case of application 2 new type variable:
+% \begin{enumerate}
+% \item introduce type variables for left expression and right expression
+%     left expression a type $A \rightarrow B$ right expression gets the type $A$
+% \item recursively type check both of them
+% \item return the type of the complete application as $B$ if the type checking in previous step is successfull
+% \end{enumerate}
+
+
+
+
+
+
+% Other outstanding questions:
+% What happens for fix point combinators
+% What happens for S combinator
+% What happens for K combinator
 What happens for Omega?
 
 

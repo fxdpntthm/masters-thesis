@@ -1,4 +1,7 @@
-
+**/auto/*
+_minted-thesis-ku/
+*.bbl
+*.blg
 
 ## R
 # History files

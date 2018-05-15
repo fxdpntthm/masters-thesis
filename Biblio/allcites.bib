@@ -2,23 +2,168 @@
 % Encoding: UTF-8
 
 
-@Book{gelman_bayesian_2003,
-  Title                    = {Bayesian Data Analysis, Second Edition},
-  Author                   = {Gelman, Andrew and Carlin, John B. and Stern, Hal S. and Rubin, Donald B.},
-  Publisher                = {Chapman \& Hall},
-  Year                     = {2003},
-  Edition                  = {2},
-  Month                    = jul,
-
-  ISBN                     = {{158488388X}}
+@article{girard_linear_1987,
+	title = {Linear logic},
+	volume = {50},
+	issn = {0304-3975},
+	url = {http://www.sciencedirect.com/science/article/pii/0304397587900454},
+	doi = {10.1016/0304-3975(87)90045-4},
+	abstract = {The familiar connective of negation is broken into two operations: linear negation which is the purely negative part of negation and the modality “of course” which has the meaning of a reaffirmation. Following this basic discovery, a completely new approach to the whole area between constructive logics and programmation is initiated.},
+	pages = {1--101},
+	number = {1},
+	journaltitle = {Theoretical Computer Science},
+        journal = {Theoretical Computer Science},
+	author = {Girard, Jean-Yves},
+        year = {1987}
 }
 
-@Book{pinheiro_mixed-effects_2000,
-  Title                    = {Mixed-effects models in S and {S-PLUS}},
-  Author                   = {Pinheiro, Jos{\textbackslash}'{e} C. and Bates, Douglas M.},
-  Publisher                = {Springer},
-  Year                     = {2000},
 
-  ISBN                     = {0387989579, 9780387989570}
+@article{jones_theory_1994,
+	title = {A theory of qualified types},
+	volume = {22},
+	issn = {0167-6423},
+	url = {http://www.sciencedirect.com/science/article/pii/0167642394000050},
+	doi = {https://doi.org/10.1016/0167-6423(94)00005-0},
+	abstract = {This paper describes a general theory of overloading based on a system of qualified types. The central idea is the use of predicates in the type of a term, restricting the scope of universal quantification. A corresponding semantic notion of evidence is introduced and provides a uniform framework for implementing applications of this system, including Haskell style type classes, extensible records and subtyping. Working with qualified types in a simple, implicitly typed, functional language, we extend the Damas-Milner approach to type inference. As a result, we show that the set of all possible typings for a given term can be characterized by a principal type scheme, calculated by a type inference algorithm.},
+	pages = {231 -- 256},
+	number = {3},
+	journaltitle = {Science of Computer Programming},
+	journal = {Science of Computer Programming},
+	author = {Jones, Mark P.},
+        year = {1994}
 }
 
+
+@inproceedings{mark_type_2000,
+	location = {Berlin, Germany},
+	title = {Type Classes with Functional Dependencies},
+	url = {http://web.cecs.pdx.edu/~mpj/pubs/fundeps.html},
+	abstract = {Type classes in Haskell allow programmers to define functions that can be used on a set of different types, with a potentially different implementation in each case. For example, type classes are used to support equality and numeric types, and for monadic programming. A commonly requested extension to support `multiple parameters' allows a more general interpretation of classes as relations on types, and has many potentially useful applications. Unfortunately, many of these examples do not work well in practice, leading to ambiguities and inaccuracies in inferred types and delaying the detection of type errors.
+
+This paper illustrates the kind of problems that can occur with multiple parameter type classes, and explains how they can be resolved by allowing programmers to specify explicit dependencies between the parameters. A particular novelty of this paper is the application of ideas from the theory of relational databases to the design of type systems.},
+	eventtitle = {{ESOP} 2000},
+	booktitle = {Proceedings of the 9th European Symposium on Programming},
+	publisher = {Springer-Verlag {LNCS} 1782},
+	author = {Mark, Jones},
+        year = {2000},
+        date = {2000}
+}
+
+
+@inproceedings{damas_principal_1982,
+	title = {Principal Type-schemes for Functional Programs},
+	url = {http://doi.acm.org/10.1145/582153.582176},
+	doi = {10.1145/582153.582176},
+        abstract = {Damas-milner algorithm},
+	series = {{POPL} '82},
+	pages = {207--212},
+	booktitle = {Proceedings of the 9th {ACM} {SIGPLAN}-{SIGACT} Symposium on Principles of Programming Languages},
+	publisher = {{ACM}},
+	author = {Damas, Luis and Milner, Robin},
+        year = {1982},
+	date = {1982}
+}
+
+
+@article{milner_theory_1978,
+	title = {A theory of type polymorphism in programming},
+	url = {http://www.sciencedirect.com/science/article/pii/0022000078900144},
+	doi = {10.1016/0022-0000(78)90014-4},
+	abstract = {The aim of this work is largely a practical one. A widely employed style of programming, particularly in structure-processing languages which impose no discipline of types, entails defining procedures which work well on objects of a wide variety. We present a formal type discipline for such polymorphic procedures in the context of a simple programming language, and a compile time type-checking algorithm W which enforces the discipline. A Semantic Soundness Theorem (based on a formal semantics for the language) states that well-type programs cannot “go wrong” and a Syntactic Soundness Theorem states that if W accepts a program then it is well typed. We also discuss extending these results to richer languages; a type-checking algorithm based on W is in fact already implemented and working, for the metalanguage {ML} in the Edinburgh {LCF} system.},
+	pages = {348--375},
+        volume = {17},
+	number = {3},
+	journal = {Journal of Computer and System Sciences},
+	shortjournal = {Journal of Computer and System Sciences},
+	author = {Milner, Robin},
+        year = {1978},
+        date = {1978}
+}
+
+
+@article{lee_proofs_1998,
+	title = {Proofs About a Folklore Let-polymorphic Type Inference Algorithm},
+	volume = {20},
+	issn = {0164-0925},
+	url = {http://doi.acm.org/10.1145/291891.291892},
+	doi = {10.1145/291891.291892},
+	abstract = {The Hindley/Milner let-polymorphic type inference system has two different algorithms: one is the de factostandard Algorithm  W that is bottom-up (or context-insensitive), and the other is a “folklore” algorithm that is top-down (or context-sensitive). Because the latter algorithm has not been formally presented with its soundness and completeness proofs, and its relation with the  W algorithm has not been rigorously investigated, its use in place of (or in combination with)  W is not well founded. In this article, we formally define the context-sensitive, top-down type inference algorithm (named “ M”), prove its soundness and completeness, and show a distinguishing property that  M always stops earlier than  W if the input program is ill typed. Our proofs can be seen as theoretical justifications for various type-checking strategies being used in practice.},
+	pages = {707--723},
+	number = {4},
+	journaltitle = {{ACM} Trans. Program. Lang. Syst.},
+        journal = {{ACM} Trans. Program. Lang. Syst.},
+	author = {Lee, Oukseh and Yi, Kwangkeun},
+	date = {1998-07},
+        year = {1998},
+	keywords = {type error, type inference algorithm}
+}
+
+
+@article{robinson_machine-oriented_1965,
+	title = {A Machine-Oriented Logic Based on the Resolution Principle},
+	volume = {12},
+	issn = {0004-5411},
+	url = {http://doi.acm.org/10.1145/321250.321253},
+	doi = {10.1145/321250.321253},
+	pages = {23--41},
+	number = {1},
+	journaltitle = {J. {ACM}},
+	author = {Robinson, J. A.},
+	urldate = {2018-02-04},
+	date = {1965-01},
+        year = {1965}
+}
+
+
+@inproceedings{morris_best_2016,
+	location = {New York, {NY}, {USA}},
+	title = {The Best of Both Worlds: Linear Functional Programming Without Compromise},
+	isbn = {978-1-4503-4219-3},
+	url = {http://doi.acm.org/10.1145/2951913.2951925},
+	doi = {10.1145/2951913.2951925},
+	series = {{ICFP} 2016},
+	shorttitle = {The Best of Both Worlds},
+	abstract = {We present a linear functional calculus with both the safety guarantees expressible with linear types and the rich language of combinators and composition provided by functional programming. Unlike previous combinations of linear typing and functional programming, we compromise neither the linear side (for example, our linear values are first-class citizens of the language) nor the functional side (for example, we do not require duplicate definitions of compositions for linear and unrestricted functions). To do so, we must generalize abstraction and application to encompass both linear and unrestricted functions. We capture the typing of the generalized constructs with a novel use of qualified types. Our system maintains the metatheoretic properties of the theory of qualified types, including principal types and decidable type inference. Finally, we give a formal basis for our claims of expressiveness, by showing that evaluation respects linearity, and that our language is a conservative extension of existing functional calculi.},
+	pages = {448--461},
+	booktitle = {Proceedings of the 21st {ACM} {SIGPLAN} International Conference on Functional Programming},
+	publisher = {{ACM}},
+	author = {Morris, J. Garrett},
+	urldate = {2018-02-06},
+	date = {2016},
+        year = {2016},
+	keywords = {linear types, qualified types, substructural types}
+}
+
+
+@article{ohearn_logic_1999,
+	title = {The Logic of Bunched Implications},
+	volume = {5},
+	issn = {1079-8986},
+	url = {http://www.jstor.org/stable/421090},
+	doi = {10.2307/421090},
+	abstract = {We introduce a logic {BI} in which a multiplicative (or linear) and an additive (or intuitionistic) implication live side-by-side. The propositional version of {BI} arises from an analysis of the proof-theoretic relationship between conjunction and implication; it can be viewed as a merging of intuitionistic logic and multiplicative intuitionistic linear logic. The naturality of {BI} can be seen categorically: models of propositional {BI}'s proofs are given by bicartesian doubly closed categories, i.e., categories which freely combine the semantics of propositional intuitionistic logic and propositional multiplicative intuitionistic linear logic. The predicate version of {BI} includes, in addition to standard additive quantifiers, multiplicative (or intensional) quantifiers ∀ $_{\textrm{new}}$ and ∃ $_{\textrm{new}}$ which arise from observing restrictions on structural rules on the level of terms as well as propositions. We discuss computational interpretations, based on sharing, at both the propositional and predicate levels.},
+	pages = {215--244},
+	number = {2},
+	journaltitle = {The Bulletin of Symbolic Logic},
+	author = {O'Hearn, Peter W. and Pym, David J.},
+	urldate = {2018-02-23},
+	date = {1999},
+	year = {1999}
+}
+
+
+@inproceedings{ohearn_resource_1999,
+	location = {London, {UK}, {UK}},
+	title = {Resource Interpretations, Bunched Implications and the Alpha lambda-Calculus},
+	isbn = {978-3-540-65763-7},
+	url = {http://dl.acm.org/citation.cfm?id=645894.671769},
+	series = {{TLCA} '99},
+	abstract = {We introduce the αλ-calculus, a typed calculus that includes a multiplicative function type -* alongside an additive function type →. It arises proof-theoretically as a calculus of proof terms for the logic of bunched implications of O'Hearn and Pym, and semantically from doubly closed categories, where a single category possesses two closed structures. Typing contexts in αλ are bunches, i.e., trees built from two combining operations, one that admits the structural rules of Weakening and Contraction and another that does not. To illuminate the consequences of αλ's approach to the structural rules we define two resource interpretations, extracted from Reynolds's "sharing reading" of affine λ-calculus. Based on this we show how αλ enables syntactic control of interference and Idealized Algol, imperative languages based on affine and simply-typed λ-calculi, to be smoothly combined in one system.},
+	pages = {258--279},
+	booktitle = {Proceedings of the 4th International Conference on Typed Lambda Calculi and Applications},
+	publisher = {Springer-Verlag},
+	author = {O'Hearn, Peter W.},
+	urldate = {2018-02-28},
+	date = {1999},
+        year = {1999}
+}

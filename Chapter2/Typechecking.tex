@@ -25,38 +25,37 @@ In case of application 2 new type variable:
 
 In Quill there are 2 kinds of lambdas:
 \begin{enumerate}
-\item Sharing Lambda $\&$
-\item Separating Lambda $\*$
+\item Sharing Lambda $\lambda^{\alpha}$
+\item Separating Lambda $\lambda^{*}$
 \end{enumerate}
-
-This helps specify if the 2 variables are independent or have some sort of sharing between them.
-eg. A sharing pair will be represented as
-\begin{verbatim}
-shPair = \x ->\&y -> \sh -> sh x y
-\end{verbatim}
+This helps us specify if the 2 variables are separated or have sharing
+of resources between them.
+The church encoding of a sharing pair will be represented as\\
+$shPair = \lambda^{*} x \rightarrow \lambda^{\alpha} y \rightarrow \lambda^{*} sh \rightarrow sh\ x\ y$\\
 This means that x and y may share resources
-
-The other way pair is a sparating pair represented as
-\begin{verbatim}
-sePair = \x -> \*y -> \se -> se x y
-\end{verbatim}
-This means that x and y do not share variables
+A sparating pair is represented as\\
+$sePair = \lambda^{*} x \rightarrow \lambda^{*}y \rightarrow \lambda^{*}se \rightarrow se\ x\ y$\\
+This means that x and y do not share resources.
+%By default we may assume that resources are always separating unless explicitly specified
+%that they are sharing.
 
 \section{Typing environment}
 
-The typing environment is a pair of identifier and its type
-
-We need to modify the typing envrionment or typing judgements
-also describes the sharing. There can be many different
-ways of doing it.
+The typing environment in standard Milner-Damas algorithm
+is a pair of identifier and its type.
+We need to modify the typing envrionment so that it describes sharing.
+% There can be many different ways of doing it.
 In the current implmenetation we have
-extended the typing environment to hold 2 more things
-a list of list of identifiers, that describes the sharing of variables
-a scope tag that identifies if the variable is global in the complete module or local to the definition.
-
-Global variables can be used anywhere in the compelete file.
+extended the typing environment to hold 2 more entities along with the
+type of the indentifier, a list of list of identifiers --- that describes the sharing of variables,
+a scope tag---that identifies if the variable is global in the complete module or local to the definition.
+Global variables can be used anywhere in the file or other code file if it is imported
 All function names will be defaulted to global scope.
 Local variables can be used only after they have been bound in the typing environment.
+The new typing envionment can be realized as:
+\begin{minted}{haskell}
+  type Env = Map Id (Type, [[Id]], Scope)
+\end{minted}
 
 % how is the list of list of ids help in identifying sharing
 
@@ -106,9 +105,9 @@ While folding out of of the recursion we do 2 things:
 1) keep track of the used variables (including implicitly used variables due to sharing)
 2) generate new goals
    a) depending on whether the the introduced variable was used
-      or its sharing member was used assign Un predicates and weaken if it is not used at all
+      or its sharing member was used. Assign Un predicates and weaken if it is not used at all
    b) introduce lesser-restricted predicates
-3) Generate new assumptions
+3) Generate other new assumptions
 
 We cannot determine when to get rid of the complete bunch.
 \begin{verbatim}
@@ -116,31 +115,170 @@ We cannot determine when to get rid of the complete bunch.
 \end{verbatim}
 hence, when we are folding out of the final recursive but 1 call ie. for Lambda bound variable x
 
+\section{Basic Definitions}
+
+We go over the definitions of the base language and some conventions that we would
+follow thorough out this thesis.
+
+\section{Language Syntax and Types}
+
+Language will be a pumped up version of simply typed lambda calculus with kind support
+
+\begin{figure}[h]
+  \begin{framed}
+      \begin{flalign}
+      \text{Term Variables}      &x, y, z         \in \text{Var} &\nonumber  \\  % \label{eqn:variables} 
+      \text{Type Variables}      &t, u, v         \in \text{TVar}&  \nonumber \\  % \label{eqn:typevariables}
+      \text{Kinds}               &\kappa          ::= * \mid \kappa \rightarrow \kappa \nonumber \\% \label{eqn:kind}
+      \text{Types}               &\tau^{\kappa}    ::= t \mid C^{\kappa} \mid \tau^{\kappa \rightarrow \kappa \rightarrow \kappa}
+      \end{flalign}
+
+% TODO work on this
+Type constructors C$^{\kappa}$  ::= $C^{* \rightarrow * \rightarrow *}$ | $\overset{!}{\rightfilledspoon}$ | $\rightfilledspoon$ | $\xrightarrow{!}$ | $\rightarrow$
+
+Predicates  $\pi$              ::= \texttt{Un} $\tau$ | \texttt{SeFun} $\tau$ | \texttt{ShFun} $\tau$ | $\tau \geq u$
+
+Qualified Types  $\rho$        ::=  $\tau^{*}$ | $\pi \Rightarrow \rho$
+
+Type schemes $\sigma$          ::=  $\rho$ | $\forall t. \sigma$
+
+Environments $\Gamma$          ::= $\epsilon$ | $\Delta$ | $x:\sigma$ | $\Gamma, \Delta$ | $\Gamma; \Delta$ 
+%TODO what is this?
+Environment Context            ::=
+
+Expressions       $F, E$       ::= $x$ | $\lambda^{*}x. F$ | $\lambda^{\alpha}x. F$ | $F E$
+                                | \texttt{let} $x$ \texttt{=} $F$ \texttt{in} $E$
+
+\end{framed}
+\caption{Language Syntax}
+\label{fig:language-syntax}
+\end{figure}
+
 
 \section{Typing rules}
 
-\begin{minipage}{.5\textwidth}
-  \begin{prooftree}
-    \AxiomC{} \RightLabel{$[Id]$}
-    \UnaryInfC{$\langle !A \rangle \vdash !A$}
-    \AxiomC{$[\Gamma], [A] \vdash B$} \RightLabel{$[!\text{--}E]$}
-    \BinaryInfC{$[\Gamma], \langle !A \rangle \vdash B$}
-    \RightLabel{$[\rightspoon \text{--} I]$}
-    \UnaryInfC{$[\Gamma] \vdash !A \rightspoon B$}
-  \end{prooftree}
-\end{minipage}
-\begin{minipage}{.5\textwidth}
-  \begin{prooftree}
-    \AxiomC{$[\Gamma] \vdash !A \rightspoon B $}
-    \AxiomC{$[\Delta] \vdash A$} \RightLabel{$[!\text{--}I]$}
-    \UnaryInfC{$[\Delta] \vdash !A$}
-    \RightLabel{$\rightspoon\text{--}E$}
-    \BinaryInfC{$[\Gamma], [\Delta] \vdash B$}
-  \end{prooftree}
-\end{minipage}
+\section{Conventions and Notations}
+$\Gamma_{x}$ is the typing environment excluding the type variable $x$. $TV(\Gamma)$ are the free
+variables in the environment $\Gamma$.
+%\begin{itemize}
+% \item $\Pi$ varies over predicates
+% \item $\Rightarrow$ qualified types
+% \item $\Gamma$ and $\Delta$ are typing environments
+% \item $,$ is a separating concatination of environment
+% \item $;$ is a sharing concatination of environment
+% \item $SeFun$ is a predicate of separating functions
+% \item $\rightfilledspoon$ for separating function application
+% \item $ShFun$ is a predicate of sharing functions
+% \item $\rightarrow$ is for sharing function application
+% \item $\geq$ lesser restricting
+% \end{itemize}
 
+\section{Syntax Directed Typing Judgements}
 
+\begin{figure}[h]
+  \begin{framed}
+    % var
+    \begin{minipage}{.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{} \RightLabel{$[VAR]$}
+        \UnaryInfC{$\Pi \mid x : \sigma \vdash x : \sigma $}
+      \end{prooftree}
+    \end{minipage}
+    % let
+    \begin{minipage}{.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Pi \mid \Gamma \vdash M : \sigma \ \ \ \ \
+          \Pi' \mid \Gamma_{x}, x: \sigma \vdash N: \tau$} \RightLabel{$[LET]$}
+        \UnaryInfC{$\Pi \cup \Pi' \mid \Gamma \vdash \texttt{let}\ x\ \texttt{=}\ M\ \texttt{in}\ N: \tau$}
+      \end{prooftree}
+    \end{minipage}
 
+    % -&> I
+    \begin{minipage}{1\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Pi \mid \Gamma_{x};x: \tau \vdash M : \tau' \ \ \ \ \
+          \Pi \Rightarrow \texttt{ShFun} \phi \ \ \ \
+          \Pi \vdash \Gamma \geq \phi$} \RightLabel{$[\rightarrow I]$}
+        \UnaryInfC{$\Pi \mid \Gamma \vdash \lambda^{\alpha}x. M \tau : \phi \tau \tau'$}
+      \end{prooftree}
+    \end{minipage}
+    % -&> E
+    \begin{minipage}{1\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Pi \mid \Gamma \vdash M : \phi \tau \tau' \ \ \ \ \
+          \Pi \mid \Delta \vdash N : \tau' \ \ \ \ \
+          \Pi \Rightarrow \texttt{ShFun} \phi \ \ \ \
+          \Pi \vdash \Gamma \geq \phi$} \RightLabel{$[\rightfilledspoon E]$}
+        \UnaryInfC{$\Pi \mid \Gamma,\Delta \vdash M N : \tau'$}
+      \end{prooftree}
+    \end{minipage}
+
+    % -*> I
+    \begin{minipage}{1\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Pi \mid \Gamma_{x},x: \tau \vdash M : \tau' \ \ \ \ \
+          \Pi \Rightarrow \texttt{SeFun} \phi \ \ \ \
+          \Pi \vdash \Gamma \geq \phi$} \RightLabel{$[\rightfilledspoon I]$}
+        \UnaryInfC{$\Pi \mid \Gamma \vdash \lambda^{*}x. M : \phi \tau \tau'$}
+      \end{prooftree}
+    \end{minipage}
+    % -*> E
+    \begin{minipage}{1\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Pi \mid \Gamma \vdash M : \phi \tau \tau' \ \ \ \ \
+          \Pi \mid \Delta \vdash N : \tau \ \ \ \ \
+          \Pi \Rightarrow \texttt{ShFun} \phi \ \ \ \
+          \Pi \vdash \Gamma \geq \phi$} \RightLabel{$[\rightarrow E]$}
+        \UnaryInfC{$\Pi \mid \Gamma;\Delta \vdash M N : \tau'$}
+      \end{prooftree}
+    \end{minipage}
+
+    % => I
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Pi, \pi \mid \Gamma \vdash M : \rho$} \RightLabel{$[\Rightarrow I]$}
+        \UnaryInfC{$\Pi \mid \Gamma \vdash M : \pi \Rightarrow \rho$}
+      \end{prooftree}
+    \end{minipage}
+    % => E
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Pi \mid \Gamma \vdash M : \pi \Rightarrow \rho \ \ \ \ \
+          \Pi \Rightarrow \pi$} \RightLabel{$[\Rightarrow E]$}
+        \UnaryInfC{$\Pi \mid \Gamma \vdash M: \rho$}
+      \end{prooftree}
+    \end{minipage}
+
+    % forall I
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Pi \mid \Gamma \vdash M: \sigma \ \ \ \ \ \
+          t \notin TV(\Gamma) \cup TV(\Pi)$}\RightLabel{$[\forall I]$}
+        \UnaryInfC{$\Pi \mid \Gamma \vdash M: \forall t. \sigma$}
+      \end{prooftree}
+    \end{minipage}
+    % forall E
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Pi \mid \Gamma \vdash M: \forall t.\sigma$}\RightLabel{$[\forall E]$}
+        \UnaryInfC{$\Pi \mid \Gamma \vdash M: [\tau / t] \sigma $}
+      \end{prooftree}
+    \end{minipage}
+
+    % user defined type constructor I
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Pi \mid \Gamma \vdash M: \forall t.\sigma$}\RightLabel{$[\forall E]$}
+        \UnaryInfC{$\Pi \mid \Gamma \vdash M: [\tau / t] \sigma $}
+      \end{prooftree}
+    \end{minipage}
+
+    % user defined type constructor E
+
+    \caption{Typing Rules}
+    \label{fig:typing-rules}
+  \end{framed}
+\end{figure}
 
 %%% Local Variables:
 %%% mode: latex

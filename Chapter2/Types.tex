@@ -32,26 +32,26 @@ Substructural   -&>     -*>
   This is useful in case of higher order functions. in the monad instance
   of Maybe, in bind operation
 
-\begin{lstlisting}
-instance Monad (-!*>) Maybe
+\begin{minted}{haskell}
+instance Monad (-!*>) Maybe where
    return a = Just a
    (>>=) a f = case a of
                  Nothing -> Nothing
-                 Just v -> f v
-\end{lstlisting}
+                 Just v  -> f v
+\end{minted}
 
   In the first branch of case expression, f is never used and discarded. Hence
   the type of the function should be $-!*>$
   This may not always be the case. As with a non-empty list
   the operation f is performed atleast once.
 
-\begin{lstlisting}
-instance Monad (-!*>) NEList
+\begin{minted}{haskell}
+instance Monad (-!*>) NEList where
    return a   = Last a
    (>>=) m f  = case a of
                   Last a    -> f a
                   Cons a as -> concat (f a) (as >>= f)
-\end{lstlisting}
+\end{minted}
 
 \end{itemize}
 
