@@ -8,16 +8,16 @@ is decidable in the sense, type checking algorithm always completes with a succe
 The algorithms also gurantee a most general typing scheme for an expression in
 the simply typed lambda calculus extended with a polymorphic let construct having a term language
 \begin{framed}
-\begin{flalign*}
-  \text{Expressions}\ \ \ M, N ::= x: \sigma \mid \lambda x: \tau. M \mid M N \mid \texttt{let}\ x\ \texttt{=}\ M\ \texttt{in}\ N \nonumber
-\end{flalign*}
+  \begin{flalign*}
+    \text{Expressions}\ \ \ M, N ::= x: \sigma \mid \lambda x: \tau. M \mid M N \mid \texttt{let}\ x\ \texttt{=}\ M\ \texttt{in}\ N \nonumber
+  \end{flalign*}
 \end{framed}
 and a type language specified by
 \begin{framed}
-\begin{flalign*}
-  \text{Types}\ \ \  \tau    &::= \alpha \mid \iota \mid \tau \rightarrow \tau \nonumber \\
-  \text{Typing Scheme}\ \ \  &::= \tau \mid \forall \alpha. \tau \nonumber
-\end{flalign*}
+  \begin{flalign*}
+    \text{Types}\ \ \  \tau    &::= \alpha \mid \iota \mid \tau \rightarrow \tau \nonumber \\
+    \text{Typing Scheme}\ \ \  &::= \tau \mid \forall \alpha. \tau \nonumber
+  \end{flalign*}
 \end{framed}
 where $\alpha$ is a type variable, $\iota$ are primitive types in the language, $\rightarrow$
 is a type constructor and $\sigma$ is a typing scheme.
@@ -63,8 +63,8 @@ to match the expression term.
       \end{prooftree}
     \end{minipage}
   \end{framed}
-\caption{Logic rules for Simply Typed Lambda Calculus}
-\label{fig:stlc-logic}
+  \caption{Logic Rules for Simply Typed Lambda Calculus}
+  \label{fig:stlc-logic}
 \end{figure}
 The logical rules for type inference are shown in \ref{fig:stlc-logic}. $\Gamma$ is the
 context or assumptions in which the expression is typed. The $[VAR]$ rule is tautology or a simple
@@ -94,42 +94,181 @@ is sound and complete. The types that satisfy all the predicates are called qual
 Qualified types are powerful enough to expresses type classes with functional dependencies,
 record types and subtyping [\cite{mark_type_2000}]. The type language is modified to contain
 qualified types. $\Pi$ and $T$ range over finite set of predicates
-\begin{framed}
-\begin{flalign*}
-  \text{Types}\ \ \ \tau              &::= \alpha \mid \iota \mid \tau \rightarrow \tau \nonumber \\
-  \text{Qualified Types}\ \ \ \rho    &::= \Pi \Rightarrow \tau \nonumber \\
-  \text{Type Scheme}\ \ \ \sigma      &::= \tau \mid \forall T. \rho \nonumber
-\end{flalign*}
+\begin{figure}[h]
+  \centering
+  \begin{framed}
+  \begin{flalign*}
+    \text{Types}\ \ \ \tau              &::= \alpha \mid \iota \mid \tau \rightarrow \tau \nonumber \\
+    \text{Qualified Types}\ \ \ \rho    &::= \Pi \Rightarrow \tau \nonumber \\
+    \text{Type Scheme}\ \ \ \sigma      &::= \tau \mid \forall T. \rho \nonumber
+  \end{flalign*}
 \end{framed}
-
+\caption{Qualified Types}
+\label{fig:qualifed-types}
+\end{figure}
 \section{Linear Logic}
 % TODO: points to cover
 % what is linearity
 % restricting weakening and contraction
-Linear logic promises to help cope with the resource and resource control. 
-After Girard \cite{girard_linear_1987} invented linear logic, it has attracted
-quite a lof of attention of computer scientists. It is refinement of classical
-intuistionistic logic.  The idea was that propositions cannot be freely duplicated or
-discarded like in classical logic. In formal terms, the contraction and weakening
-of logical rules are restricted. This instigates a view of
-propositions to behave like resources. In real world software applications,
+Linear logic [\cite{girard_linear_1987}] promises to help cope with the resource and resource control problem.
+It is refinement of classical intuistionistic logic. The core idea is that propositions
+cannot be freely duplicated or discarded as in classical instuistionistic logic.
+In formal terms, the contraction and weakening of logical rules are restricted.
+This instigates a view of propositions to behave like resources. In real world software applications,
 resources may not be freely copied or dropped from a program context.
 Program entities like database connections, file handles or even
 in memory shared state are pet peeves for programmers writing
 industry grade software. Linear logic hopes to be a remedy for
-these problems.
+these problems. If contraction and weakening is completely abandoned,
+the system gets overly restrictive. Wadler describes a refinement of
+linear logic based on Girard's Logic of Unity [\cite{wadler_taste_1993}, \cite{girard_unity_1993}].
+It works around the problem of linear logic being too restrictive by allowing
+instuistionistic rules in fragments. It can be considered as a disjoint union
+of linear logic and intuistionistic logic. The grammar of classical intuistionistic logic is shown in \ref{fig:intu-logic-grammar}
+where $A \rightarrow B$ implies implication, $A \times B$ is conjunction and $A \plus B$ is disjunction.
+\begin{figure}
+  \centering
+  \begin{framed}
+  \begin{flalign*}
+    A, B, C ::= X \mid A \vdash B \mid A \rightarrow B \mid A \times B \mid A \plus B
+  \end{flalign*}
+\end{framed}
+\caption{Grammar for Intuistionistic Logic}
+\label{fig:intu-logic-grammar}
+\end{figure}
+
+In a pure linear logic setting, none of the assumptions can be used more than once (weakening prohibited) and they cannot be discarded
+(contraction prohibited) This gives rise to a different flavor of all the logical connectives.
+$A \rightspoon B$ describes the new implication meaning and is read as {\em``consume A to give B''} its logical rules
+is given by $\rightspoon I$ and $\rightspoon E$. Similarly there are 2 kinds of connectives, multiplicative and additive that
+arise in this logic system. More symbols are added inplace of $\plus$ and $\times$ to differentiate between the
+multipicative conjunction and disjuntion ($\otimes$ and $\parr$), and additive conjuntion and disjunction ($\with $ and $\oplus$).
+While working in intuistionistic linear logic, $\par$ is dropped from the system. (TODO why is additive disjunction dropped? in ILL?)
+
+\begin{figure}
+  \centering
+  \begin{framed}
+    \begin{flalign*}
+      A, B, C ::= X \mid \oc A \mid A \vdash B \mid A \rightspoon B \mid A \with B \mid A \otimes B
+    \end{flalign*}
+  \end{framed}
+  \caption{Grammar for Linear Logic}
+\end{figure}
+
+\begin{figure}[h]
+  \begin{framed}
+    % -o I
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Gamma, A \vdash B$} \RightLabel{$[\rightspoon I]$}
+        \UnaryInfC{$\Gamma \vdash A \rightspoon B$}
+      \end{prooftree}
+    \end{minipage}
+    % -o E
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Gamma \vdash  A \rightspoon B$}
+        \AxiomC{$\Delta \vdash A$} \RightLabel{$[\rightspoon E]$}
+        \BinaryInfC{$\Gamma, \Delta \vdash B$}
+      \end{prooftree}
+    \end{minipage}
+
+  % & I
+  \begin{minipage}{.3\textwidth}
+    \begin{prooftree}
+      \AxiomC{$\Gamma \vdash A$}
+      \AxiomC{$\Gamma \vdash B$} \RightLabel{$[\with I]$}
+      \BinaryInfC{$\Gamma \vdash A \with B$}
+    \end{prooftree}
+  \end{minipage}
+  \begin{minipage}{.3\textwidth}
+    \begin{prooftree}
+      \AxiomC{$\Gamma \vdash A \with B$} \RightLabel{$[\with E_1]$}
+      \UnaryInfC{$\Gamma \vdash A$}
+    \end{prooftree}
+  \end{minipage}
+  \begin{minipage}{.3\textwidth}
+    \begin{prooftree}
+      \AxiomC{$\Gamma \vdash A \with B$} \RightLabel{$[\with E_2]$}
+      \UnaryInfC{$\Gamma \vdash B$}
+    \end{prooftree}
+  \end{minipage}
+
+
+  % otimes I
+  \begin{minipage}{.3\textwidth}
+    \begin{prooftree}
+      \AxiomC{$\Gamma \vdash A$}
+      \AxiomC{$\Delta \vdash B$} \RightLabel{$[\otimes I]$}
+      \BinaryInfC{$\Gamma, \Delta \vdash A \otimes B$}
+    \end{prooftree}
+  \end{minipage}
+  \begin{minipage}{.7\textwidth}
+    \begin{prooftree}
+      \AxiomC{$\Gamma \vdash A \otimes B$} \RightLabel{$[\otimes E]$}
+      \AxiomC{$\Gamma, A, B \vdash C$}
+      \BinaryInfC{$\Gamma \vdash C$}
+    \end{prooftree}
+  \end{minipage}
+
+    % % par I
+    % \begin{minipage}{0.5\textwidth}
+    %   \begin{prooftree}
+    %     \AxiomC{$\Gamma, A \vdash B$} \RightLabel{$[\parr I]$}
+    %     \UnaryInfC{$\Gamma \vdash A \rightspoon B$}
+    %   \end{prooftree}
+    % \end{minipage}
+    % % par E
+    % \begin{minipage}{0.5\textwidth}
+    %   \begin{prooftree}
+    %     \AxiomC{$\Gamma \vdash  A \rightspoon B$}
+    %     \AxiomC{$\Delta \vdash A$} \RightLabel{$[\parr E]$}
+    %     \BinaryInfC{$\Gamma, \Delta \vdash B$}
+    %   \end{prooftree}
+    % \end{minipage}
+
+    % oplus
+    \begin{minipage}{.20\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Gamma \vdash A$} \RightLabel{$[\oplus I_1]$}
+        \UnaryInfC{$\Gamma \vdash A \oplus B$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{.20\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Delta \vdash B$} \RightLabel{$[\oplus I_2]$}
+        \UnaryInfC{$\Delta \vdash A \oplus B$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{0.6\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Gamma \vdash A \oplus B$}
+        \AxiomC{$\Delta, A \vdash C$}
+        \AxiomC{$\Delta, B \vdash C$}\RightLabel{$[\oplus E]$}
+        \TrinaryInfC{$\Gamma, \Delta \vdash C$}
+      \end{prooftree}
+    \end{minipage}
+  \end{framed}
+  \caption{Linear Logic Rules}
+  \label{fig:linear-logic-rules}
+\end{figure}
+
+To escape linearity, exponential $\oc$ is used, which signifies that an assumption can
+be duplicted or dropped without restriction. $\oc A$ can be thought of as {\em``as many A's as needed''}.
+Thus the intitionsistic $A \rightarrow B$ can be encoded in linear logic by $\oc A \rightspoon B$.
+Similarly $A \plus B$ would be represented as $\oc A \otimes \oc B$ and $A \times B$ would be represented as $A \with B$. We clearly see that
+this is a much powerful system in contrast to classical intuistionistic logic because of its enhanced expressivity.
 
 \section{Bunched Implications and $\alpha$ Lambda Calculus}
-$\alpha$ Lambda calculus introduces 2 kinds of arrows due the theory
-developed by O'Hearn and Pym [\cite{ohearn_logic_1999}]
-$\sepimp$     : Arguments of function do not share resources with their arguments
-$\rightarrow$ : Arguments of functions may share resources with their arguments
+
+$\alpha$ Lambda calculus introduces 2 kinds of arrows by O'Hearn and Pym [\cite{ohearn_logic_1999}]
+$\sepimp$     : Arguments of function do not share resources with their arguments\\
+$\rightarrow$ : Arguments of functions may share resources with their arguments\\
 and 2 new varieties of bunches $\Gamma; \Delta$ and $\Gamma, \Delta$ where
 the former admits to weakening and contraction but the later does not.
 
 This is where $\alpha$ lambda calculus is introduced. we consider resources
 magic wand? How does this connect to Linear logic?
-
 
 \section{Linear logic with qualified types: Quill}
 Combining linear logic with qualified types in Quill \cite{morris_best_2016}
