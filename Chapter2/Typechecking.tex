@@ -21,7 +21,7 @@ Language will be a pumped up version of simply typed lambda calculus with kind s
       \text{Qualified Types}\ \ \     \rho            &::= \tau^{*} \mid \pi \Rightarrow \rho \nonumber\\
       \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma \nonumber\\
       \text{Environments}\ \ \      \Gamma,\Delta     &::= \epsilon \mid x:\sigma \mid \Gamma, \Delta \mid \Gamma; \Delta \nonumber\\
-      \text{Environment Context}\ \ \ H               &::= H,H' \mid H;H' \mid \fbox{$\phantom{5}$} \nonumber\\ %\text{what is this how is it different from Environment?}
+      \text{Environment Context}\ \ \ H, H'           &::= \epsilon \mid H,H' \mid H;H' \mid \square \nonumber\\ %\text{what is this how is it different from Environment?}
       \text{Expressions}\ \ \         M, N            &::= x \mid \lambda^{*}x. M \mid \lambda^{\alpha}x. M \mid M N\nonumber\\
                                                       &      \mid \texttt{let}\ x\ \texttt{=}\ M\ \texttt{in}\ N\nonumber\\
                                                       &      \mid \texttt{case}\ M\ \texttt{of}\ \{K_i\ x_{1i}\ x_{2i}\ \ldots\ x_{ji}\}_i\nonumber
@@ -70,6 +70,7 @@ variables in the environment $\Gamma$.
         \UnaryInfC{$\Pi \cup \Pi' \mid \Gamma \vdash \texttt{let}\ x\ \texttt{=}\ M\ \texttt{in}\ N: \tau$}
       \end{prooftree}
     \end{minipage}
+
     % => I
     \begin{minipage}{0.5\textwidth}
       \begin{prooftree}

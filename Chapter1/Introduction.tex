@@ -143,7 +143,7 @@ $A \rightspoon B$ describes the new implication meaning and is read as {\em``con
 is given by $\rightspoon I$ and $\rightspoon E$. Similarly there are 2 kinds of connectives, multiplicative and additive that
 arise in this logic system. More symbols are added inplace of $\plus$ and $\times$ to differentiate between the
 multipicative conjunction and disjuntion ($\otimes$ and $\parr$), and additive conjuntion and disjunction ($\with $ and $\oplus$).
-While working in intuistionistic linear logic, $\par$ is dropped from the system. (TODO why is additive disjunction dropped? in ILL?)
+While working in intuistionistic linear logic, $\parr$ is dropped from the system. (TODO why is additive disjunction dropped? in ILL?)
 
 \begin{figure}
   \centering
@@ -152,7 +152,7 @@ While working in intuistionistic linear logic, $\par$ is dropped from the system
       A, B, C ::= X \mid \oc A \mid A \vdash B \mid A \rightspoon B \mid A \with B \mid A \otimes B
     \end{flalign*}
   \end{framed}
-  \caption{Grammar for Linear Logic}
+  \caption{Grammar for Intuistionistic Linear Logic}
 \end{figure}
 
 \begin{figure}[h]
@@ -193,7 +193,6 @@ While working in intuistionistic linear logic, $\par$ is dropped from the system
       \UnaryInfC{$\Gamma \vdash B$}
     \end{prooftree}
   \end{minipage}
-
 
   % otimes I
   \begin{minipage}{.3\textwidth}
@@ -249,7 +248,7 @@ While working in intuistionistic linear logic, $\par$ is dropped from the system
       \end{prooftree}
     \end{minipage}
   \end{framed}
-  \caption{Linear Logic Rules}
+  \caption{Intuionistic Linear Logic Rules}
   \label{fig:linear-logic-rules}
 \end{figure}
 
@@ -261,11 +260,126 @@ this is a much powerful system in contrast to classical intuistionistic logic be
 
 \section{Bunched Implications and $\alpha$ Lambda Calculus}
 
-$\alpha$ Lambda calculus introduces 2 kinds of arrows by O'Hearn and Pym [\cite{ohearn_logic_1999}]
+In intuitionistic linear logic, the context is considered as a list or a set. In the theory of
+bunched implications, the context is treated as a tree in contrast to other logics Contexts are syntactically
+combined using 2 connectives $,$ or a $;$ and are called bunches. The logic of Bunched Implication (\textbf{\em BI})
+tries to glue together intuistionistic linear logic with intuistionistic logic by
+permitting contexts connected with $;$ to undergo contraction and weakening while the ones connect with $,$
+are prohibited to undergo contraction and weakening. $,$ and $;$ do not distributive over each other.
+There are two flavours of implication---additive and multiplicative---which is related to the idea of conjunction.
+\begin{framed}
+\begin{minipage}{1.0\linewidth}
+  \begin{prooftree}
+    \AxiomC{$\Gamma, A \vdash B$}
+    \UnaryInfC{$\Gamma \vdash A \lozenge B$}
+  \end{prooftree}
+\end{minipage}
+\end{framed}
+In the logic of {\textbf{\em BI}} the question then faced is choosing what kind of
+implication should be used inplace of $\lozenge$---the additive kind or the multiplicative kind.
+O'Hearn and Pym [\cite{ohearn_logic_1999}] argue by introducing 2 kinds of arrows
+and using them depending on the connectives used for the context. A multiplicative implication ($\sepimp$)
+is used when the context is connected with a $,$ and an additive implication ($\rightarrow$) is used when the
+context is connected using $;$. This gives rise to 2 rules
+\begin{framed}
+\begin{minipage}{0.5\linewidth}
+  \begin{prooftree}
+    \AxiomC{$\Gamma, A \vdash B$} \RightLabel{$[\sepimp I]$}
+    \UnaryInfC{$\Gamma \vdash A \sepimp B$}
+  \end{prooftree}
+\end{minipage}
+\begin{minipage}{0.5\linewidth}
+  \begin{prooftree}
+    \AxiomC{$\Gamma; A \vdash B$} \RightLabel{$[\rightarrow I]$}
+    \UnaryInfC{$\Gamma \vdash A \rightarrow B$}
+  \end{prooftree}
+\end{minipage}
+\end{framed}
+
+As we see in $[\sepimp I]$; $\Gamma, A$ cannot under go weakening or contraction to duplicate
+or get rid of either $A$ or $\Gamma$. This hints to a notion that multiplicative implication ($\sepimp$)
+exhibits property of the linear implication ($\rightspoon$). The linear implication cannot however
+be directly converted to a multiplicative implication as the later does not exhibit properties of
+counting the number of uses of its arguments. The logic of \textbf{\em BI} tries to combine the
+additive logic i.e. intuistionistic logic with the multiplicative side i.e. intuistionistic linear logic seemlessly.
+The multiplicative side can be used to model the behaviour of resources in the programming language
+while the additive side would help the programmers fall back to the non-resource intuistionsitic parts.
+
+$\alpha$ Lambda calculus[\cite{ohearn_resource_1999}] interprets the logic of \textbf{\em BI} and introduces 2 kinds of arrows by
+modifiying the the syntax of lambda calculus.
+
 $\sepimp$     : Arguments of function do not share resources with their arguments\\
 $\rightarrow$ : Arguments of functions may share resources with their arguments\\
-and 2 new varieties of bunches $\Gamma; \Delta$ and $\Gamma, \Delta$ where
-the former admits to weakening and contraction but the later does not.
+
+\begin{framed}
+  \begin{flalign*}
+    \text{Expressions}\ \ \ M, N ::= x: \sigma \mid \lambda^{\alpha} x: \tau. M \mid \lambda^{*} x: \tau. M \mid M N \mid \texttt{let}\ x\ \texttt{=}\ M\ \texttt{in}\ N \nonumber
+  \end{flalign*}
+\end{framed}
+
+\begin{framed}
+  \begin{flalign*}
+    \text{Types}\ \ \  \tau    &::= \alpha \mid \iota \mid \tau \rightarrow \tau \mid \tau \sepimp \tau \nonumber \\
+    \text{Typing Scheme}\ \ \  &::= \tau \mid \forall \alpha. \tau \nonumber
+  \end{flalign*}
+\end{framed}
+
+
+\begin{figure}[h]
+  \begin{framed}
+    % var
+    \begin{minipage}{.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$x: \sigma \in \Gamma$} \RightLabel{$[VAR]$}
+        \UnaryInfC{$\Gamma \vdash x : \sigma $}
+      \end{prooftree}
+    \end{minipage}
+    % let
+    \begin{minipage}{.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Gamma \vdash M : \sigma \ \ \ \ \
+          \Gamma_{x}, x: \sigma \vdash N: \tau$} \RightLabel{$[LET]$}
+        \UnaryInfC{$\Gamma \vdash (\texttt{let}\ x\ \texttt{=}\ M\ \texttt{in}\ N) : \tau$}
+      \end{prooftree}
+    \end{minipage}
+
+    % -> I
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Gamma_{x}, x: \tau \vdash M : \tau'$} \RightLabel{$[\sepimp I]$}
+        \UnaryInfC{$\Gamma \vdash \lambda^{*} x. M : \tau \sepimp \tau'$}
+      \end{prooftree}
+    \end{minipage}
+    % -> E
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Gamma \vdash M : \tau \sepimp \tau' \ \ \ \ \
+          \Gamma \vdash N : \tau$} \RightLabel{$[\sepimp E]$}
+        \UnaryInfC{$\Gamma \vdash M N : \tau'$}
+      \end{prooftree}
+    \end{minipage}
+
+    % -o I
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Gamma_{x}; x: \tau \vdash M : \tau'$} \RightLabel{$[\rightarrow I]$}
+        \UnaryInfC{$\Gamma \vdash \lambda^{\alpha} x. M : \tau \rightarrow \tau'$}
+      \end{prooftree}
+    \end{minipage}
+    % -o E
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Gamma \vdash M : \tau \rightarrow \tau' \ \ \ \ \
+          \Gamma \vdash N : \tau$} \RightLabel{$[\rightarrow E]$}
+        \UnaryInfC{$\Gamma \vdash M N : \tau'$}
+      \end{prooftree}
+    \end{minipage}
+  \end{framed}
+  \caption{Logic Rules for $\alpha$ Lambda Calculus}
+  \label{fig:bi-logic}
+\end{figure}
+
+
 
 This is where $\alpha$ lambda calculus is introduced. we consider resources
 magic wand? How does this connect to Linear logic?
