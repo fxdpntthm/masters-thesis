@@ -261,11 +261,12 @@ this is a much powerful system in contrast to classical intuistionistic logic be
 \section{Bunched Implications and $\alpha$ Lambda Calculus}
 
 In intuitionistic linear logic, the context is considered as a list or a set. In the theory of
-bunched implications, the context is treated as a tree in contrast to other logics Contexts are syntactically
-combined using 2 connectives $,$ or a $;$ and are called bunches. The logic of Bunched Implication (\textbf{\em BI})
+bunched implications, the context is treated as a tree in contrast to other logics. Contexts are syntactically
+combined using 2 connectives comma ($,$) or a semicolon ($;$) and are called bunches. The logic of Bunched Implication (\textbf{\em BI})
 tries to glue together intuistionistic linear logic with intuistionistic logic by
-permitting contexts connected with $;$ to undergo contraction and weakening while the ones connect with $,$
-are prohibited to undergo contraction and weakening. $,$ and $;$ do not distributive over each other.
+permitting contexts connected with semicolon to undergo contraction and weakening while the ones connect with comma
+are prohibited to undergo contraction and weakening. Comma and semicolon do not distributive over each other.
+Thus $A,(B;C) \neq A, B ; A,C$ and $A;(B,C) \neq A;B,A;C$ where A B C are contexts.
 There are two flavours of implication---additive and multiplicative---which is related to the idea of conjunction.
 \begin{framed}
 \begin{minipage}{1.0\linewidth}
@@ -306,25 +307,21 @@ The multiplicative side can be used to model the behaviour of resources in the p
 while the additive side would help the programmers fall back to the non-resource intuistionsitic parts.
 
 $\alpha$ Lambda calculus[\cite{ohearn_resource_1999}] interprets the logic of \textbf{\em BI} and introduces 2 kinds of arrows by
-modifiying the the syntax of lambda calculus.
-
-$\sepimp$     : Arguments of function do not share resources with their arguments\\
-$\rightarrow$ : Arguments of functions may share resources with their arguments\\
+modifiying the the syntax of lambda calculus:\\
+$\sepimp$     : Function do not share resources with their arguments\\
+$\rightarrow$ : Function may share resources with their arguments\\
 
 \begin{framed}
   \begin{flalign*}
     \text{Expressions}\ \ \ M, N ::= x: \sigma \mid \lambda^{\alpha} x: \tau. M \mid \lambda^{*} x: \tau. M \mid M N \mid \texttt{let}\ x\ \texttt{=}\ M\ \texttt{in}\ N \nonumber
   \end{flalign*}
 \end{framed}
-
 \begin{framed}
   \begin{flalign*}
     \text{Types}\ \ \  \tau    &::= \alpha \mid \iota \mid \tau \rightarrow \tau \mid \tau \sepimp \tau \nonumber \\
     \text{Typing Scheme}\ \ \  &::= \tau \mid \forall \alpha. \tau \nonumber
   \end{flalign*}
 \end{framed}
-
-
 \begin{figure}[h]
   \begin{framed}
     % var
@@ -379,14 +376,78 @@ $\rightarrow$ : Arguments of functions may share resources with their arguments\
   \label{fig:bi-logic}
 \end{figure}
 
+We now see that we have two kinds of pairs. A sharing pair (\texttt{shPair}) and a separating pair (\texttt{sePair}) depending on
+what arrow we use. The church encoding of both the pairs are given in \ref{fig:bi-pairs}.
+\begin{figure}[h]
+  \centering
+  \begin{framed}
+    \begin{lstlisting}
+      shPair = $\lambda^{*} a.\ \lambda^{\alpha} b.\ \lambda^{*} f.\ f\ a\ b$
+      sePair = $\lambda^{*} a.\ \lambda^{*} b.\ \lambda^{*}\ f.\ f\ a\ b$
+    \end{lstlisting}
+  \end{framed}
+  \caption{Pairs in \textbf{\em BI}}
+  \label{fig:bi-pairs}
+\end{figure}
+The types of both these pair will be as shown in \ref{fig:bi-pairs-typing}
+
+!!TODO: We have not yet described Curry-Howard isomorphism. We can use logic rules
+decorate them with terms in our surface level lambda calculus and run algorithm M/W to infer the type
+
+\begin{figure}[h]
+  \centering
+  \begin{framed}
+    \begin{lstlisting}
+      shPair : a $\sepimp$ b $\rightarrow$ (a $\sepimp$ b $\sepimp$ c) $\sepimp$ c
+      sePair : a $\sepimp$ b $\sepimp$ (a $\sepimp$ b $\sepimp$ c) $\sepimp$ c
+    \end{lstlisting}
+  \end{framed}
+  \caption{Typing for Pairs in \textbf{\em BI}}
+  \label{fig:bi-pairs-typing}
+\end{figure}
 
 
-This is where $\alpha$ lambda calculus is introduced. we consider resources
-magic wand? How does this connect to Linear logic?
+% This is kind of a big jump here.
+% probably shift qualified types after linear logic section to have better continuity
+\section{Linear logic with Qualified Types: Quill}
+We start our work based on Quill [\cite{morris_best_2016}]. It tries
+to implement linear types using qualified types. The novelty of using a qualified
+types is that it gives a complete and decidable type inference system. By using
+a modified version of Algorithm M we can compute principal types of the terms.
+In reality due to higher ordered kind system, we may not be able to deduce the
+type of the terms but we can work around it by annotating some or all parts of
+the terms. This is usually done at a top level function declaration. Specifying types
+also serves as some kind of documentation for the programmers.
+The key idea of Morris is to introduce 2 types of predicates into the language: \texttt{Un} and \texttt{Fun}.
+\texttt{Un $\tau$} implies that the type $\tau$ is unrestricted, meaning it does not
+contain any resources or the resources that it captures can be easily duplicated and dropped.
+The \texttt{Fun $\tau$} implies that the type $\tau$ is of a function type. The function
+depending on its use, may or may not capture resources in its closure. Thus the functions
+themselves can be of restricted or unrestricted type. In traditional sense of typeclasses
+in haskell, we can think of the \texttt{Un} to be a typeclass with methods supporting the operation
+of duplication and dropping.
+\begin{figure}[h]
+  \centering
+  \begin{framed}
+    \begin{minted}[escapeinside=||,mathescape=true]{haskell}
+      class Un where
+      dup  :: t |$\overset{!}{\rightarrow}$| (t |$\otimes$| t)
+      drop :: t |$\overset{!}{\rightarrow}$| 1
+    \end{minted}
+  \end{framed}
+  \caption{\texttt{Un} as a Typeclass}
+  \label{fig:un-typeclass}
+\end{figure}
 
-\section{Linear logic with qualified types: Quill}
-Combining linear logic with qualified types in Quill \cite{morris_best_2016}
+Simple types such as integers and booleans are all of unrestricted type as
+they can be duplicated or dropped freely.
+While program resources such as file handles, database connections
+should be treated as restricted type as we cannot freely duplicate it
+or drop it. Although there would be certain portions of the program where we would
+like to close the file handle or free the memory space allocated on the heap.
+This is where we expected the bunched implications would play a crucial role.
 
+Combining linear logic with qualified types in Quill
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: t

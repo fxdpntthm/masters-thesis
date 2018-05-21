@@ -1,4 +1,4 @@
-\chapter{Type Extensions}
+\section{Type Extensions}
 
 We add 2 new type classes to our language
 \begin{itemize}
@@ -32,7 +32,7 @@ We add 2 new type classes to our language
   can be duplicated or discarded. And the function shares resources with the arguments
 
   $\overset{!}{\sepimp}$ implies that the function itself can be discarded.
-  This is useful in case of higher order functions. 
+  This is useful in case of higher order functions.
 
 \begin{minted}{haskell}
 instance Monad (-!*>) Maybe where
