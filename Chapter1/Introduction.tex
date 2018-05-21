@@ -106,10 +106,12 @@ qualified types. $\Pi$ and $T$ range over finite set of predicates
 \caption{Qualified Types}
 \label{fig:qualifed-types}
 \end{figure}
+
 \section{Linear Logic}
 % TODO: points to cover
 % what is linearity
 % restricting weakening and contraction
+While classical logic deals with truth of propositions, linear logic deals with availability of resources.
 Linear logic [\cite{girard_linear_1987}] promises to help cope with the resource and resource control problem.
 It is refinement of classical intuistionistic logic. The core idea is that propositions
 cannot be freely duplicated or discarded as in classical instuistionistic logic.
@@ -124,7 +126,7 @@ the system gets overly restrictive. Wadler describes a refinement of
 linear logic based on Girard's Logic of Unity [\cite{wadler_taste_1993}, \cite{girard_unity_1993}].
 It works around the problem of linear logic being too restrictive by allowing
 instuistionistic rules in fragments. It can be considered as a disjoint union
-of linear logic and intuistionistic logic. The grammar of classical intuistionistic logic is shown in \ref{fig:intu-logic-grammar}
+of classical linear logic and intuistionistic logic. The grammar of classical intuistionistic logic is shown in \ref{fig:intu-logic-grammar}
 where $A \rightarrow B$ implies implication, $A \times B$ is conjunction and $A \plus B$ is disjunction.
 \begin{figure}
   \centering
@@ -143,7 +145,7 @@ $A \rightspoon B$ describes the new implication meaning and is read as {\em``con
 is given by $\rightspoon I$ and $\rightspoon E$. Similarly there are 2 kinds of connectives, multiplicative and additive that
 arise in this logic system. More symbols are added inplace of $\plus$ and $\times$ to differentiate between the
 multipicative conjunction and disjuntion ($\otimes$ and $\parr$), and additive conjuntion and disjunction ($\with $ and $\oplus$).
-While working in intuistionistic linear logic, $\parr$ is dropped from the system. (TODO why is additive disjunction dropped? in ILL?)
+While working in intuistionistic linear logic, $\parr$ is dropped from the system. (TODO why is additive disjunction dropped in ILL?)
 
 \begin{figure}
   \centering
@@ -431,8 +433,8 @@ of duplication and dropping.
   \begin{framed}
     \begin{minted}[escapeinside=||,mathescape=true]{haskell}
       class Un where
-      dup  :: t |$\overset{!}{\rightarrow}$| (t |$\otimes$| t)
-      drop :: t |$\overset{!}{\rightarrow}$| 1
+          dup  :: t |$\overset{!}{\rightarrow}$| (t |$\otimes$| t)
+          drop :: t |$\overset{!}{\rightarrow}$| 1
     \end{minted}
   \end{framed}
   \caption{\texttt{Un} as a Typeclass}
@@ -445,7 +447,7 @@ While program resources such as file handles, database connections
 should be treated as restricted type as we cannot freely duplicate it
 or drop it. Although there would be certain portions of the program where we would
 like to close the file handle or free the memory space allocated on the heap.
-This is where we expected the bunched implications would play a crucial role.
+(This is where we expected the bunched implications would play a crucial role. I guess.)
 
 Combining linear logic with qualified types in Quill
 %%% Local Variables:
