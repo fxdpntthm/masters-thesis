@@ -23,7 +23,10 @@
 \usepackage{framed}
 \usepackage{minted}
 \usepackage{cmll}
-% \usepackage{amsmath, amssymb}
+\usepackage{amsthm}
+\renewcommand\qedsymbol{$\blacksquare$}
+
+\newtheorem{theorem}{Theorem}
 
 \doublespacing
 \usepackage[unicode=true,
@@ -34,6 +37,10 @@
  pdfauthor={Apoorv Ingle},
  pdfsubject={A Thesis},
  urlcolor={blue},citecolor={blue},allcolors={blue}}
+\usepackage{cleveref}
+\crefformat{section}{\S#2#1#3} % see manual of cleveref, section 8.2.1
+\crefformat{subsection}{\S#2#1#3}
+\crefformat{subsubsection}{\S#2#1#3}
 
 \makeatletter
 
@@ -159,11 +166,10 @@
 
 \end{romanpages}
 
-\include{Chapter1/Introduction}
-\include{Chapter2/Typechecking}
-\include{Chapter2/Datastructure}
-\include{Chapter2/Types}
-\include{Chapter4/Examples}
+\include{Chapter1/Introduction}       % description of algorithm M linear logic, BI, qualified types
+\include{Chapter2/Examples}           % file handles, doubly linked list, circular linked list as a queue
+\include{Chapter3/Typechecking}       % Core syntax and Types with modified Algorithm M and unification
+\include{Chapter4/Datastructure}      % sharing pair and weakening example Monad etc
 
 \global\long\def\bibname{References}
 

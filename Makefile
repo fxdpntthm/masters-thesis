@@ -5,4 +5,4 @@ thesis:
 	pdflatex -shell-escape thesis-ku.tex
 
 clean:
-	rm -rf *.aux *.bbl *.log *.lot *.out *.toc
+	rm -rf *.aux *.bbl *.log *.lot *.out *.toc *.pyg _minted-thesis-ku

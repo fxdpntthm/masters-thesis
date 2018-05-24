@@ -2,8 +2,8 @@
 % TODO should change title
 
 \section{Type Inference Algorithm}
-Algorithm W [\cite{damas_principal_1982}] and its varient algorithm M [\cite{lee_proofs_1998}]
-are the basis of almost all modern statically typed programming languages. Type inference
+Algorithm $\mathcal{W}$ [\cite{damas_principal_1982}] and its varient algorithm $\mathcal{M}$ [\cite{lee_proofs_1998}]
+are the basis of most of the modern statically typed programming languages. Type inference
 is decidable in the sense, type checking algorithm always completes with a success or failure.
 The algorithms also gurantee a most general typing scheme for an expression in
 the simply typed lambda calculus extended with a polymorphic let construct having a term language
@@ -260,16 +260,16 @@ Thus the intitionsistic $A \rightarrow B$ can be encoded in linear logic by $\oc
 Similarly $A \plus B$ would be represented as $\oc A \otimes \oc B$ and $A \times B$ would be represented as $A \with B$. We clearly see that
 this is a much powerful system in contrast to classical intuistionistic logic because of its enhanced expressivity.
 
-\section{Bunched Implications and $\alpha$ Lambda Calculus}
+\section{Bunched Implications and $\alpha\lambda$ Calculus}
 
 In intuitionistic linear logic, the context is considered as a list or a set. In the theory of
-bunched implications, the context is treated as a tree in contrast to other logics. Contexts are syntactically
-combined using 2 connectives comma ($,$) or a semicolon ($;$) and are called bunches. The logic of Bunched Implication (\textbf{\em BI})
+bunched implications (\textbf{\em BI}), the context is treated as a tree in contrast to other logics. Contexts are syntactically
+combined using 2 connectives comma ($,$) or a semicolon ($;$) and are called bunches. The logic of \textbf{\em BI}
 tries to glue together intuistionistic linear logic with intuistionistic logic by
-permitting contexts connected with semicolon to undergo contraction and weakening while the ones connect with comma
+permitting contexts connected with semicolon to undergo contraction and weakening while the context connected with comma
 are prohibited to undergo contraction and weakening. Comma and semicolon do not distributive over each other.
 Thus $A,(B;C) \neq A, B ; A,C$ and $A;(B,C) \neq A;B,A;C$ where A B C are contexts.
-There are two flavours of implication---additive and multiplicative---which is related to the idea of conjunction.
+There are two flavours of implication---additive and multiplicative---which is closely related to the idea of conjunction.
 \begin{framed}
 \begin{minipage}{1.0\linewidth}
   \begin{prooftree}
@@ -282,8 +282,8 @@ In the logic of {\textbf{\em BI}} the question then faced is choosing what kind 
 implication should be used inplace of $\lozenge$---the additive kind or the multiplicative kind.
 O'Hearn and Pym [\cite{ohearn_logic_1999}] argue by introducing 2 kinds of arrows
 and using them depending on the connectives used for the context. A multiplicative implication ($\sepimp$)
-is used when the context is connected with a $,$ and an additive implication ($\rightarrow$) is used when the
-context is connected using $;$. This gives rise to 2 rules
+is used when the context is connected with a comma and an additive implication ($\rightarrow$) is used when the
+context is connected using semicolon. This gives rise to 2 rules
 \begin{framed}
 \begin{minipage}{0.5\linewidth}
   \begin{prooftree}
@@ -299,7 +299,7 @@ context is connected using $;$. This gives rise to 2 rules
 \end{minipage}
 \end{framed}
 
-As we see in $[\sepimp I]$; $\Gamma, A$ cannot under go weakening or contraction to duplicate
+As we see in $[\sepimp I]$ $\Gamma, A$ cannot under go weakening or contraction to duplicate
 or get rid of either $A$ or $\Gamma$. This hints to a notion that multiplicative implication ($\sepimp$)
 exhibits property of the linear implication ($\rightspoon$). The linear implication cannot however
 be directly converted to a multiplicative implication as the later does not exhibit properties of
@@ -308,7 +308,7 @@ additive logic i.e. intuistionistic logic with the multiplicative side i.e. intu
 The multiplicative side can be used to model the behaviour of resources in the programming language
 while the additive side would help the programmers fall back to the non-resource intuistionsitic parts.
 
-$\alpha$ Lambda calculus[\cite{ohearn_resource_1999}] interprets the logic of \textbf{\em BI} and introduces 2 kinds of arrows by
+$\alpha \lambda$ calculus[\cite{ohearn_resource_1999}] interprets the logic of \textbf{\em BI} and introduces 2 kinds of arrows by
 modifiying the the syntax of lambda calculus:\\
 $\sepimp$     : Function do not share resources with their arguments\\
 $\rightarrow$ : Function may share resources with their arguments\\
@@ -374,7 +374,7 @@ $\rightarrow$ : Function may share resources with their arguments\\
       \end{prooftree}
     \end{minipage}
   \end{framed}
-  \caption{Logic Rules for $\alpha$ Lambda Calculus}
+  \caption{Logic Rules for $\alpha \lambda$ Calculus}
   \label{fig:bi-logic}
 \end{figure}
 
@@ -452,5 +452,5 @@ like to close the file handle or free the memory space allocated on the heap.
 Combining linear logic with qualified types in Quill
 %%% Local Variables:
 %%% mode: latex
-%%% TeX-master: t
+%%% TeX-master: "../thesis-ku"
 %%% End:

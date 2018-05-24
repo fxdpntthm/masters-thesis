@@ -1,0 +1,175 @@
+\chapter{Programming in Quill}
+In the following \cref{sec:file-handle-example}, \cref{sec:dll-example} and \cref{sec:queue-example},
+we illustrate using different examples to show how Quill is different
+from other functional languages and how a powerful type system backed by logic of Bunched Implications
+would be useful in keeping track of resources.
+
+\section{File Handles}\label{sec:file-handle-example}
+In an imperative language file handles are treated as normal variables
+and it is the programmers responsiblity to check that that files are not closed twice
+or there are no files that remain open when the program exists. This seemingly non-trivial
+responsibility becomes tedious and erroneous as soon as there are multiple conditionals in the programming
+logic and as programs get larger in size. Modern functional languages such as Haskell treat file handles as
+a special datatype and make them an instance of Monad. The type system however is not powerful enough
+to detect whether a file handle is closed twice or is not closed at all. A sample program that opens a file and reads
+a line from the file and then closes the file handle in Hasell is shown in \cref{fig:file-read-close}
+\begin{figure}[h]
+  \begin{framed}
+    \begin{minted}{haskell}
+      do f  <- openFile "sample.txt"
+         s  <- readLine f
+         () <- close f
+    \end{minted}
+  \end{framed}
+  \caption{Reading from a file in Haskell}
+  \label{fig:file-read-close}
+\end{figure}
+
+Consider an incorrect version of the above program where the file handle is closed twice after reading a line from it \cref{fig:file-read-close-2times}.
+It may not be a problem in a single threaded environment, but in a multithreaded environment
+the second close may accidently close the file handle that was reused in the background by another thread. When
+another thread would try to write on this closed file handle, it would throw an exception.
+Haskell's type system happily accepts this program but it might generate a runtime exception.
+\begin{figure}[h]
+  \begin{framed}
+    \begin{minted}{haskell}
+      do f  <- openFile "sample.txt"
+         s  <- readLine f
+         () <- close f
+         () <- close f
+    \end{minted}
+  \end{framed}
+  \caption{Reading from a file in Haskell and closing twice}
+  \label{fig:file-read-close-2times}
+\end{figure}
+
+Another example of incorrect way of using file handle is by not closing the file handle after using it shown in \cref{fig:file-read-noclose}.
+In a short lived process, when the program exits, filehandles that are not closed are freed by the operating system.
+But if it is a long running process it would run out of file handles and the whole process would crash with an error that
+it cannot open any more file handles. Abnormal exit from the process would interfere in the write process
+and the operating system would close the file handle without waiting for the buffer to be completely
+written on the file system.
+\begin{figure}[h]
+  \begin{framed}
+    \begin{minted}{haskell}
+      do f  <- openFile "sample.txt"
+         s  <- readLine f
+    \end{minted}
+  \end{framed}
+  \caption{Reading from a file in Haskell and not closing file handle}
+  \label{fig:file-read-noclose}
+\end{figure}
+
+Consider the desugared version of the ``do'' notation. It would internally be represented
+in terms of bind ($>>=$) function. Recall that type signature of bind function is given as
+\begin{minted}{haskell}
+  (>>=) :: (Monad m) => m t -> (t -> m u) -> m u
+\end{minted}
+thus \cref{fig:file-read-close-2times} would look like \cref{fig:file-read-close-2times-desugared}
+and the desugared version of \cref{fig:file-read-noclose} would look like \cref{fig:file-read-noclose-desugared}.
+
+\begin{figure}[h]
+  \begin{framed}
+    \begin{minted}{haskell}
+      (>>=) (openFile "sample.txt" ReadMode)
+            (\f -> (>>=) (readLine f)
+                         (\s -> (>>=) (close f) (\_ -> close f)))
+    \end{minted}
+  \end{framed}
+  \caption{Reading from a file in Haskell and closing twice}
+  \label{fig:file-read-close-2times-desugared}
+\end{figure}
+
+\begin{figure}[h]
+  \begin{framed}
+    \begin{minted}{haskell}
+      (>>=) (openFile "sample.txt" ReadMode) (\f -> readLine f)
+    \end{minted}
+  \end{framed}
+  \caption{Reading from a file in Haskell and not closing it}
+  \label{fig:file-read-noclose-desugared}
+\end{figure}
+
+\begin{figure}[h]
+  \begin{framed}
+    \begin{minted}{haskell}
+      (>>=) (openFile "sample.txt" WriteMode) (\f -> writeLine f "abc")
+    \end{minted}
+  \end{framed}
+  \caption{Writing to a file in Haskell and not closing it}
+  \label{fig:file-read-noclose-desugared}
+\end{figure}
+
+In both the cases, the types of the programs would be computed by haskell compiler as \mintinline{haskell}{IO ()}
+This well typed looking program should be flagged by the compiler as it would cause problems at runtime.
+To overcome this, we introduce the concept of sharing and separation along with
+unrestrictedness that was introduced in [\cite{morris_best_2016}].
+
+Given that $\rightarrow$ constructor now has 2 meanings of it either being shared or separated, we are
+forced to describe the bind operator in terms of $\sepimp$ or $\rightarrow$. In Quill the bind operation will
+be typed as  given in \cref{fig:quill-bind-type}.
+\begin{figure}[h]
+  \begin{framed}
+    \begin{minted}[escapeinside=||,python3=true,mathescape=true]{haskell}
+          (>>=) :: m t -*> (t -!*> m u) -*> m u
+    \end{minted}
+  \end{framed}
+  \caption{Type signature for bind in Quill}
+  \label{fig:quill-bind-type}
+\end{figure}
+Thus all the resources used should be separating, but as we see in \cref{fig:file-read-close-2times-desugared} the file handle
+\texttt{f} is shared in the 2 binds.
+
+Describe each bind for \cref{fig:file-read-close}.
+      % (>>=) (openFile "sample.txt" ReadMode)
+      %       (\f -> (>>=) (readLine f)
+      %                    (\s -> (close f)))
+The first bind:\\
+\mintinline{haskell}{(>>=) (openFile "sample.txt" ReadMode) (\f -> ...)}\\
+\mintinline{haskell}{:: IO FileHandle -*> (FileHandle -!*> IO ()) -*> IO ()}
+
+second bind:\\
+\mintinline{haskell}{\f -> (>>=) (readLine f) (\s -> close f)}\\
+\mintinline{haskell}{:: FileHandle -> IO String -*> (String -!*> IO ()) -*> IO ()}
+
+
+Describe each bind for \cref{fig:file-read-close-2times-desugared}.
+      % (>>=) (openFile "sample.txt" ReadMode)
+      %       (\f -> (>>=) (readLine f)
+      %                    (\s -> (>>=) (close f) (\_ -> close f)))
+
+The first bind:\\
+\mintinline{haskell}{(>>=) (openFile "sample.txt" ReadMode) (\f -> ...)}\\
+\mintinline{haskell}{:: IO FileHandle -*> (FileHandle -!*> IO ()) -*> IO ()}
+
+second bind:\\
+\mintinline{haskell}{(>>=) (readLine f) (\s -> ... )}\\
+\mintinline{haskell}{:: IO String -*> (String -!*> IO ()) -*> IO ()}
+
+third bind:\\
+\mintinline{haskell}{(>>=) (closeFile f) (\_ -> closeFile f)}\\
+\mintinline{haskell}{:: IO () -*> (() -!*> IO ()) -&> IO ()}
+
+This would be raised as a compiler error for mismatched types of the third bind operation.
+as we clearly see, the arguments of the third bind operation are \mintinline{haskell}{close f}
+and \mintinline{haskell}{\_ -> close f} where share the only resource \texttt{f} hence,
+the type of the third bind would be computed as \\
+\mintinline{haskell}{:: IO () -*> (() -!*> IO ()) -&> IO ()} which would be a type error.
+
+Similarly, in \cref{fig:file-read-noclose-desugared} the file handle \texttt{f} is not closed thus it is declared, but not used
+in the scope, it would be tagged as an unrestricted value. This ofcourse is not true for the file handle type. Thus
+the program would not compile due to mismatch of the file handle type needing to be unrestricted. This clearly shows
+the power of Quill over normal haskell.
+
+\section{Doubly List}\label{sec:dll-example}
+\section{Circular Linked List as a Queue}\label{sec:queue-example}
+
+
+
+Circular list as a queue example
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis-ku"
+%%% End:

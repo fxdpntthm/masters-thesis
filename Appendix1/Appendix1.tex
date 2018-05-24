@@ -2,4 +2,32 @@
 
 \section{Proofs}
 
-This could contain all the proofs (if any)
+\begin{theorem}
+  Soundness of $\mathcal{M}$. If $\mathcal{M}(S, X; \Gamma \vdash M : \tau) = P, S', \Sigma$ then $S' P | S' (\Gamma\mid_{\Sigma}) \vdash M : S' \tau$
+\end{theorem}
+
+\begin{proof}
+  Proof by induction on structure of $M$
+\begin{itemize}
+\item Case 1. $x$
+\item Case 2. $\lambda^{*} x. M$
+\item Case 3. $\lambda ^{\alpha}x. M$
+\item Case 4. $M\ N$
+\item Case 5. $\texttt{let}\ x = M\ \texttt{in}\ N$
+\end{itemize}
+
+\end{proof}
+
+\begin{theorem}
+  Completeness of $\mathcal{M}$.
+\end{theorem}
+\begin{proof}
+Proof by induction on derivation on $M$
+\end{proof}
+
+\begin{theorem}
+  $\mathcal{M}$ computes principal types.
+\end{theorem}
+\begin{proof}
+
+\end{proof}
