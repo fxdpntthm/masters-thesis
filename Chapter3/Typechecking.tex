@@ -69,7 +69,7 @@ $\Gamma_{x}$ is the typing environment excluding the type variable $x$. $TV(\Gam
 variables in the environment $\Gamma$. $\Gamma \cdot \Delta$ means that the contexts can either
 be comma separated or semicolon separated i.e. $\Gamma, \Delta$ or $\Gamma;\Delta$. The contexts are
 in bunches we denote a subtree of a bunch by $\mathcal{H}(\Delta)$ we mean $\Delta$ is a subtree of
-$\mathcal{H}$.
+$\mathcal{H}$. describe Contexts with holes
 
 \section{Syntax Directed Typing Judgements}
 
@@ -262,10 +262,76 @@ $\mathcal{H}$.
         \UnaryInfC{$P \vdash H \geq \phi$}
       \end{prooftree}
     \end{minipage}
-
+  \end{framed}
     \caption{Typing Rules}
     \label{fig:typing-rules}
+\end{figure}
+
+\begin{figure}[h]
+  \begin{framed}
+  \begin{minipage}{1\linewidth}
+    \begin{prooftree}
+      \AxiomC{$P \mid H  \vdash M : \tau$}
+      \AxiomC{$P \mid H' \vdash N: \tau'$} \RightLabel{$[\with I]$}
+      \BinaryInfC{$P \mid H;H' \vdash (M;N): \tau \with \tau'$}
+    \end{prooftree}
+  \end{minipage}
+
+  \begin{minipage}{.5\linewidth}
+    \begin{prooftree}
+      \AxiomC{$P \mid H \vdash M: \tau \with \tau'$} \RightLabel{$[\with E_1]$}
+      \UnaryInfC{$P \mid H \vdash \texttt{fst}\ M: \tau$}
+    \end{prooftree}
+  \end{minipage}
+  \begin{minipage}{.5\linewidth}
+    \begin{prooftree}
+      \AxiomC{$P \mid H \vdash M: \tau \with \tau'$} \RightLabel{$[\with E_2]$}
+      \UnaryInfC{$P \mid H \vdash \texttt{snd}\ M: \tau'$}
+    \end{prooftree}
+  \end{minipage}
+
+  \begin{minipage}{1\linewidth}
+    \begin{prooftree}
+      \AxiomC{$P \mid H  \vdash M : \tau$}
+      \AxiomC{$P \mid H' \vdash N: \tau'$} \RightLabel{$[\otimes I]$}
+      \BinaryInfC{$P \mid H,H' \vdash (M,N): \tau \otimes \tau'$}
+    \end{prooftree}
+  \end{minipage}
+
+  \begin{minipage}{.5\linewidth}
+    \begin{prooftree}
+      \AxiomC{$P \mid H \vdash M: \tau \otimes \tau'$} \RightLabel{$[\otimes E_1]$}
+      \AxiomC{$P => \texttt{Un}\ \texttt{snd}\ M$}
+      \BinaryInfC{$P \mid H \vdash \texttt{fst}\ M: \tau$}
+    \end{prooftree}
+  \end{minipage}
+  \begin{minipage}{.5\linewidth}
+    \begin{prooftree}
+      \AxiomC{$P \mid H \vdash M: \tau \otimes \tau'$} \RightLabel{$[\otimes E_2]$}
+      \AxiomC{$P => \texttt{Un}\ \texttt{fst}\ M$}
+      \BinaryInfC{$P \mid H \vdash \texttt{snd}\ M: \tau'$}
+    \end{prooftree}
+  \end{minipage}
+\end{framed}
+  \caption{Derivable Typing rules}
+  \label{fig:derivable-typing-rules}
+\end{figure}
+
+
+\begin{figure}[h]
+  \begin{framed}
+    \begin{minipage}[ht]{1\linewidth}
+      \centering
+      \fbox{
+        $\mathcal{M}(S, X;\Gamma \vdash M : \tau) = P, S', \Sigma$
+      }
+    \end{minipage}
+    \begin{minipage}{1\linewidth}
+      
+    \end{minipage}
   \end{framed}
+  \caption{Type Inference Algorithm $\mathcal{M}$}
+  \label{fig:algorithm-m}
 \end{figure}
 
 
