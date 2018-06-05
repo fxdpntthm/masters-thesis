@@ -124,23 +124,44 @@ be typed as given in \cref{fig:quill-bind-type}. This means all resources used b
   \label{fig:quill-bind-type}
 \end{figure}
 Thus all the resources used should be separating, but as we see in \cref{fig:file-read-close-2times-desugared} the file handle
-\texttt{f} is shared in the third bind operation. The first bind has a type signature of\\
-\mintinline[escapeinside=||,mathescape=true]{haskell}{(>>=|$_1$|) (openFile "sample.txt" ReadMode) (\f -> ...)}\\
-\mintinline{haskell}{:: IO FileHandle -*> (FileHandle -!*> IO ()) -*> IO ()}
-second bind has a type signature of\\
-\mintinline[escapeinside=||,mathescape=true]{haskell}{(>>=|$_2$|) (readLine f) (\s -> ... )}\\
-\mintinline{haskell}{:: IO FileHandle -*> (FileHandle -!*> IO (String, Filehandle)) -*> IO (String, FileHandle)}
-and the third bind operation has the type signature of\\
-\mintinline[escapeinside=||,mathescape=true]{haskell}{(>>=|$_3$|) (closeFile f) (\_ -> closeFile f)}\\
-\mintinline{haskell}{:: IO () -*> (() -!*> IO ()) -&> IO ()}
-This would be raised as a compiler error as the type of the third bind operation does
-not match the expected type of bind function.
-The arguments of the third bind operation are \mintinline{haskell}{close f}
-and \mintinline{haskell}{\_ -> close f} where they share the only resource \texttt{f} hence,
-the type of the third bind would be computed as \\
+\texttt{f} is shared in the third bind operation.
+The bind operations will have the signatures as shown in \cref{fig:bind-signatures}
+\begin{figure}[h]
+\begin{framed}
+\begin{minted}[escapeinside=||,mathescape=true]{haskell}
+(>>=|$_1$|):: IO FileHandle -*> (FileHandle -!*> IO ()) -*> IO ()
+(>>=|$_1$|) (openFile "sample.txt" ReadMode) (\f -> ...)
+
+(>>=|$_2$|) :: IO FileHandle
+            -*> (FileHandle -!*> IO (String, Filehandle))
+            -*> IO (String, FileHandle)}
+(>>=|$_2$|) (readLine f) (\ (s,f) -> ... )
+
+(>>=|$_3$|) :: IO () -*> (() -!*> IO ()) -&> IO ()
+(>>=|$_3$|) (closeFile f) (\_ -> closeFile f)}
+\end{minted}
+\end{framed}
+\caption{Bind Signatures}
+\label{fig:bind-signatures}
+\end{figure}
+
+% The first bind has a type signature of\\
+% \mintinline[escapeinside=||,mathescape=true]{haskell}{(>>=|$_1$|) (openFile "sample.txt" ReadMode) (\f -> ...)}\\
+% \mintinline{haskell}{:: IO FileHandle -*> (FileHandle -!*> IO ()) -*> IO ()}
+% second bind has a type signature of\\
+% \mintinline[escapeinside=||,mathescape=true]{haskell}{(>>=|$_2$|) (readLine f) (\s -> ... )}\\
+% \mintinline{haskell}{:: IO FileHandle -*> (FileHandle -!*> IO (String, Filehandle)) -*> IO (String, FileHandle)}
+% and the third bind operation has the type signature of\\
+% \mintinline[escapeinside=||,mathescape=true]{haskell}{(>>=|$_3$|) (closeFile f) (\_ -> closeFile f)}\\
+% \mintinline{haskell}{:: IO () -*> (() -!*> IO ()) -&> IO ()}
+% This would be raised as a compiler error as the type of the third bind operation does
+% not match the expected type of bind function.
+% The arguments of the third bind operation are \mintinline{haskell}{close f}
+% and \mintinline{haskell}{\_ -> close f} where they share the only resource \texttt{f}
+The type of the third bind would be computed as \\
 \mintinline{haskell}{IO () -*> (() -!*> IO ()) -&> IO ()} which would be a type error
 as the bind operation should have a type signature of
-\mintinline{haskell}{IO () -*> (() -!*> IO ()) -*> IO ()}
+\mintinline{haskell}{IO () -*> (() -!*> IO ()) -*> IO ()}. The types here would not match.
 
 The types do match up for the correct implementation of the file read and close described in \cref{fig:file-read-close}.
       % (>>=) (openFile "sample.txt" ReadMode)
