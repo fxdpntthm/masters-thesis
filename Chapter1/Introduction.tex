@@ -29,6 +29,12 @@ The algorithm works in an interesting way where the types of all well-typed term
 inferred automatically and if types are specified, the same algorithm can be used
 to match the expression term.
 
+\TODO{
+Talks about Curry-Howard here.
+Logic rules and corresponding Typing rules.
+Typing rules are nothing but logic rules with terms and types.
+Types correspond to predicates
+}
 \begin{figure}[h]
   \begin{framed}
     % var
@@ -41,12 +47,26 @@ to match the expression term.
     % let
     \begin{minipage}{.5\textwidth}
       \begin{prooftree}
-        \AxiomC{$\Gamma \vdash M : \sigma \ \ \ \ \
-          \Gamma_{x}, x: \sigma \vdash N: \tau$} \RightLabel{$[LET]$}
-        \UnaryInfC{$\Gamma \vdash (\texttt{let}\ x\ \texttt{=}\ M\ \texttt{in}\ N) : \tau$}
+        \AxiomC{$\Gamma \vdash M : \sigma$}
+        \AxiomC{$\Gamma_{x}, x: \sigma \vdash N: \tau$} \RightLabel{$[LET]$}
+        \BinaryInfC{$\Gamma \vdash (\Let{x}{M}{N}) : \tau$}
       \end{prooftree}
     \end{minipage}
-
+    % forall I
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Gamma \vdash M : \sigma$}\RightLabel{$[\forall I]$}
+        \AxiomC{$t \notin \text{fvs}(\Gamma)$}
+        \BinaryInfC{$\Gamma \vdash \lambda t. M : \forall t. \sigma$}
+      \end{prooftree}
+    \end{minipage}
+    % forall E
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Gamma \vdash M : \forall t. \sigma$} \RightLabel{$[\forall E]$}
+        \UnaryInfC{$\Gamma \vdash M \tau : [\tau \backslash t] \sigma$}
+      \end{prooftree}
+    \end{minipage}
     % -> I
     \begin{minipage}{0.5\textwidth}
       \begin{prooftree}
@@ -57,9 +77,9 @@ to match the expression term.
     % -> E
     \begin{minipage}{0.5\textwidth}
       \begin{prooftree}
-        \AxiomC{$\Gamma \vdash M : \tau \rightarrow \tau' \ \ \ \ \
-          \Gamma \vdash N : \tau$} \RightLabel{$[\rightarrow E]$}
-        \UnaryInfC{$\Gamma \vdash M N : \tau'$}
+        \AxiomC{$\Gamma \vdash M : \tau \rightarrow \tau'$}
+        \AxiomC{$\Gamma \vdash N : \tau$} \RightLabel{$[\rightarrow E]$}
+        \BinaryInfC{$\Gamma \vdash M N : \tau'$}
       \end{prooftree}
     \end{minipage}
   \end{framed}
@@ -70,8 +90,9 @@ The logical rules for type inference are shown in \ref{fig:stlc-logic}. $\Gamma$
 context or assumptions in which the expression is typed. The $[VAR]$ rule is tautology or a simple
 lookup of the term variable $x$ in the context $\Gamma$. The $[LET]$ allows creating local
 definitions within an expression term. $[\rightarrow I]$ and $[\rightarrow E]$ are rules
-for typing lambda terms and application respectively.
-
+for typing lambda terms and application respectively. We also include the rules for
+type application and abstraction $[\forall I]$ and $[\forall E]$ to introduce second order
+quantification in predicate logic.
 
 % This simple type sytem is powerful in its
 % expressivity and can encode a large variety of computations. The type checking algorithm
@@ -82,8 +103,7 @@ for typing lambda terms and application respectively.
 % being written using a mechanize technique so that the programmer can concentrate on designing the logic
 % rather than fighting undefinedness of the programs. This creates an excellent feedback loop
 % to the programmer while building large software systems. % TODO too generic should it be in introduction?
-% TODO Give examples?
-
+% TODO Give examples? and come up with a Curry-Howard interpretation of
 
 \section{Qualified Types}
 Jones [\cite{jones_theory_1994}] proposed incorporating predicates in the type language.
@@ -93,20 +113,41 @@ A modification of Milner-Damas algorithm to encorporate predicates ensures that 
 is sound and complete. The types that satisfy all the predicates are called qualified types for the term.
 Qualified types are powerful enough to expresses type classes with functional dependencies,
 record types and subtyping [\cite{mark_type_2000}]. The type language is modified to contain
-qualified types. $\Pi$ and $T$ range over finite set of predicates
+qualified types. $P$ and $T$ range over finite set of predicates. We slightly modify the typing rules
+from \cref{fig:stlc-logic} to add 2 new rules for qualified types as shown in \cref{fig:qualified-types-rules}
 \begin{figure}[h]
   \centering
   \begin{framed}
   \begin{flalign*}
     \text{Types}\ \ \ \tau              &::= \alpha \mid \iota \mid \tau \rightarrow \tau \nonumber \\
-    \text{Qualified Types}\ \ \ \rho    &::= \Pi \Rightarrow \tau \nonumber \\
+    \text{Qualified Types}\ \ \ \rho    &::= P \Rightarrow \tau \nonumber \\
     \text{Type Scheme}\ \ \ \sigma      &::= \tau \mid \forall T. \rho \nonumber
   \end{flalign*}
 \end{framed}
 \caption{Qualified Types}
 \label{fig:qualifed-types}
 \end{figure}
-
+\begin{figure}[h]
+  \begin{framed}
+    % => I
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$P, \pi \mid \Gamma \vdash M : \rho$} \RightLabel{$[=> I]$}
+        \UnaryInfC{$P \mid \Gamma \vdash M : \pi \Rightarrow \rho$}
+      \end{prooftree}
+    \end{minipage}
+    % => E
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma \vdash M : \pi \Rightarrow \rho$}
+        \AxiomC{$P \Rightarrow \pi$} \RightLabel{$[=> E]$}
+        \BinaryInfC{$P \mid \Gamma \vdash M: \rho$}
+      \end{prooftree}
+    \end{minipage}
+  \end{framed}
+  \caption{Modified Typing Rules}
+  \label{fig:qualified-types-rules}
+\end{figure}
 \section{Linear Logic}
 % TODO: points to cover
 % what is linearity
@@ -145,7 +186,7 @@ $A \rightspoon B$ describes the new implication meaning and is read as {\em``con
 is given by $\rightspoon I$ and $\rightspoon E$. Similarly there are 2 kinds of connectives, multiplicative and additive that
 arise in this logic system. More symbols are added inplace of $\plus$ and $\times$ to differentiate between the
 multipicative conjunction and disjuntion ($\otimes$ and $\parr$), and additive conjuntion and disjunction ($\with $ and $\oplus$).
-While working in intuistionistic linear logic, $\parr$ is dropped from the system. (TODO why is additive disjunction dropped in ILL?)
+While working in intuistionistic linear logic, $\parr$ is dropped from the system as it can be encoded by other connectives.
 
 \begin{figure}
   \centering
@@ -174,7 +215,6 @@ While working in intuistionistic linear logic, $\parr$ is dropped from the syste
         \BinaryInfC{$\Gamma, \Delta \vdash B$}
       \end{prooftree}
     \end{minipage}
-
   % & I
   \begin{minipage}{.3\textwidth}
     \begin{prooftree}
@@ -195,7 +235,6 @@ While working in intuistionistic linear logic, $\parr$ is dropped from the syste
       \UnaryInfC{$\Gamma \vdash B$}
     \end{prooftree}
   \end{minipage}
-
   % otimes I
   \begin{minipage}{.3\textwidth}
     \begin{prooftree}
@@ -315,17 +354,27 @@ modifiying the the syntax of lambda calculus:\\
 $\sepimp$     : Function do not share resources with their arguments\\
 $\rightarrow$ : Function may share resources with their arguments\\
 
+\begin{figure}[h]
 \begin{framed}
   \begin{flalign*}
-    \text{Expressions}\ \ \ M, N ::= x: \sigma \mid \lambda^{\alpha} x: \tau. M \mid \lambda^{*} x: \tau. M \mid M N \mid \texttt{let}\ x\ \texttt{=}\ M\ \texttt{in}\ N \nonumber
+    \text{Types}\ \ \  \tau           &::= \alpha \mid \iota \mid \tau \rightarrow \tau \mid \tau \sepimp \tau \nonumber \\
+    \text{Typing Scheme}\ \ \  \sigma &::= \tau \mid \forall \alpha. \tau \nonumber
   \end{flalign*}
 \end{framed}
+\caption{$\alpha\lambda$-calculus Types}
+\label{fig:al-cal-types}
+\end{figure}
+
+\begin{figure}[h]
 \begin{framed}
   \begin{flalign*}
-    \text{Types}\ \ \  \tau    &::= \alpha \mid \iota \mid \tau \rightarrow \tau \mid \tau \sepimp \tau \nonumber \\
-    \text{Typing Scheme}\ \ \  &::= \tau \mid \forall \alpha. \tau \nonumber
+    \text{Expressions}\ \ \ M, N ::= x \mid \lambda^{\alpha} x. M \mid \lambda^{*} x. M \mid M N \mid \Let{x}{M}{N}\nonumber
   \end{flalign*}
 \end{framed}
+\caption{$\alpha\lambda$ calculus Terms}
+\label{fig:al-calc-terms}
+\end{figure}
+
 \begin{figure}[h]
   \begin{framed}
     % var
@@ -343,7 +392,21 @@ $\rightarrow$ : Function may share resources with their arguments\\
         \UnaryInfC{$\Gamma \vdash (\texttt{let}\ x\ \texttt{=}\ M\ \texttt{in}\ N) : \tau$}
       \end{prooftree}
     \end{minipage}
-
+    % forall I
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Gamma \vdash M : \sigma$}\RightLabel{$[\forall I]$}
+        \AxiomC{$t \notin \text{fvs}(\Gamma)$}
+        \BinaryInfC{$\Gamma \vdash \lambda t. M : \forall t. \sigma$}
+      \end{prooftree}
+    \end{minipage}
+    % forall E
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Gamma \vdash M : \forall t. \sigma$} \RightLabel{$[\forall E]$}
+        \UnaryInfC{$\Gamma \vdash M \tau : [\tau \backslash t] \sigma$}
+      \end{prooftree}
+    \end{minipage}
     % -> I
     \begin{minipage}{0.5\textwidth}
       \begin{prooftree}
@@ -359,7 +422,6 @@ $\rightarrow$ : Function may share resources with their arguments\\
         \UnaryInfC{$\Gamma \vdash M N : \tau'$}
       \end{prooftree}
     \end{minipage}
-
     % -o I
     \begin{minipage}{0.5\textwidth}
       \begin{prooftree}
@@ -376,7 +438,7 @@ $\rightarrow$ : Function may share resources with their arguments\\
       \end{prooftree}
     \end{minipage}
   \end{framed}
-  \caption{Logic Rules for $\alpha \lambda$ Calculus}
+  \caption{Typing Rules for $\alpha\lambda$ Calculus}
   \label{fig:bi-logic}
 \end{figure}
 
@@ -394,9 +456,6 @@ what arrow we use. The church encoding of both the pairs are given in \ref{fig:b
   \label{fig:bi-pairs}
 \end{figure}
 The types of both these pair will be as shown in \ref{fig:bi-pairs-typing}
-
-!!TODO: We have not yet described Curry-Howard isomorphism. We can use logic rules
-decorate them with terms in our surface level lambda calculus and run algorithm M/W to infer the type
 
 \begin{figure}[h]
   \centering

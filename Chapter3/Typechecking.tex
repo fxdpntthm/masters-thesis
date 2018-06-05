@@ -9,7 +9,7 @@
                                                       \{\oplus, \overset{!}{\sepimp}, \sepimp, \xrightarrow{!}, \rightarrow \} \subseteq \mathcal{T}^{* \rightarrow * \rightarrow *}\nonumber\\
       \text{Types}\ \ \               \tau^{\kappa}    &::= t \mid T^{\kappa} \mid \tau^{\kappa' \rightarrow \kappa} \tau^{\kappa'}\nonumber\\
       \text{Predicates}\ \ \          \pi             &::= \texttt{Un}\ \tau \mid \texttt{SeFun}\ \tau \mid \texttt{ShFun}\ \tau \mid \tau \geq \tau' \nonumber\\
-      \text{Qualified Types}\ \ \     \rho            &::= \tau^{*} \mid \pi \Rightarrow \rho \nonumber\\
+      \text{Qualified Types}\ \ \     \rho            &::= \tau^{*} \mid \pi => \rho \nonumber\\
       \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma \nonumber\\
     \end{flalign*}
   \end{framed}
@@ -65,7 +65,7 @@ in both the connectives.
   \begin{framed}
     \begin{flalign*}
       \text{Term Variables}\ \ \      x, y, z         &\in \text{Var} \nonumber\\
-      \text{Patterns}\ \ \            p               &::= x \mid C \overset{\rightarrow}{x}\nonumber\\
+      \text{Patterns}\ \ \            p               &::= x \mid C \vec{x}\nonumber\\
       \text{Expressions}\ \ \         M, N            &::= x \mid \lambda^{*}x. M \mid \lambda^{\alpha}x. M \mid M N\nonumber\\
                                                       &\mid \Let{x}{M}{N} \mid \texttt{case}\ M\ \texttt{of}\ \{p_i \mapsto N_i\}_i\nonumber
     \end{flalign*}
@@ -91,7 +91,7 @@ or constructor terms
 \section{Conventions and Notations}
 $\Gamma_{x}$ is the typing environment excluding the type variable $x$. $TV(\Gamma)$ are the free
 variables in the environment $\Gamma$. $\Gamma \bullet \Delta$ means that the contexts can either
-be comma separated or semicolon separated i.e. $\Gamma, \Delta$ or $\Gamma;\Delta$. $\overset{\rightarrow}{x}$ is a shorthand for
+be comma separated or semicolon separated i.e. $\Gamma, \Delta$ or $\Gamma;\Delta$. $\vec{x}$ is a shorthand for
 one or many variables.
 
 \section{Syntax Directed Typing Judgments}
@@ -111,6 +111,37 @@ one or many variables.
         \AxiomC{$P \mid \Gamma \vdash M : \sigma$}
         \AxiomC{$P' \mid \Gamma_{x} \cdot x: \sigma \vdash N: \tau$} \RightLabel{[LET]}
         \BinaryInfC{$P \cup P' \mid \Gamma \vdash \texttt{let}\ x\ \texttt{=}\ M\ \texttt{in}\ N: \tau$}
+      \end{prooftree}
+    \end{minipage}
+    % => I
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$P, \pi \mid \Gamma \vdash M : \rho$} \RightLabel{$[=> I]$}
+        \UnaryInfC{$P \mid \Gamma \vdash M : \pi \Rightarrow \rho$}
+      \end{prooftree}
+    \end{minipage}
+    % => E
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma \vdash M : \pi \Rightarrow \rho$}
+        \AxiomC{$P \Rightarrow \pi$} \RightLabel{$[=> E]$}
+        \BinaryInfC{$P \mid \Gamma \vdash M: \rho$}
+      \end{prooftree}
+    \end{minipage}
+
+    % forall I
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma \vdash M: \sigma$}
+        \AxiomC{$t \notin TV(\Gamma) \cup TV(P)$}\RightLabel{$[\forall I]$}
+        \BinaryInfC{$P \mid \Gamma \vdash M: \forall t. \sigma$}
+      \end{prooftree}
+    \end{minipage}
+    % forall E
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma \vdash M: \forall t.\sigma$}\RightLabel{$[\forall E]$}
+        \UnaryInfC{$P \mid \Gamma \vdash M: [\tau \backslash t] \sigma $}
       \end{prooftree}
     \end{minipage}
 
@@ -146,38 +177,6 @@ one or many variables.
       \end{prooftree}
     \end{minipage}
 
-    % => I
-    \begin{minipage}{0.5\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P, \pi \mid \Gamma \vdash M : \rho$} \RightLabel{$[\Rightarrow I]$}
-        \UnaryInfC{$P \mid \Gamma \vdash M : \pi \Rightarrow \rho$}
-      \end{prooftree}
-    \end{minipage}
-    % => E
-    \begin{minipage}{0.5\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash M : \pi \Rightarrow \rho$}
-        \AxiomC{$P \Rightarrow \pi$} \RightLabel{$[\Rightarrow E]$}
-        \BinaryInfC{$P \mid \Gamma \vdash M: \rho$}
-      \end{prooftree}
-    \end{minipage}
-
-    % forall I
-    \begin{minipage}{0.5\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash M: \sigma$}
-        \AxiomC{$t \notin TV(\Gamma) \cup TV(P)$}\RightLabel{$[\forall I]$}
-        \BinaryInfC{$P \mid \Gamma \vdash M: \forall t. \sigma$}
-      \end{prooftree}
-    \end{minipage}
-    % forall E
-    \begin{minipage}{0.5\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash M: \forall t.\sigma$}\RightLabel{$[\forall E]$}
-        \UnaryInfC{$P \mid \Gamma \vdash M: [\tau / t] \sigma $}
-      \end{prooftree}
-    \end{minipage}
-
     % -&> I
     \begin{minipage}{1\textwidth}
       \begin{prooftree}
@@ -192,7 +191,7 @@ one or many variables.
       \begin{prooftree}
         \AxiomC{$P \mid \Gamma \vdash M : \phi \tau \tau'$}
         \AxiomC{$P \mid \Delta \vdash N : \tau'$}
-        \AxiomC{$P \Rightarrow \texttt{ShFun}\ \phi$}
+        \AxiomC{$P => \texttt{ShFun}\ \phi$}
         \AxiomC{$P \vdash \Gamma \geq \phi$} \RightLabel{$[\rightarrow E]$}
         \QuaternaryInfC{$P \mid \Gamma;\Delta \vdash M N : \tau'$}
       \end{prooftree}
@@ -202,7 +201,7 @@ one or many variables.
     \begin{minipage}{1\textwidth}
       \begin{prooftree}
         \AxiomC{$P \mid \Gamma_{x},x: \tau \vdash M : \tau'$}
-        \AxiomC{$P \Rightarrow \texttt{SeFun}\ \phi$}
+        \AxiomC{$P => \texttt{SeFun}\ \phi$}
         \AxiomC{$ P \vdash \Gamma \geq \phi$} \RightLabel{$[\sepimp I]$}
         \TrinaryInfC{$P \mid \Gamma \vdash \lambda^{*}x. M : \phi \tau \tau'$}
       \end{prooftree}
@@ -212,11 +211,15 @@ one or many variables.
       \begin{prooftree}
         \AxiomC{$P \mid \Gamma \vdash M : \phi \tau \tau'$}
         \AxiomC{$P \mid \Delta \vdash N : \tau$}
-        \AxiomC{$P \Rightarrow \texttt{SeFun}\ \phi$}
+        \AxiomC{$P => \texttt{SeFun}\ \phi$}
         \AxiomC{$P \vdash \Gamma \geq \phi$} \RightLabel{$[\sepimp E]$}
         \QuaternaryInfC{$P \mid \Gamma,\Delta \vdash M N : \tau'$}
       \end{prooftree}
     \end{minipage}
+  \end{framed}
+    \caption{Typing Rules}
+    \label{fig:typing-rules}
+\end{figure}
 
     % user defined type constructor I
     \begin{minipage}{1\textwidth}
@@ -231,29 +234,29 @@ one or many variables.
     \begin{minipage}{1\textwidth}
       \begin{prooftree}
         \AxiomC{$P \mid \Gamma \vdash C: \tau_1 \sepimp \tau_2 \rightarrow \tau_3 \rightarrow \dots \rightarrow \tau_n \rightarrow T$}
-        \AxiomC{$P \mid \Delta \equiv \Delta'(x_1 : \tau_1 ; x_2 : \tau_2 ; \ldots ; x_n:\tau_n)$}\RightLabel{$[\text{C-sh}]$}
-        \BinaryInfC{$P \mid \Gamma; \Delta \vdash C \overset{\rightarrow}{x} : T $}
+        \AxiomC{$\Delta \equiv H(x_1 : \tau_1 ; x_2 : \tau_2 ; \ldots ; x_n:\tau_n)$}\RightLabel{$[\text{C-sh}]$}
+        \BinaryInfC{$P \mid \Gamma; \Delta \vdash C \vec{x} : T $}
       \end{prooftree}
     \end{minipage}
     % Separating constructor
     \begin{minipage}{1\textwidth}
       \begin{prooftree}
         \AxiomC{$P \mid \Gamma \vdash C: \tau_1 \sepimp \tau_2 \sepimp \tau_3 \sepimp \dots \sepimp \tau_n \sepimp T$}
-        \AxiomC{$P \mid \Delta \equiv \Delta'(x_1: \tau_1, x_2:\tau_2, \dots ,x_n:\tau_n)$}\RightLabel{$[\text{C-se}]$}
-        \BinaryInfC{$P \mid \Gamma, \Delta \vdash C \overset{\rightarrow}{x} : T $}
+        \AxiomC{$\Delta \equiv H(x_1: \tau_1, x_2:\tau_2, \dots ,x_n:\tau_n)$}\RightLabel{$[\text{C-se}]$}
+        \BinaryInfC{$P \mid \Gamma, \Delta \vdash C \vec{x} : T $}
       \end{prooftree}
     \end{minipage}
 
     \begin{minipage}{0.5\linewidth}
       \begin{prooftree}
-        \AxiomC{$P \Rightarrow \texttt{Un}\ \tau$}\RightLabel{[\texttt{Un}-$\tau$]}
+        \AxiomC{$P => \texttt{Un}\ \tau$}\RightLabel{[\texttt{Un}-$\tau$]}
         \UnaryInfC{$P \vdash \tau\ \texttt{un}$}
       \end{prooftree}
     \end{minipage}
     \begin{minipage}{0.5\linewidth}
       \begin{prooftree}
         \AxiomC{$P,\pi \vdash \rho\ \texttt{un}$}\RightLabel{[\texttt{Un}-$\rho$]}
-        \UnaryInfC{$P \vdash \pi \Rightarrow \rho\ \texttt{un}$}
+        \UnaryInfC{$P \vdash \pi => \rho\ \texttt{un}$}
       \end{prooftree}
     \end{minipage}
 
@@ -272,14 +275,14 @@ one or many variables.
 
     \begin{minipage}{0.5\linewidth}
       \begin{prooftree}
-        \AxiomC{$P \Rightarrow \tau \geq \phi$}\RightLabel{[$\geq$-$\tau$]}
+        \AxiomC{$P => \tau \geq \phi$}\RightLabel{[$\geq$-$\tau$]}
         \UnaryInfC{$P \vdash \tau \geq \phi$}
       \end{prooftree}
     \end{minipage}
     \begin{minipage}{0.5\linewidth}
       \begin{prooftree}
         \AxiomC{$P,\pi \vdash \rho \geq \phi$}\RightLabel{[$\geq$-$\rho$]}
-        \UnaryInfC{$P \vdash (\pi \Rightarrow \rho) \geq \phi$}
+        \UnaryInfC{$P \vdash (\pi => \rho) \geq \phi$}
       \end{prooftree}
     \end{minipage}
 
@@ -295,10 +298,6 @@ one or many variables.
         \UnaryInfC{$P \vdash H \geq \phi$}
       \end{prooftree}
     \end{minipage}
-  \end{framed}
-    \caption{Typing Rules}
-    \label{fig:typing-rules}
-\end{figure}
 
 \begin{figure}[h]
   \begin{framed}
@@ -362,10 +361,40 @@ We write $C \overset{U}{\sim}_{\kappa} C'$ for assertion that $U$ is the unifier
 of the constructor types $C$ and $C'$.
 
 \begin{flalign*}
-\tau \sim \tau' \Rightarrow \exists S. S \tau = \tau'
+\tau \sim \tau' => \exists S. S \tau = \tau'
 \end{flalign*}
 \begin{figure}[h]
-  % Leq
+  \begin{framed}
+    \begin{minipage}{0.5\linewidth}
+      \begin{flalign*}
+        Leq(\phi, \Gamma)  = \bigcup_{(x:\tau) \in \Gamma} \{P \mid P \vdash \phi \leq \tau \}
+      \end{flalign*}
+    \end{minipage}
+    \begin{minipage}{0.5\linewidth}
+      \begin{flalign*}
+        \texttt{Un}(\Gamma)  = \bigcup\{P \mid (y:\sigma) \in \Gamma, P \vdash \sigma\ \texttt{un} \}
+      \end{flalign*}
+    \end{minipage}
+    \begin{minipage}{0.5\linewidth}
+      \begin{flalign*}
+        \texttt{Weaken}(x, \sigma, \Sigma)  = \begin{cases}
+             P\ \ \ \ &\text{if}\ x \notin \Sigma, P \vdash \sigma\ \texttt{un}\\
+             \emptyset\ \ \ &otherwise
+        \end{cases}
+      \end{flalign*}
+    \end{minipage}
+    \begin{minipage}{0.5\linewidth}
+      \begin{flalign*}
+        \texttt{GenI}(\Gamma, P &=> \tau)  = \forall (ftv(S P, \tau)).S P => \tau \nonumber\\
+                                          \text{where}\ &S\ \text{improves}\ \texttt{ftv}(P) \backslash \texttt{ftv}(\Gamma, \tau)\ \text{in}\ P
+      \end{flalign*}
+    \end{minipage}
+    \begin{minipage}{1\linewidth}
+      \begin{flalign*}
+        \mathcal{C}(P, \Gamma, \Sigma)  = \{ x_i, x_j \mid \Gamma(x_i:\tau_1;x_j:\tau_2) \}
+      \end{flalign*}
+    \end{minipage}
+  \end{framed}
   % Un
   % Weaken
   % GenI
@@ -386,9 +415,9 @@ of the constructor types $C$ and $C'$.
     % x var
     \begin{minipage}{1\linewidth}
       \begin{flalign*}
-        \M(S, X;\Gamma \vdash x : \tau) &= ([\overset{\rightarrow}{u} / \overset{\rightarrow}{t}]P), S' \circ S, \{x\} \nonumber \\
-        \text{where}\ (x : \forall \overset{\rightarrow}{t}. P \Rightarrow \nu) &\in S \Gamma \nonumber\\
-        S' &= \Unf([\overset{\rightarrow}{u} / \overset{\rightarrow}{t}]\nu, S \tau)
+        \M(S, X;\Gamma \vdash x : \tau) &= ([\vec{u} / \vec{t}]P), S' \circ S, \{x\} \nonumber \\
+        \text{where}\ (x : \forall \vec{t}. P => \nu) &\in S \Gamma \nonumber\\
+        S' &= \Unf([\vec{u} / \vec{t}]\nu, S \tau)
       \end{flalign*}
     \end{minipage}
 
@@ -427,7 +456,7 @@ of the constructor types $C$ and $C'$.
       \begin{flalign*}
         \M(S, X;\Gamma \vdash \Let{x}{M}{N} : \tau) &= (P \cup Q), R', \Sigma \cup \{\Sigma' \backslash x \} \nonumber\\
         \text{where}\ P, R, \Sigma &= \M(S, X;\Gamma \vdash M:u_1) \nonumber \\
-        \sigma &= \text{GenI}(R\Gamma; R(P \Rightarrow u_1)) \nonumber\\
+        \sigma &= \text{GenI}(R\Gamma; R(P => u_1)) \nonumber\\
         P', R', \Sigma' &= \M(R, X;\Gamma, x:\sigma \vdash N : \tau) \nonumber\\
         Q &= \text{Un}(\Gamma|_{\Sigma \cap \Sigma'}) \cup \text{Weaken}(x, \sigma, \Sigma')
       \end{flalign*}
@@ -439,19 +468,32 @@ of the constructor types $C$ and $C'$.
         \text{where}\ P_M, R_M, \Sigma_M &= \M(S, X;\Gamma \vdash M:u_1 \oplus u_2 \oplus \cdots \oplus u_n) \nonumber \\
                       P_1, R_1, \Sigma_1 &= \M(R_M, X;\Gamma \vdash p_1:u_1 \vdash N_1: v) \nonumber \\
                       P_i, R_i, \Sigma_i &= \M(R_{i-1}, X;\Gamma \vdash p_i:u_i \vdash N_i: v) \nonumber \\
-                                 \Sigma' &= TODO \cup \Sigma_i \nonumber\\
+                                 \Sigma' &= \bigcup_{i,j \leq n} (\Sigma_i \cap \Sigma_{j}) \nonumber\\
                                        Q &= \text{Un}(\Gamma|_{\Sigma'}) \cup \{\text{Weaken}(p_i, u_i, \Sigma_i)\}
       \end{flalign*}
     \end{minipage}
-
-    \begin{minipage}{1\linewidth}
-    \end{minipage}
-
 \end{framed}
   \caption{Type Inference Algorithm $\mathcal{M}$}
   \label{fig:algorithm-m}
 \end{figure}
-TODO define $\mathcal{C}(\Gamma, \Sigma)$, GenI
+
+\begin{figure}[h]
+  \begin{framed}
+      \begin{minipage}{1\linewidth}
+      \begin{flalign*}
+        \M(S, X;\Gamma \vdash C\ x) &= (P_M \cup \{P_i\}), Q, \Sigma_M \cup \{\Sigma_i\} \nonumber\\
+          \text{where}\ C &= \forall \vec{t_1}. (\forall \vec{t_2}. \exists \vec{t_3}. Q => v') \sepimp v \nonumber\\
+       P_M, R_M, \Sigma_M &= \M(S, X;\Gamma \vdash M:u_1 \oplus u_2 \oplus \cdots \oplus u_n) \nonumber \\
+       P_1, R_1, \Sigma_1 &= \M(R_M, X;\Gamma \vdash p_1:u_1 \vdash N_1: v) \nonumber \\
+       P_i, R_i, \Sigma_i &= \M(R_{i-1}, X;\Gamma \vdash p_i:u_i \vdash N_i: v) \nonumber \\
+                  \Sigma' &= \bigcup_{i,j \leq n} (\Sigma_i \cap \Sigma_{j}) \nonumber\\
+                                                  Q &= \text{Un}(\Gamma|_{\Sigma'}) \cup \{\text{Weaken}(p_i, u_i, \Sigma_i)\}
+      \end{flalign*}
+    \end{minipage}
+  \end{framed}
+  \caption{Type Inference Algorithm $\mathcal{M}$ (continued)}
+  \label{fig:algorithm-m-cont}
+\end{figure}
 
 Here is how the naive recursive algorithm works
 

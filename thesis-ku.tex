@@ -51,6 +51,7 @@
 %% Because html converters don't know tabularnewline
 \providecommand{\tabularnewline}{\\}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\newcommand{\BI}{\textbf{\em BI}}
 \newcommand\sepimp{\mathrel{-\mkern-6mu*}}
 
 \newcommand{\M}{\mathcal{M}}
@@ -61,7 +62,10 @@
 \newcommand{\Un}[1]{\texttt{Un}\ #1}
 \newcommand{\Let}[3]{\texttt{let}\ #1 = #2\ \texttt{in}\ #3}
 \newcommand{\Case}[2]{\texttt{case}\ #1\ \texttt{of}\ #2}
-%used to align decimals in tables according to APA style
+
+\newcommand{\TODO}[1]{{\begin{framed}{\color{red} #1}\end{framed}}}
+
+% used to align decimals in tables according to APA style
 \usepackage{dcolumn}
 \usepackage{booktabs}
 
@@ -110,14 +114,33 @@
 
 \maketitle
 \begin{abstract}
-  Linear logic promises a way to introduce the efficient resource handling in programs.
-  There have been a number of attempts to make use of linear logic in programming languages.
-  Each method seems to have some flaw and caveats making it too difficult to be useful
-  in real life applications. It has made its way into some parts of programming languages
+  In current setting of programming languages, resources are treated as normal values.
+  They have a different semantics in execution stage that does not match with static
+  semantics. For example file handles or database connections are treated as integers
+  in C. Modern functional programming languages like Haskell try to improve on this
+  by making them a bit more resource-aware and wrapping them in IO monads. Though it is an
+  improvement over imperative languages, it still lacks the the appropriate treatment.
+  Linear logic[\cite{girard_linear_1987}] promised a way to introduce the efficient resource handling in programs.
+  There have been numerous attempts to make use of linear logic in programming languages.
+  It has made its way into some parts of programming languages
   such as garbage collectors and also type systems (Rust and Clean). While the logic
-  is more expressive than intuistionistic logic, there is no
-  practical programming language that allows programmers that leverage it in its fullest degree.
-  In this thesis we redefine the existing Quill type system to incorporate linear logic.
+  is more expressive than intuistionistic logic, there are various practical issues
+  that prohibit leveraging it to its fullest degree. In this thesis, we take a
+  different view over the resource management problem by concentrating
+  on sharing or separation of resources. This has been studied in a theoritical
+  setting as a logic of bunched implications (\BI)[\cite{ohearn_logic_1999}].
+
+  We build a prototype of a Curry-Howard interpretation of the logic of \BI\ called
+  the $\alpha\lambda$ calculus [\cite{ohearn_bunched_2003}] by
+  introducing 2 new type constructors of arrow type: sharing arrow and separating arrow to replace
+  the usual notion of function arrows of simply typed lambda calculus.
+  Sharing arrows imply that functions may share resources with
+  its arguments, while separating arrows imply that functions do not share resources with its arguments.
+  The basis of our work is Quill [\cite{morris_best_2016}] that has a notion of unrestricted types.
+  We realize that the interaction of unrestricted types and sharing and separating is harmless
+  as program entities that do not have a sense of resourcefulness can be
+  duplicated or dropped anytime without any adverse implications. Thus all unrestricted types
+  are realizations of existing purely functional programs.
 
   % Complexity of software systems has been increasing forever. Automation of tasks
   % provides consistency, correctness and speed at a much greater degree than humans.
@@ -137,24 +160,13 @@
   % of a type, define the degree of unrestrictedness of classes
   % and a concept of sharing or separation of closures for functions
 
-  We introduce 2 new type constructors of arrow class: sharing arrow and
-  separating arrow over already existing unrestricted types formalized in
-  Quill [\cite{morris_best_2016}]. Sharing arrows imply that the objects may share resources, while separating
-  arrows imply that they do not share any resources. For unrestricted types
-  sharing and separating does not make any difference as they can be easily
-  duplicated or dropped without any adverse implications. So all the existing
-  programs would type check correctly with only difference being everything
-  regarded as unrestricted. This work is similar to bunched implications and
-  $\alpha$Lambda calculus. [\cite{ohearn_resource_1999}, \cite{ohearn_logic_1999}]
-  with the difference being the notion of un-restrictedness of resources.
-
   % What am I trying to doing here?
   % Make Quill work. Write programs in them and check and see
   % how painful it is.
-  We realize that we have 2 kinds of pairs, a sharing pair and a separating pair depending
-  on the arrow we use. We try to formalize other structures such as Lists, non-empty lists
-  datatypes (recursive and non-recursive) and type classes such as functor, applicative and
-  monads with specific instances of each.
+  % We realize that we have 2 kinds of pairs, a sharing pair and a separating pair depending
+  % on the arrow we use. We try to formalize other structures such as Lists, non-empty lists
+  % datatypes (recursive and non-recursive) and type classes such as functor, applicative and
+  % monads with specific instances of each.
 
 \begin{acknowledgementslong}
 %%if you want a "quote" environment for acknowledgements,
@@ -184,7 +196,7 @@
 \bibliography{Biblio/allcites}
 
 \appendix
-\include{Appendix1/Appendix1}
+\include{Appendix/Appendix}
 \end{document}
 
 %%% Local Variables:
