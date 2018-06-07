@@ -8,9 +8,9 @@
       \text{Type constructors}\ \ \   T^{\kappa}       &::= \mathcal{T}^{\kappa}\ \text{where}
                                                       \{\oplus, \overset{!}{\sepimp}, \sepimp, \xrightarrow{!}, \rightarrow \} \subseteq \mathcal{T}^{* \rightarrow * \rightarrow *}\nonumber\\
       \text{Types}\ \ \               \tau^{\kappa}    &::= t \mid T^{\kappa} \mid \tau^{\kappa' \rightarrow \kappa} \tau^{\kappa'}\nonumber\\
-      \text{Predicates}\ \ \          \pi             &::= \texttt{Un}\ \tau \mid \texttt{SeFun}\ \tau \mid \texttt{ShFun}\ \tau \mid \tau \geq \tau' \nonumber\\
+      \text{Predicates}\ \ \          \pi             &::= \texttt{Un}\ \tau \mid \texttt{SeFun}\ \tau \mid \texttt{ShFun}\ \tau \mid \tau \leq \tau' \nonumber\\
       \text{Qualified Types}\ \ \     \rho            &::= \tau^{*} \mid \pi => \rho \nonumber\\
-      \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma \nonumber\\
+      \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma \nonumber
     \end{flalign*}
   \end{framed}
   \caption{Types in Language}
@@ -34,15 +34,16 @@ We write \texttt{ShFun} $\tau$ to describe that type $\tau$ may share resources 
 argument types and \texttt{SeFun} $\tau$ to describe that $\tau$ is
 does not share any resources from its argument types. The function types can also be of the unrestricted type.
 Thus if a type $\tau$ is unrestricted i.e. it qualifies with predicate \texttt{Un} and it is also a function types
-i.e. \texttt{SeFun} or \texttt{ShFun}, we write them as
-$\overset{!}{\sepimp}$ and $\xrightarrow{!}$ respectively. This can be considered as an improving substitution following
-Jone's notion of improvement of qualified types [\cite{jones_simplifying_1995}]
+i.e. \texttt{SeFun} or \texttt{ShFun}, we write them as $\overset{!}{\sepimp}$ and $\xrightarrow{!}$ respectively.
+This can be considered as an improving substitution following Jone's notion of improvement of qualified types [\cite{jones_simplifying_1995}].
+We also define an ordering on types by using the predicate $\leq$. The predicate $\tau \leq \tau'$ holds if the type $\tau$
+is less restricting than $\tau'$
 
 \begin{figure}[h]
   \begin{framed}
   \begin{flalign*}
-    \text{Environments}\ \ \      \Gamma,\Delta     &::= \epsilon \mid x:\sigma \mid \Gamma, \Delta \mid \Gamma; \Delta \nonumber\\
-    \text{Environment Context}\ \ \ H, H'           &::= \epsilon \mid H,H' \mid H;H' \mid \square \nonumber\\
+    \text{Environments}\ \ \      \Gamma,\Delta     &::= \epsilon \mid x:\sigma \mid \Gamma, \Delta \mid \Gamma; \Delta \nonumber
+    % \text{Environment Context}\ \ \ H, H'           &::= \epsilon \mid H,H' \mid H;H' \mid \square \nonumber\\
   \end{flalign*}
 \end{framed}
   \caption{Language Context}
@@ -57,17 +58,18 @@ Two contex are equivalent ($\Gamma \equiv \Delta$)if they can be transformed int
 The bunches have a restriction that no identifier appears more than once. We restrict certain structural rules on the context
 depending on the connectives being used. If contexts are combined using a comma ($,$), contraction and weakening is not admissible,
 but if the contexts are combined using a semicolon ($;$) then it can undergo contraction and weakening. Exchange rule is admissible
-in both the connectives.
-
-% TODO!! add the tree graph here
-
+in both the connectives. This distinction enables us to have a special treatement for resources in our language.
+By associating a resource with a comma constructor, our type system will not disposed it off by using the contraction rule.
+While, non-resourceful objects (or normal propositions) can be combined using the semi-colon constructor.
+\TODO{add the contexttree graph here}
 \begin{figure}[h]
   \begin{framed}
     \begin{flalign*}
-      \text{Term Variables}\ \ \      x, y, z         &\in \text{Var} \nonumber\\
-      \text{Patterns}\ \ \            p               &::= x \mid C \vec{x}\nonumber\\
-      \text{Expressions}\ \ \         M, N            &::= x \mid \lambda^{*}x. M \mid \lambda^{\alpha}x. M \mid M N\nonumber\\
-                                                      &\mid \Let{x}{M}{N} \mid \texttt{case}\ M\ \texttt{of}\ \{p_i \mapsto N_i\}_i\nonumber
+      \text{Term Variables}\ \ \  x, y, z  &\in \text{Var} \nonumber\\
+      \text{Patterns}\ \ \        p        &::= x \mid C \vec{x}\nonumber\\
+      \text{Expressions}\ \ \     M, N     &::= x \mid \lambda^{*}x. M \mid \lambda^{\alpha}x. M \mid M N\nonumber\\
+                                           &\mid \Case{M}{\{\texttt{inl}\ M \mapsto N ; \texttt{inr}\ M \mapsto N'\}}\mid \texttt{inl}\ M \mid \texttt{inr}\ M \nonumber\\
+                                           &\mid \Let{x}{M}{N} \mid \nonumber
     \end{flalign*}
   \end{framed}
   \caption{Language Syntax}
@@ -77,16 +79,17 @@ in both the connectives.
 
 % Describe terms and patterns
 Our term language is similar to that of simply typed lambda calculus involving variables and application
-but now we have 2 different kinds of lambdas. The alpha lambda ($\lambda^{\alpha} x. M$) denotes sharing
+but now we have 2 different kind of lambdas. The alpha lambda ($\lambda^{\alpha} x. M$) denotes sharing
 of the argument term with the expression $M$ and the separating lambda term ($\lambda^{*} x. M$) that implies
-the argument term has a separating context with the expression $M$. We also have $\texttt{let}$
+the argument term has a separating context with the expression $M$. We also have polymorphic $\texttt{let}$
 expressions to be able to define functions with a limited scope. The type constructors are added
 in order to allow programmers to define their own data types. They can be used to define sum and product types.
-$\texttt{case}\ M\ \texttt{of}$ can be used
-to pattern match on the expression to express it in terms of individual sum types. Patterns are either term variables
-or constructor terms
+\texttt{case} expression can be used to pattern match on the expression to express it in terms
+of individual sum types. Patterns are either term variables or constructor terms.
 
-% TODO!! How do we write about type constructors?
+\TODO{How do we write about type constructors?}
+\TODO{Encode sum types in this calculus}
+\TODO{4 types of pairs. 2 of them are church encodeable. 2 of them are not.}
 
 \section{Conventions and Notations}
 $\Gamma_{x}$ is the typing environment excluding the type variable $x$. $TV(\Gamma)$ are the free
@@ -110,7 +113,22 @@ one or many variables.
       \begin{prooftree}
         \AxiomC{$P \mid \Gamma \vdash M : \sigma$}
         \AxiomC{$P' \mid \Gamma_{x} \cdot x: \sigma \vdash N: \tau$} \RightLabel{[LET]}
-        \BinaryInfC{$P \cup P' \mid \Gamma \vdash \texttt{let}\ x\ \texttt{=}\ M\ \texttt{in}\ N: \tau$}
+        \BinaryInfC{$P \cup P' \mid \Gamma \vdash \Let{x}{M}{N}: \tau$}
+      \end{prooftree}
+    \end{minipage}
+    % forall I
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma \vdash M: \sigma$}
+        \AxiomC{$t \notin TV(\Gamma) \cup TV(P)$}\RightLabel{$[\forall I]$}
+        \BinaryInfC{$P \mid \Gamma \vdash M: \forall t. \sigma$}
+      \end{prooftree}
+    \end{minipage}
+    % forall E
+    \begin{minipage}{0.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma \vdash M: \forall t.\sigma$}\RightLabel{$[\forall E]$}
+        \UnaryInfC{$P \mid \Gamma \vdash M: [\tau \backslash t] \sigma $}
       \end{prooftree}
     \end{minipage}
     % => I
@@ -128,55 +146,36 @@ one or many variables.
         \BinaryInfC{$P \mid \Gamma \vdash M: \rho$}
       \end{prooftree}
     \end{minipage}
-
-    % forall I
-    \begin{minipage}{0.5\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash M: \sigma$}
-        \AxiomC{$t \notin TV(\Gamma) \cup TV(P)$}\RightLabel{$[\forall I]$}
-        \BinaryInfC{$P \mid \Gamma \vdash M: \forall t. \sigma$}
-      \end{prooftree}
-    \end{minipage}
-    % forall E
-    \begin{minipage}{0.5\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash M: \forall t.\sigma$}\RightLabel{$[\forall E]$}
-        \UnaryInfC{$P \mid \Gamma \vdash M: [\tau \backslash t] \sigma $}
-      \end{prooftree}
-    \end{minipage}
-
     % CTR UN
     \begin{minipage}{.5\textwidth}
       \begin{prooftree}
-        \AxiomC{$P \mid \Gamma(H', H') \vdash M : \sigma$}
-        \AxiomC{$P'\vdash H' un$} \RightLabel{[C-un]}
-        \BinaryInfC{$P \mid \Gamma(H') \vdash M : \sigma$}
+        \AxiomC{$P \mid \Gamma(\Delta', \Delta') \vdash M : \sigma$}
+        \AxiomC{$P'\vdash H' un$} \RightLabel{[CTR-UN]}
+        \BinaryInfC{$P \mid \Gamma(\Delta') \vdash M : \sigma$}
       \end{prooftree}
     \end{minipage}
     % WKN UN
     \begin{minipage}{.5\textwidth}
       \begin{prooftree}
         \AxiomC{$P \mid \Gamma(\epsilon) \vdash M : \sigma$}
-        \AxiomC{$P'\vdash H' un$} \RightLabel{[W-un]}
-        \BinaryInfC{$P \mid \Gamma(H') \vdash M : \sigma$}
+        \AxiomC{$P'\vdash H' un$} \RightLabel{[WKN-UN]}
+        \BinaryInfC{$P \mid \Gamma(\Delta') \vdash M : \sigma$}
       \end{prooftree}
     \end{minipage}
-
     % CTR Sh
     \begin{minipage}{.5\textwidth}
       \begin{prooftree}
-        \AxiomC{$P \mid \Gamma(H'; H') \vdash M : \sigma$} \RightLabel{[C-sh]}
-        \UnaryInfC{$P \mid \Gamma(H') \vdash M : \sigma$}
+        \AxiomC{$P \mid \Gamma(\Delta'; \Delta') \vdash M : \sigma$} \RightLabel{[CTR-SH]}
+        \UnaryInfC{$P \mid \Gamma(\Delta') \vdash M : \sigma$}
       \end{prooftree}
     \end{minipage}
     % WKN Sh
     \begin{minipage}{.5\textwidth}
       \begin{prooftree}
-        \AxiomC{$P  \mid \Gamma(H') \vdash M : \sigma$} \RightLabel{[W-sh]}
+        \AxiomC{$P  \mid \Gamma(H') \vdash M : \sigma$} \RightLabel{[WKN-SH]}
         \UnaryInfC{$P \mid \Gamma(H'; H'') \vdash M : \sigma$}
       \end{prooftree}
     \end{minipage}
-
     % -&> I
     \begin{minipage}{1\textwidth}
       \begin{prooftree}
@@ -196,7 +195,6 @@ one or many variables.
         \QuaternaryInfC{$P \mid \Gamma;\Delta \vdash M N : \tau'$}
       \end{prooftree}
     \end{minipage}
-
     % -*> I
     \begin{minipage}{1\textwidth}
       \begin{prooftree}
@@ -221,85 +219,133 @@ one or many variables.
     \label{fig:typing-rules}
 \end{figure}
 
-    % user defined type constructor I
-    \begin{minipage}{1\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \bullet \Delta \vdash M: \tau_1 \oplus \tau_2 \oplus \cdots \oplus \tau_n$}
-        \AxiomC{$P \mid \Delta \vdash p_i :\tau_i$}
-        \AxiomC{$P \mid \Gamma \bullet \Delta \vdash N_i:v$}\RightLabel{$[C_i I]$}
-        \TrinaryInfC{$P \mid \Gamma \bullet \Delta \vdash \texttt{case}\ M\ \texttt{of}\ \{p_i \mapsto N_i\}_i : v $}
-      \end{prooftree}
-    \end{minipage}
-    % sharing constructor
-    \begin{minipage}{1\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash C: \tau_1 \sepimp \tau_2 \rightarrow \tau_3 \rightarrow \dots \rightarrow \tau_n \rightarrow T$}
-        \AxiomC{$\Delta \equiv H(x_1 : \tau_1 ; x_2 : \tau_2 ; \ldots ; x_n:\tau_n)$}\RightLabel{$[\text{C-sh}]$}
-        \BinaryInfC{$P \mid \Gamma; \Delta \vdash C \vec{x} : T $}
-      \end{prooftree}
-    \end{minipage}
-    % Separating constructor
-    \begin{minipage}{1\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash C: \tau_1 \sepimp \tau_2 \sepimp \tau_3 \sepimp \dots \sepimp \tau_n \sepimp T$}
-        \AxiomC{$\Delta \equiv H(x_1: \tau_1, x_2:\tau_2, \dots ,x_n:\tau_n)$}\RightLabel{$[\text{C-se}]$}
-        \BinaryInfC{$P \mid \Gamma, \Delta \vdash C \vec{x} : T $}
-      \end{prooftree}
-    \end{minipage}
+We now see that we have two kinds of pairs. A sharing pair (\texttt{shPair}) and a separating pair (\texttt{sePair}) depending on
+what arrow we use. The church encoding of both the pairs are given in \ref{fig:bi-pairs}.
+\begin{figure}[h]
+  \centering
+  \begin{framed}
+    \begin{minted}[escapeinside=||,mathescape=true]{haskell}
+      shPair = |$\lambda^{*}$| a. |$\lambda^{\alpha}$| b. |$\lambda^{*}$| f. f a b
+      sePair = |$\lambda^{*}$| a. |$\lambda^{*}$| b. |$\lambda^{*}$| f. f a b
+    \end{minted}
+  \end{framed}
+  \caption{Pairs in \textbf{\em BI}}
+  \label{fig:bi-pairs}
+\end{figure}
+The types of both these pair will be as shown in \ref{fig:bi-pairs-typing}
+\begin{figure}[h]
+  \centering
+  \begin{framed}
+    \begin{lstlisting}
+      shPair : a $\sepimp$ b $\rightarrow$ (a $\sepimp$ b $\sepimp$ c) $\sepimp$ c
+      sePair : a $\sepimp$ b $\sepimp$ (a $\sepimp$ b $\sepimp$ c) $\sepimp$ c
+    \end{lstlisting}
+  \end{framed}
+  \caption{Typing for Pairs in \textbf{\em BI}}
+  \label{fig:bi-pairs-typing}
+\end{figure}
 
-    \begin{minipage}{0.5\linewidth}
-      \begin{prooftree}
-        \AxiomC{$P => \texttt{Un}\ \tau$}\RightLabel{[\texttt{Un}-$\tau$]}
-        \UnaryInfC{$P \vdash \tau\ \texttt{un}$}
-      \end{prooftree}
-    \end{minipage}
-    \begin{minipage}{0.5\linewidth}
-      \begin{prooftree}
-        \AxiomC{$P,\pi \vdash \rho\ \texttt{un}$}\RightLabel{[\texttt{Un}-$\rho$]}
-        \UnaryInfC{$P \vdash \pi => \rho\ \texttt{un}$}
-      \end{prooftree}
-    \end{minipage}
 
-    \begin{minipage}{0.5\linewidth}
-      \begin{prooftree}
-        \AxiomC{$P, \texttt{Un}\ t \vdash \sigma\ \texttt{Un}$}\RightLabel{[\texttt{Un}-$\sigma$]}
-        \UnaryInfC{$P \vdash \forall t.\sigma\ \texttt{un}$}
-      \end{prooftree}
-    \end{minipage}
-    \begin{minipage}{0.5\linewidth}
-      \begin{prooftree}
-        \AxiomC{$\bigwedge_{x:\sigma \in H}P \vdash \rho\ \texttt{un}$}\RightLabel{[\texttt{Un}-$H$]}
-        \UnaryInfC{$P \vdash H\ \texttt{un}$}
-      \end{prooftree}
-    \end{minipage}
+% sum type E
+\begin{minipage}{1\textwidth}
+  \begin{prooftree}
+    \AxiomC{$P \mid \Gamma \vdash M: \tau_1 \oplus \tau_2$}
+    \AxiomC{$P \mid \Delta_x\bullet x:\tau_1 \vdash N :\tau_i$}
+    \AxiomC{$P \mid \Delta_x \bullet x:\tau_2 \vdash N':v$}\RightLabel{$[\oplus E]$}
+    \TrinaryInfC{$P \mid \Delta \bullet \Delta' \vdash \Case{M}{\{\texttt{inl}\ M \mapsto N; \texttt{inr}\ M \mapsto N'\}} : v $}
+  \end{prooftree}
+\end{minipage}
+% sum type I_l
+\begin{minipage}{0.5\textwidth}
+  \begin{prooftree}
+    \AxiomC{$P \mid \Gamma \vdash M: \tau_1$}
+    \UnaryInfC{$P \mid \Delta \vdash \texttt{inl}\ M: \tau_1 \oplus \tau_2 $}
+  \end{prooftree}
+\end{minipage}
+% sum type I_r
+\begin{minipage}{0.5\textwidth}
+  \begin{prooftree}
+    \AxiomC{$P \mid \Gamma \vdash M: \tau_2$}
+    \UnaryInfC{$P \mid \Delta \vdash \texttt{inr}\ M: \tau_1 \oplus \tau_2 $}
+  \end{prooftree}
+\end{minipage}
 
-    \begin{minipage}{0.5\linewidth}
-      \begin{prooftree}
-        \AxiomC{$P => \tau \geq \phi$}\RightLabel{[$\geq$-$\tau$]}
-        \UnaryInfC{$P \vdash \tau \geq \phi$}
-      \end{prooftree}
-    \end{minipage}
-    \begin{minipage}{0.5\linewidth}
-      \begin{prooftree}
-        \AxiomC{$P,\pi \vdash \rho \geq \phi$}\RightLabel{[$\geq$-$\rho$]}
-        \UnaryInfC{$P \vdash (\pi => \rho) \geq \phi$}
-      \end{prooftree}
-    \end{minipage}
-
-    \begin{minipage}{0.5\linewidth}
-      \begin{prooftree}
-        \AxiomC{$P, \texttt{Un}\ t \vdash \sigma \geq \phi$}\RightLabel{[$\geq$-$\sigma$]}
-        \UnaryInfC{$P \vdash (\forall t.\sigma) \geq \phi$}
-      \end{prooftree}
-    \end{minipage}
-    \begin{minipage}{0.5\linewidth}
-      \begin{prooftree}
-        \AxiomC{$\bigwedge_{x:\sigma \in H}P \vdash \rho \geq \phi$}\RightLabel{[$\geq$-$H$]}
-        \UnaryInfC{$P \vdash H \geq \phi$}
-      \end{prooftree}
-    \end{minipage}
+% sharing constructor
+\begin{minipage}{1\textwidth}
+  \begin{prooftree}
+    \AxiomC{$P \mid \Gamma \vdash C: \tau_1 \sepimp \tau_2 \rightarrow \tau_3 \rightarrow \dots \rightarrow \tau_n \rightarrow T$}
+    \AxiomC{$\Delta \equiv H(x_1 : \tau_1 ; x_2 : \tau_2 ; \ldots ; x_n:\tau_n)$}\RightLabel{$[\text{C-sh}]$}
+    \BinaryInfC{$P \mid \Gamma; \Delta \vdash C \vec{x} : T $}
+  \end{prooftree}
+\end{minipage}
+% Separating constructor
+\begin{minipage}{1\textwidth}
+  \begin{prooftree}
+    \AxiomC{$P \mid \Gamma \vdash C: \tau_1 \sepimp \tau_2 \sepimp \tau_3 \sepimp \dots \sepimp \tau_n \sepimp T$}
+    \AxiomC{$\Delta \equiv H(x_1: \tau_1, x_2:\tau_2, \dots ,x_n:\tau_n)$}\RightLabel{$[\text{C-se}]$}
+    \BinaryInfC{$P \mid \Gamma, \Delta \vdash C \vec{x} : T $}
+  \end{prooftree}
+\end{minipage}
 
 \begin{figure}[h]
+  \begin{framed}
+  \begin{minipage}{0.5\linewidth}
+    \begin{prooftree}
+      \AxiomC{$P => \texttt{Un}\ \tau$}\RightLabel{[\texttt{Un}-$\tau$]}
+      \UnaryInfC{$P \vdash \tau\ \texttt{un}$}
+    \end{prooftree}
+  \end{minipage}
+  \begin{minipage}{0.5\linewidth}
+    \begin{prooftree}
+      \AxiomC{$P,\pi \vdash \rho\ \texttt{un}$}\RightLabel{[\texttt{Un}-$\rho$]}
+      \UnaryInfC{$P \vdash \pi => \rho\ \texttt{un}$}
+    \end{prooftree}
+  \end{minipage}
+
+  \begin{minipage}{0.5\linewidth}
+    \begin{prooftree}
+      \AxiomC{$P, \texttt{Un}\ t \vdash \sigma\ \texttt{Un}$}\RightLabel{[\texttt{Un}-$\sigma$]}
+      \UnaryInfC{$P \vdash \forall t.\sigma\ \texttt{un}$}
+    \end{prooftree}
+  \end{minipage}
+  \begin{minipage}{0.5\linewidth}
+    \begin{prooftree}
+      \AxiomC{$\bigwedge_{x:\sigma \in \Gamma}P \vdash \rho\ \texttt{un}$}\RightLabel{[\texttt{Un}-$\Gamma$]}
+      \UnaryInfC{$P \vdash \Gamma\ \texttt{un}$}
+    \end{prooftree}
+  \end{minipage}
+
+  \begin{minipage}{0.5\linewidth}
+    \begin{prooftree}
+      \AxiomC{$P => \tau \leq \phi$}\RightLabel{[$\leq$-$\tau$]}
+      \UnaryInfC{$P \vdash \tau \leq \phi$}
+    \end{prooftree}
+  \end{minipage}
+  \begin{minipage}{0.5\linewidth}
+    \begin{prooftree}
+      \AxiomC{$P,\pi \vdash \rho \leq \phi$}\RightLabel{[$\leq$-$\rho$]}
+      \UnaryInfC{$P \vdash (\pi => \rho) \leq \phi$}
+    \end{prooftree}
+  \end{minipage}
+
+  \begin{minipage}{0.5\linewidth}
+    \begin{prooftree}
+      \AxiomC{$P, \texttt{Un}\ t \vdash \sigma \leq \phi$}\RightLabel{[$\leq$-$\sigma$]}
+      \UnaryInfC{$P \vdash (\forall t.\sigma) \leq \phi$}
+    \end{prooftree}
+  \end{minipage}
+  \begin{minipage}{0.5\linewidth}
+    \begin{prooftree}
+      \AxiomC{$\bigwedge_{x:\sigma \in \Gamma}P \vdash \rho \leq \phi$}\RightLabel{[$\leq$-$\Gamma$]}
+      \UnaryInfC{$P \vdash \Gamma \leq \phi$}
+    \end{prooftree}
+  \end{minipage}
+\end{framed}
+  \caption{Typing Rules for Base cases}
+  \label{fig:bi-base-typing-rules}
+\end{figure}
+
+  \begin{figure}[h]
   \begin{framed}
   \begin{minipage}{1\linewidth}
     \begin{prooftree}

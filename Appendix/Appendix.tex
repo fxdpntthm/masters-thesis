@@ -2,19 +2,208 @@
 
 \section{Proofs}
 
+\subsection{Derivable Typing rules}
+Proof for \cref{fig:derivable-typing-rules}
+
+\begin{minipage}[h]{1.0\linewidth}
+  \begin{prooftree}
+    \AxiomC{$$}\RightLabel{[VAR]}
+    \UnaryInfC{$\emptyset \mid y:B \vdash y: B $}\RightLabel{[VAR]}
+
+    \AxiomC{$$}
+    \UnaryInfC{$\emptyset \mid x: A \vdash x: A$}
+
+    \AxiomC{$$}\RightLabel{[VAR]}
+    \UnaryInfC{$\emptyset \mid f: A \sepimp B \rightarrow C \vdash f: A \sepimp B \rightarrow C $}\RightLabel{[$\sepimp E$]}
+    \BinaryInfC{$\emptyset \mid x:A, f: A \sepimp B \rightarrow C \vdash f x: (B \rightarrow C)$}\RightLabel{[$\rightarrow E$]}
+
+    \BinaryInfC{$\emptyset \mid y:B;x:A,f:A \sepimp B \rightarrow C \vdash f x y: C$}\RightLabel{[$EXCH$]}
+    \UnaryInfC{$\emptyset \mid x:A;y:B,f:A \sepimp B \rightarrow C \vdash f x y: C$}\RightLabel{[$\sepimp I$]}
+    \UnaryInfC{$\emptyset \mid x:A;y:B \vdash \lambda^{*}f. f x y: (A \sepimp B \rightarrow C) \rightarrow C$}\RightLabel{[$\rightarrow I$]}
+    \UnaryInfC{$\emptyset \mid x:A \vdash \lambda^{\alpha}y. \lambda^{*}f. f x y: B \rightarrow (A \sepimp B \rightarrow C) \rightarrow C$}\RightLabel{[$\equiv$]}
+    \UnaryInfC{$\emptyset \mid I, x:A \vdash \lambda^{\alpha}y. \lambda^{*}f. f x y: B \rightarrow (A \sepimp B \rightarrow C) \rightarrow C$}\RightLabel{[$\sepimp I$]}
+    \UnaryInfC{$\emptyset \mid I \vdash \lambda^{*}x. \lambda^{\alpha}y. \lambda^{*}f. f x y: A \sepimp B \rightarrow (A \sepimp B \rightarrow C) \rightarrow C$}
+  \end{prooftree}
+\end{minipage}
+
+We can now define sharing (additive) pair as:
+\begin{framed}\centering
+    $; = \lambda^{*}x. \lambda^{\alpha}y. \lambda^{*}f. f x y$
+\end{framed}
+and assign a new type to this pair and call it $\with$
+\begin{framed}\centering
+  $A \with B = (A \sepimp B \rightarrow C) \rightarrow C$
+\end{framed}
+
+\begin{minipage}[h]{1.0\linewidth}
+  \begin{prooftree}
+    \AxiomC{$$}\RightLabel{[VAR]}
+    \UnaryInfC{$\emptyset \mid y:B \vdash y: B $}\RightLabel{[VAR]}
+
+    \AxiomC{$$}
+    \UnaryInfC{$\emptyset \mid x: A \vdash x: A$}
+
+    \AxiomC{$$}\RightLabel{[VAR]}
+    \UnaryInfC{$\emptyset \mid f: A \sepimp B \sepimp C \vdash f: A \sepimp B \sepimp C $}\RightLabel{[$\sepimp E$]}
+    \BinaryInfC{$\emptyset \mid x:A, f: A \sepimp B \sepimp C \vdash f x: (B \sepimp C)$}\RightLabel{[$\sepimp E$]}
+
+    \BinaryInfC{$\emptyset \mid y:B,x:A,f:A \sepimp B \sepimp C \vdash f x y: C$}\RightLabel{[$EXCH$]}
+    \UnaryInfC{$\emptyset \mid x:A,y:B,f:A \sepimp B \sepimp C \vdash f x y: C$}\RightLabel{[$\sepimp I$]}
+    \UnaryInfC{$\emptyset \mid x:A,y:B \vdash \lambda^{*}f. f x y: (A \sepimp B \sepimp C) \sepimp C$}\RightLabel{[$\sepimp I$]}
+    \UnaryInfC{$\emptyset \mid x:A \vdash \lambda^{*}y. \lambda^{*}f. f x y: B \sepimp (A \sepimp B \sepimp C) \sepimp C$}\RightLabel{[$\equiv$]}
+    \UnaryInfC{$\emptyset \mid I, x:A \vdash \lambda^{*}y. \lambda^{*}f. f x y: B \sepimp (A \sepimp B \sepimp C) \sepimp C$}\RightLabel{[$\sepimp I$]}
+    \UnaryInfC{$\emptyset \mid I \vdash \lambda^{*}x. \lambda^{*}y. \lambda^{*}f. f x y: A \sepimp B \sepimp (A \sepimp B \sepimp C) \sepimp C$}
+  \end{prooftree}
+\end{minipage}
+We can now define separating (multiplicative) pair as:
+\begin{framed}\centering
+    $,= \lambda^{*}x. \lambda^{*}y. \lambda^{*}f. f x y$
+\end{framed}
+We assign a new type to this pair construct and call it $\otimes$
+\begin{framed}\centering
+  $A \otimes B = (A \sepimp B \sepimp C) \sepimp C$
+\end{framed}
+
+We will abuse the notation of lambda calculus for $;$ and $,$ as use them as infix operators for syntactic convinence
+\begin{flalign*}
+  \langle x , y \rangle \equiv (,) x y\\
+  \langle x ; y \rangle \equiv (;) x y
+\end{flalign*}
+
+We now define left and right projections or deconstructors for separating and sharing pairs below:
+
+\begin{minipage}[h]{1.0\linewidth}
+  \begin{prooftree}
+    \AxiomC{$$}\RightLabel{[VAR]}
+    \UnaryInfC{$\emptyset \mid x:A \vdash x: A $}\RightLabel{[WKN-SH]}
+    \UnaryInfC{$\emptyset \mid x:A;y:B \vdash x: A $}\RightLabel{[$\rightarrow I$]}
+    \UnaryInfC{$\emptyset \mid x:A \vdash \lambda^{\alpha}x : B \rightarrow A $}\RightLabel{[$\equiv$]}
+    \UnaryInfC{$\emptyset \mid I, x:A \vdash \lambda^{\alpha}: B \rightarrow A $}\RightLabel{[$\sepimp I$]}
+    \UnaryInfC{$\emptyset \mid I \vdash \lambda^{*}x. \lambda^{\alpha}y. x: A \sepimp B \rightarrow A$}
+  \end{prooftree}
+\end{minipage}
+
+\begin{framed}
+  \centering
+    $\texttt{fst}_{sh} = \lambda^{*}x. \lambda^{\alpha}y. x$
+\end{framed}
+\begin{minipage}[h]{1.0\linewidth}
+  \begin{prooftree}
+    \AxiomC{$$}\RightLabel{[VAR]}
+    \UnaryInfC{$\emptyset \mid y:B \vdash y: B $}\RightLabel{[WKN-SH]}
+    \UnaryInfC{$\emptyset \mid x:A; y:B \vdash y: B $}\RightLabel{[$\rightarrow I$]}
+    \UnaryInfC{$\emptyset \mid x:A \vdash \lambda^{\alpha}y : B \rightarrow B $}\RightLabel{[$\equiv$]}
+    \UnaryInfC{$\emptyset \mid I, x:A \vdash \lambda^{\alpha}y: B \rightarrow B $}\RightLabel{[$\sepimp I$]}
+    \UnaryInfC{$\emptyset \mid I \vdash \lambda^{*}x. \lambda^{\alpha}y. y: A \sepimp B \rightarrow B$}
+  \end{prooftree}
+\end{minipage}
+
+\begin{framed}\centering
+    $\texttt{snd}_{sh} = \lambda^{*}x. \lambda^{\alpha}y. y$
+\end{framed}
+
+
+
+
+\begin{minipage}[h]{1.0\linewidth}
+  \begin{prooftree}
+    \AxiomC{$$}\RightLabel{[VAR]}
+    \UnaryInfC{$\Un{B} \mid x:A \vdash x:A $}
+
+    \AxiomC{$$}
+    \UnaryInfC{$\Un{B} => \Un{B}$}\RightLabel{[UN-$\Gamma$, UN-$\sigma$, UN-$\tau$]}
+    \UnaryInfC{$\Un{B} \vdash y:B\ \texttt{un} $}\RightLabel{[WKN-UN]}
+
+    \BinaryInfC{$\Un{B} \mid x:A, y:B \vdash x: A $}\RightLabel{[$\sepimp I$]}
+    \UnaryInfC{$\Un{B} \mid x:A \vdash \lambda^{*}y. x : B \sepimp A $}\RightLabel{[$\equiv$]}
+    \UnaryInfC{$\Un{B} \mid I, x:A \vdash \lambda^{*}y. x: B \sepimp A $}\RightLabel{[$\sepimp I$]}
+    \UnaryInfC{$\Un{B} \mid I \vdash \lambda^{*}x. \lambda^{*}y. x: A \sepimp B \sepimp A$}
+  \end{prooftree}
+\end{minipage}
+
+\begin{framed}\centering
+    $\texttt{fst}_{sep} = \lambda^{*}x. \lambda^{*}y. x$
+\end{framed}
+
+\begin{minipage}[h]{1.0\linewidth}
+  \begin{prooftree}
+    \AxiomC{$$}\RightLabel{[VAR]}
+    \UnaryInfC{$\Un{A} \mid y:B \vdash y: B $}
+
+    \AxiomC{$$}
+    \UnaryInfC{$\Un{A} => \Un{A}$}\RightLabel{[UN-$\Gamma$, UN-$\sigma$, UN-$\tau$]}
+    \UnaryInfC{$\Un{A} \vdash x:A\ \texttt{un} $}\RightLabel{[WKN-UN]}
+
+    \BinaryInfC{$\Un{A} \mid x:A, y:B \vdash y: B $}\RightLabel{[$\sepimp I$]}
+    \UnaryInfC{$\Un{A} \mid x:A \vdash \lambda^{*}y.y: B \sepimp B $}\RightLabel{[$\equiv$]}
+    \UnaryInfC{$\Un{A} \mid I, x:A \vdash \lambda^{*}y.y: B \sepimp B $}\RightLabel{[$\sepimp I$]}
+    \UnaryInfC{$\Un{A} \mid I \vdash \lambda^{*}x. \lambda^{*}y. y: A \sepimp B \sepimp B$}
+  \end{prooftree}
+\end{minipage}
+
+\begin{framed}\centering
+    $\texttt{snd}_{sep} = \lambda^{*}x. \lambda^{*}y. y$
+\end{framed}
+
+
+\begin{minipage}{0.5\linewidth}
+  \begin{prooftree}
+    \AxiomC{$\emptyset \mid I, M: A \with B \vdash \texttt{fst}_{sh}\ : A \sepimp B \rightarrow A$}\RightLabel{$\with E_1$}
+    \UnaryInfC{$\emptyset \mid I \vdash \texttt{fst}_{sh}\  M : A$}
+  \end{prooftree}
+\end{minipage}
+\begin{minipage}{0.5\linewidth}
+  \begin{prooftree}
+    \AxiomC{$\emptyset \mid I, M: A \with B \vdash \texttt{fst}_{sh}\ : A \sepimp B \rightarrow B$}\RightLabel{$\with E_2$}
+    \UnaryInfC{$\emptyset \mid I \vdash \texttt{snd}_{sh}\  M : B$}
+  \end{prooftree}
+\end{minipage}
+\begin{minipage}{1\linewidth}
+  \begin{prooftree}
+    \AxiomC{$P \mid \emptyset \vdash (;) : (A \sepimp B \sepimp C) \sepimp C $}
+    \AxiomC{$P \mid \Gamma  \vdash M : A$}
+    \AxiomC{$P \mid \Delta \vdash N: B $} \RightLabel{$[\with I]$}
+    \TrinaryInfC{$P \mid \Gamma;\Delta \vdash \langle M ; N \rangle: A \with B$}
+  \end{prooftree}
+\end{minipage}
+
+
+
+\begin{minipage}{0.5\linewidth}
+  \begin{prooftree}
+    \AxiomC{$\Un{B} \mid I, M: A \otimes B \vdash \texttt{fst}_{sep}\ : A \sepimp B \sepimp A$}\RightLabel{$\otimes E_1$}
+    \UnaryInfC{$\Un{B} \mid I \vdash \texttt{fst}_{sep}\  M : A$}
+  \end{prooftree}
+\end{minipage}
+\begin{minipage}{0.5\linewidth}
+  \begin{prooftree}
+    \AxiomC{$\Un{A} \mid I, M: A \otimes B \vdash \texttt{fst}_{sep}\ : A \sepimp B \sepimp B$}\RightLabel{$\otimes E_2$}
+    \UnaryInfC{$\Un{A} \mid I \vdash \texttt{snd}_{sep}\  M : B$}
+  \end{prooftree}
+\end{minipage}
+\begin{minipage}{1\linewidth}
+  \begin{prooftree}
+    \AxiomC{$P \mid \emptyset \vdash (,) : (A \sepimp B \sepimp C) \sepimp C $}
+    \AxiomC{$P \mid \Gamma  \vdash M : A$}
+    \AxiomC{$P \mid \Delta \vdash N: B $} \RightLabel{$[\otimes I]$}
+    \TrinaryInfC{$P \mid \Gamma,\Delta \vdash \langle M , N \rangle: A \otimes B$}
+  \end{prooftree}
+\end{minipage}
+
+
 \begin{theorem}
   Soundness of $\mathcal{M}$. If $\mathcal{M}(S, X; \Gamma \vdash M : \tau) = P, S', \Sigma$ then $S' P | S' (\Gamma\mid_{\Sigma}) \vdash M : S' \tau$
 \end{theorem}
 
 \begin{proof}
   Proof by induction on structure of $M$
-\begin{itemize}
-\item Case 1. $x$
-\item Case 2. $\lambda^{*} x. M$
-\item Case 3. $\lambda ^{\alpha}x. M$
-\item Case 4. $M\ N$
-\item Case 5. $\texttt{let}\ x = M\ \texttt{in}\ N$
-\end{itemize}
+  \begin{itemize}
+  \item Case 1. $x$
+  \item Case 2. $\lambda^{*} x. M$
+  \item Case 3. $\lambda ^{\alpha}x. M$
+  \item Case 4. $M\ N$
+  \item Case 5. $\texttt{let}\ x = M\ \texttt{in}\ N$
+  \end{itemize}
 
 \end{proof}
 
@@ -22,7 +211,7 @@
   Completeness of $\mathcal{M}$.
 \end{theorem}
 \begin{proof}
-Proof by induction on derivation on $M$
+  Proof by induction on derivation on $M$
 \end{proof}
 
 \begin{theorem}

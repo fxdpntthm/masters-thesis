@@ -348,11 +348,12 @@ The multiplicative side can be used to model the behaviour of resources in the p
 while the additive side would help the programmers fall back to the non-resource intuistionsitic parts. The logic of \textbf{\em BI}
 argues that instead of looking at the number of times an argument is used within the function, it should
 be viewed in terms of {\em sharing}.
-
-$\alpha \lambda$ calculus[\cite{ohearn_resource_1999}] interprets the logic of \textbf{\em BI} and introduces 2 kinds of arrows by
-modifiying the the syntax of lambda calculus:\\
-$\sepimp$     : Function do not share resources with their arguments\\
-$\rightarrow$ : Function may share resources with their arguments\\
+$\alpha \lambda$ calculus[\cite{ohearn_resource_1999}] is interpretation of the logic of \textbf{\em BI}.
+It introduces 2 kinds of arrows by modifiying the the syntax of lambda calculus:
+\begin{enumerate}
+  \item $\sepimp$     : Function do not share resources with their arguments
+  \item $\rightarrow$ : Function may share resources with their arguments
+\end{enumerate}
 
 \begin{figure}[h]
 \begin{framed}
@@ -361,7 +362,7 @@ $\rightarrow$ : Function may share resources with their arguments\\
     \text{Typing Scheme}\ \ \  \sigma &::= \tau \mid \forall \alpha. \tau \nonumber
   \end{flalign*}
 \end{framed}
-\caption{$\alpha\lambda$-calculus Types}
+\caption{$\alpha\lambda$-Calculus Types}
 \label{fig:al-cal-types}
 \end{figure}
 
@@ -371,7 +372,7 @@ $\rightarrow$ : Function may share resources with their arguments\\
     \text{Expressions}\ \ \ M, N ::= x \mid \lambda^{\alpha} x. M \mid \lambda^{*} x. M \mid M N \mid \Let{x}{M}{N}\nonumber
   \end{flalign*}
 \end{framed}
-\caption{$\alpha\lambda$ calculus Terms}
+\caption{$\alpha\lambda$-Calculus Terms}
 \label{fig:al-calc-terms}
 \end{figure}
 
@@ -440,33 +441,6 @@ $\rightarrow$ : Function may share resources with their arguments\\
   \end{framed}
   \caption{Typing Rules for $\alpha\lambda$ Calculus}
   \label{fig:bi-logic}
-\end{figure}
-
-We now see that we have two kinds of pairs. A sharing pair (\texttt{shPair}) and a separating pair (\texttt{sePair}) depending on
-what arrow we use. The church encoding of both the pairs are given in \ref{fig:bi-pairs}.
-\begin{figure}[h]
-  \centering
-  \begin{framed}
-    \begin{lstlisting}
-      shPair = $\lambda^{*} a.\ \lambda^{\alpha} b.\ \lambda^{*} f.\ f\ a\ b$
-      sePair = $\lambda^{*} a.\ \lambda^{*} b.\ \lambda^{*}\ f.\ f\ a\ b$
-    \end{lstlisting}
-  \end{framed}
-  \caption{Pairs in \textbf{\em BI}}
-  \label{fig:bi-pairs}
-\end{figure}
-The types of both these pair will be as shown in \ref{fig:bi-pairs-typing}
-
-\begin{figure}[h]
-  \centering
-  \begin{framed}
-    \begin{lstlisting}
-      shPair : a $\sepimp$ b $\rightarrow$ (a $\sepimp$ b $\sepimp$ c) $\sepimp$ c
-      sePair : a $\sepimp$ b $\sepimp$ (a $\sepimp$ b $\sepimp$ c) $\sepimp$ c
-    \end{lstlisting}
-  \end{framed}
-  \caption{Typing for Pairs in \textbf{\em BI}}
-  \label{fig:bi-pairs-typing}
 \end{figure}
 
 
