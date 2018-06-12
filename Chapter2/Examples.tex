@@ -73,6 +73,7 @@ written on the file system.
     \begin{minted}{haskell}
       do f <- openFile "sample.txt"
          (s, f)  <- readLine f
+         return s
     \end{minted}
   \end{framed}
   \caption{Reading from a file and not closing file handle}
@@ -178,8 +179,7 @@ and the second bind has a type signature of\\
 Similarly, in \cref{fig:file-read-noclose-desugared} the file handle \texttt{f} is not closed thus it is declared, but not used
 in the scope, it would be tagged as an unrestricted value by the Quill type checker.
 This is in voilation of our assumption that resources cannot be of the unrestricted type. Thus
-the program would not typecheck due to mismatch of the file handle type needing to be unrestricted.
-
+the program would not typecheck due to mismatch of the file handle type to be unrestricted.
 
 \section{Exception handling}
 

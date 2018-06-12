@@ -655,8 +655,16 @@ We cannot determine when to get rid of the complete bunch.
 \end{verbatim}
 hence, when we are folding out of the final recursive but 1 call ie. for Lambda bound variable x
 
+\section{Sharing}
+What do we exactly mean by sharing?
+There are 2 interpretations of sharing that i can think of
+1) We have a resource $\mathcal{R}$, and 2 pointers $\alpha$, $\beta$. we say $alpha$, $\beta$ share if both of them point to the same resource $\mathcal{R}$
+   $\mathcal{R}$ is never exposed to the user space and can be manipulated only by using $\alpha$, $\beta$.
+2) We have resource 
+
 
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../thesis-ku.tex"
 %%% End:
+ 
