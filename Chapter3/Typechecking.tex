@@ -17,7 +17,7 @@
   \label{fig:quill-types}
 \end{figure}
 % Describe types
-We extend the type language described in \cite{morris_best_2016} by adding four new binary
+We extend the type language described in [\cite{morris_best_2016}] by adding four new binary
 type constructors $\sepimp$, $\overset{!}{\sepimp}$, $\rightarrow$ and $\xrightarrow{!}$
 which we write in infix format instead of the two $\overset{\circ}{\rightarrow}$
 and $\overset{\bullet}{\rightarrow}$ constructors which describe restricted and unrestricted
@@ -36,21 +36,21 @@ does not share any resources from its argument types. The function types can als
 Thus if a type $\tau$ is unrestricted i.e. it qualifies with predicate \texttt{Un} and it is also a function types
 i.e. \texttt{SeFun} or \texttt{ShFun}, we write them as $\overset{!}{\sepimp}$ and $\xrightarrow{!}$ respectively.
 This can be considered as an improving substitution following Jone's notion of improvement of qualified types [\cite{jones_simplifying_1995}].
-We also define an ordering on types by using the predicate $\leq$. The predicate $\tau \leq \tau'$ holds if the type $\tau$
-is less restricting than $\tau'$
+We also define an ordering on types by using the predicate $\geq$. The predicate $\tau \geq \tau'$ holds if the type $\tau'$
+is less restricting than $\tau$.
 
 \begin{figure}[h]
   \begin{framed}
   \begin{flalign*}
     \text{Environments}\ \ \      \Gamma,\Delta     &::= \epsilon \mid x:\sigma \mid \Gamma, \Delta \mid \Gamma; \Delta \nonumber
-    % \text{Environment Context}\ \ \ H, H'           &::= \epsilon \mid H,H' \mid H;H' \mid \square \nonumber\\
+    \text{Environment Context}\ \ \ H, H'           &::= \epsilon \mid H,H' \mid H;H' \mid \square \nonumber\\
   \end{flalign*}
 \end{framed}
   \caption{Language Context}
   \label{fig:quill-context}
 \end{figure}
 % Describe Typing judgments
-In normal type systems, the contexts are represented as sets or lists. In our modified system we represented them as binary trees.
+In normal type systems, the contexts are represented as sets or lists. In \BI\ they are represented as binary trees.
 The leaf nodes contain the pair of variable and types. Internal nodes of the context tree are
 connectives which can either be a semicolon ($;$) or a comma ($,$).
 If a bunch $\Delta$ is a subtree of $\Gamma$, then we denote a subtree relation by $\Gamma(\Delta)$.
@@ -61,7 +61,32 @@ but if the contexts are combined using a semicolon ($;$) then it can undergo con
 in both the connectives. This distinction enables us to have a special treatement for resources in our language.
 By associating a resource with a comma constructor, our type system will not disposed it off by using the contraction rule.
 While, non-resourceful objects (or normal propositions) can be combined using the semi-colon constructor.
-\TODO{add the contexttree graph here}
+An example bunch is shown in \cref{fig:bunches-bi}. a and b have a shared context while c is separate from the bunch a and b.
+If $\Gamma$ represents the complete bunch of \cref{fig:bunches-bi}, $\Delta \equiv (a:A; b:B)$ and $\Delta' \equiv (c:C)$
+then $\Gamma \equiv \Delta,\Delta'$ and $\Gamma(\Delta)$.
+
+\begin{figure}[h]
+  \centering
+  \tikzset{every tree node/.style={minimum width=2em},
+         blank/.style={draw=none},
+         edge from parent/.style=
+         {draw,edge from parent path={(\tikzparentnode) -- (\tikzchildnode)}},
+         level distance=1.5cm}
+\begin{tikzpicture}
+\Tree
+[.,
+    [.;
+        [.a:A ]
+        [.b:B ]
+    ]
+    [.c:C ]
+    ]
+\end{tikzpicture}
+
+\caption{Bunches in \textbf{\em BI}}
+\label{fig:bunches-bi}
+\end{figure}
+
 \begin{figure}[h]
   \begin{framed}
     \begin{flalign*}
@@ -76,10 +101,43 @@ While, non-resourceful objects (or normal propositions) can be combined using th
   \label{fig:quill-terms}
 \end{figure}
 % Describe the language here
+We try to emulate the behaviour of bunches using multisets and denote multiset union using $\Gamma \sqcup \Gamma'$.
+Our contexts will be a collection of variables with an added annotation of sharing. If a resource $x$ is in
+sharing with one or many resources $\bar{y}$ we would represent it as $x^{\bar{y}}:\tau$. Further $\Gamma, x^{\bar{y}}:\tau$ would mean $\Gamma \sqcup x^{\bar{y}}:\tau$.
+Next we define auxilary definions to compute sharing.
 
+\begin{figure}[h]
+  \begin{framed}
+    \noindent
+    \begin{flalign*}
+      \text{Vars}(\Gamma, x^{\bar{y}}) &= \text{Vars}(\Gamma) \cup \{ x \}\\
+      \text{Shared}(\Gamma, x^{\bar{y}}) &= \text{Shared}(\Gamma) \cup \{ \bar{y} \}\\
+      \text{Used}(\Gamma) &= \text{Vars}(\Gamma) \cup \text{Shared}(\Gamma)\\
+      (\Gamma, x^{\bar{y}})^{[a \mapsto \bar{b}]} &= \begin{cases}
+        x \notin \bar{y}\ \ \ \ (\Gamma^{[a \mapsto \bar{b}]}, x^{\bar{y}}:\tau)\\
+        x \in \bar{y}\ \ \ \  (\Gamma^{[a \mapsto \bar{b}]}, x^{(\bar{y}\backslash a)\cup\bar{b}}:\tau)
+      \end{cases}\\
+      \Gamma^{[\bar{a} \mapsto \bar{b}]} &= (\dots((\Gamma^{[a_1 \mapsto \bar{b}]})^{[a_2 \mapsto \bar{b}]})^{\dots})^{[a_2 \mapsto \bar{b}]}
+    \end{flalign*}
+  \end{framed}
+  \caption{Auxilary Functions on Multisets}
+  \label{fig:multiset-aux-function}
+\end{figure}
+
+We also define two partial operators on contexts as shown in \cref{fig:context-operation}.
+\begin{figure}[h]
+  \begin{framed}
+    \begin{flalign*}
+      \Gamma \circledast \Gamma' &= \Gamma \sqcup \Gamma' => \text{if}\ \text{Vars}(\Gamma) \# \text{Used}(\Gamma')\ \text{and}\ \text{Vars}(\Gamma')\# \text{Used}(\Gamma) \\
+      \Gamma \varoplus \Gamma'   &= \Gamma \sqcup \Gamma' => \text{if}\ \text{Used}(\Gamma) \equiv \text{Used}(\Gamma')
+    \end{flalign*}
+  \end{framed}
+  \caption{Context Operations}
+  \label{fig:context-operation}
+\end{figure}
 % Describe terms and patterns
 Our term language is similar to that of simply typed lambda calculus involving variables and application
-but now we have 2 different kind of lambdas. The alpha lambda ($\lambda^{\alpha} x. M$) denotes sharing
+but we have 2 different kind of lambdas. The alpha lambda ($\lambda^{\alpha} x. M$) denotes sharing
 of the argument term with the expression $M$ and the separating lambda term ($\lambda^{*} x. M$) that implies
 the argument term has a separating context with the expression $M$. We also have polymorphic $\texttt{let}$
 expressions to be able to define functions with a limited scope. The type constructors are added
@@ -92,10 +150,9 @@ of individual sum types. Patterns are either term variables or constructor terms
 \TODO{4 types of pairs. 2 of them are church encodeable. 2 of them are not.}
 
 \section{Conventions and Notations}
-$\Gamma_{x}$ is the typing environment excluding the type variable $x$. $TV(\Gamma)$ are the free
-variables in the environment $\Gamma$. $\Gamma \bullet \Delta$ means that the contexts can either
-be comma separated or semicolon separated i.e. $\Gamma, \Delta$ or $\Gamma;\Delta$. $\vec{x}$ is a shorthand for
-one or many variables.
+$\Gamma_{x}$ is the typing environment excluding the type variable $x$. $TV(\Gamma)$ denotes free type
+variables in the environment $\Gamma$. $\Gamma \odot \Delta$ means that the contexts can either
+be sharing union($\Gamma \varoplus \Delta$) or separating union $\Gamma \circledast \Delta$.
 
 \section{Syntax Directed Typing Judgments}
 
@@ -104,15 +161,22 @@ one or many variables.
     % var
     \begin{minipage}{.5\textwidth}
       \begin{prooftree}
-        \AxiomC{} \RightLabel{[VAR]}
-        \UnaryInfC{$P \mid x : \sigma \vdash x : \sigma $}
+        \AxiomC{} \RightLabel{[ID]}
+        \UnaryInfC{$P \mid x^{\bar{y}} : \sigma \vdash x : \sigma $}
+      \end{prooftree}
+    \end{minipage}
+    % EXCH
+    \begin{minipage}{.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$\Gamma \odot \Delta \vdash M : \sigma$} \RightLabel{[EXCH]}
+        \UnaryInfC{$P \mid \Delta \odot \Gamma \vdash M : \sigma $}
       \end{prooftree}
     \end{minipage}
     % let
-    \begin{minipage}{.5\textwidth}
+    \begin{minipage}{1\textwidth}
       \begin{prooftree}
         \AxiomC{$P \mid \Gamma \vdash M : \sigma$}
-        \AxiomC{$P' \mid \Gamma_{x} \cdot x: \sigma \vdash N: \tau$} \RightLabel{[LET]}
+        \AxiomC{$P' \mid \Gamma_{x} \odot x: \sigma \vdash N: \tau$} \RightLabel{[LET]}
         \BinaryInfC{$P \cup P' \mid \Gamma \vdash \Let{x}{M}{N}: \tau$}
       \end{prooftree}
     \end{minipage}
@@ -149,37 +213,38 @@ one or many variables.
     % CTR UN
     \begin{minipage}{.5\textwidth}
       \begin{prooftree}
-        \AxiomC{$P \mid \Gamma(\Delta', \Delta') \vdash M : \sigma$}
-        \AxiomC{$P'\vdash H' un$} \RightLabel{[CTR-UN]}
-        \BinaryInfC{$P \mid \Gamma(\Delta') \vdash M : \sigma$}
+        \AxiomC{$P \mid \Gamma \circledast \Delta \vdash M : \sigma$}
+        \AxiomC{$P'\vdash \Delta\ \texttt{un}$} \RightLabel{[CTR-UN]}
+        \BinaryInfC{$P \mid \Gamma \vdash M : \sigma$}
       \end{prooftree}
     \end{minipage}
     % WKN UN
     \begin{minipage}{.5\textwidth}
       \begin{prooftree}
-        \AxiomC{$P \mid \Gamma(\epsilon) \vdash M : \sigma$}
-        \AxiomC{$P'\vdash H' un$} \RightLabel{[WKN-UN]}
-        \BinaryInfC{$P \mid \Gamma(\Delta') \vdash M : \sigma$}
+        \AxiomC{$P \mid \Gamma \vdash M : \sigma$}
+        \AxiomC{$P' \vdash \Delta\ \texttt{un}$} \RightLabel{[WKN-UN]}
+        \BinaryInfC{$P \mid \Gamma \circledast \Delta \vdash M : \sigma$}
       \end{prooftree}
     \end{minipage}
     % CTR Sh
     \begin{minipage}{.5\textwidth}
       \begin{prooftree}
-        \AxiomC{$P \mid \Gamma(\Delta'; \Delta') \vdash M : \sigma$} \RightLabel{[CTR-SH]}
-        \UnaryInfC{$P \mid \Gamma(\Delta') \vdash M : \sigma$}
+        \AxiomC{$P \mid \Gamma \varoplus \Delta \vdash M : \sigma$} \RightLabel{[CTR-SH]}
+        \AxiomC{$P \mid \Gamma \vdash M : \sigma$} \RightLabel{[CTR-SH]}
+        \BinaryInfC{$P \mid \Gamma \vdash M : \sigma$}
       \end{prooftree}
     \end{minipage}
     % WKN Sh
     \begin{minipage}{.5\textwidth}
       \begin{prooftree}
-        \AxiomC{$P  \mid \Gamma(H') \vdash M : \sigma$} \RightLabel{[WKN-SH]}
-        \UnaryInfC{$P \mid \Gamma(H'; H'') \vdash M : \sigma$}
+        \AxiomC{$P  \mid \Gamma \vdash M : \sigma$} \RightLabel{[WKN-SH]}
+        \UnaryInfC{$P \mid \Gamma \varoplus \Delta \vdash M : \sigma$}
       \end{prooftree}
     \end{minipage}
     % -&> I
     \begin{minipage}{1\textwidth}
       \begin{prooftree}
-        \AxiomC{$P \mid \Gamma_{x};x: \tau \vdash M : \tau'$}
+        \AxiomC{$P \mid \Gamma^{[\emptyset\mapsto \{x\}]},x^{\text{Vars}(\Gamma)}: \tau \vdash M : \tau'$}
         \AxiomC{$P \Rightarrow \texttt{ShFun}\ \phi$}
         \AxiomC{$P \vdash \Gamma \geq \phi$} \RightLabel{$[\rightarrow I]$}
         \TrinaryInfC{$P \mid \Gamma \vdash \lambda^{\alpha}x. M : \phi \tau \tau'$}
@@ -192,13 +257,13 @@ one or many variables.
         \AxiomC{$P \mid \Delta \vdash N : \tau'$}
         \AxiomC{$P => \texttt{ShFun}\ \phi$}
         \AxiomC{$P \vdash \Gamma \geq \phi$} \RightLabel{$[\rightarrow E]$}
-        \QuaternaryInfC{$P \mid \Gamma;\Delta \vdash M N : \tau'$}
+        \QuaternaryInfC{$P \mid \Gamma \varoplus \Delta \vdash M N : \tau'$}
       \end{prooftree}
     \end{minipage}
     % -*> I
     \begin{minipage}{1\textwidth}
       \begin{prooftree}
-        \AxiomC{$P \mid \Gamma_{x},x: \tau \vdash M : \tau'$}
+        \AxiomC{$P \mid \Gamma,x^{\emptyset}: \tau \vdash M : \tau'$}
         \AxiomC{$P => \texttt{SeFun}\ \phi$}
         \AxiomC{$ P \vdash \Gamma \geq \phi$} \RightLabel{$[\sepimp I]$}
         \TrinaryInfC{$P \mid \Gamma \vdash \lambda^{*}x. M : \phi \tau \tau'$}
@@ -211,7 +276,7 @@ one or many variables.
         \AxiomC{$P \mid \Delta \vdash N : \tau$}
         \AxiomC{$P => \texttt{SeFun}\ \phi$}
         \AxiomC{$P \vdash \Gamma \geq \phi$} \RightLabel{$[\sepimp E]$}
-        \QuaternaryInfC{$P \mid \Gamma,\Delta \vdash M N : \tau'$}
+        \QuaternaryInfC{$P \mid \Gamma \circledast \Delta \vdash M N : \tau'$}
       \end{prooftree}
     \end{minipage}
   \end{framed}
@@ -219,31 +284,77 @@ one or many variables.
     \label{fig:typing-rules}
 \end{figure}
 
-We now see that we have two kinds of pairs. A sharing pair (\texttt{shPair}) and a separating pair (\texttt{sePair}) depending on
-what arrow we use. The church encoding of both the pairs are given in \ref{fig:bi-pairs}.
-\begin{figure}[h]
+We now see that we have two kinds of pairs. A sharing pair (\texttt{Pair$_{sh}$}) and a separating pair (\texttt{Pair$_{sep}$}) depending on
+which arrow we use. The church encoding of both the pairs and their respective types are given in \ref{fig:bi-pairs-typing}.
+Derivation proofs of both the pairs is given in \cref{sec:pairs}.
+\begin{figure}
   \centering
   \begin{framed}
-    \begin{minted}[escapeinside=||,mathescape=true]{haskell}
-      shPair = |$\lambda^{*}$| a. |$\lambda^{\alpha}$| b. |$\lambda^{*}$| f. f a b
-      sePair = |$\lambda^{*}$| a. |$\lambda^{*}$| b. |$\lambda^{*}$| f. f a b
-    \end{minted}
-  \end{framed}
-  \caption{Pairs in \textbf{\em BI}}
-  \label{fig:bi-pairs}
-\end{figure}
-The types of both these pair will be as shown in \ref{fig:bi-pairs-typing}
-\begin{figure}[h]
-  \centering
-  \begin{framed}
-    \begin{lstlisting}
-      shPair : a $\sepimp$ b $\rightarrow$ (a $\sepimp$ b $\sepimp$ c) $\sepimp$ c
-      sePair : a $\sepimp$ b $\sepimp$ (a $\sepimp$ b $\sepimp$ c) $\sepimp$ c
-    \end{lstlisting}
+    \begin{flalign*}
+      \text{Pair}_{sh} &: \tau \sepimp \tau' \rightarrow (\tau \sepimp \tau' \rightarrow \nu) \rightarrow \nu\\
+      \text{Pair}_{sh} &= \lambda^{*} x. \lambda^{\alpha} by. \lambda^{\alpha} f. f x y\\
+      \text{Pair}_{sep} &: \tau \sepimp \tau' \sepimp (\tau \sepimp \tau' \sepimp \nu) \sepimp \nu\\
+      \text{Pair}_{sep} &= \lambda^{*} x. \lambda^{*} y. \lambda^{*} f. f x y
+    \end{flalign*}
   \end{framed}
   \caption{Typing for Pairs in \textbf{\em BI}}
   \label{fig:bi-pairs-typing}
 \end{figure}
+We can now introduce 2 new type constructors in our type language $\otimes$ and $\with$
+which represent separating pair and sharing pair respectively as shown in \cref{fig:pair-typing-rules}
+
+
+\begin{figure}[h]
+  \begin{framed}
+    \begin{minipage}{1\linewidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma  \vdash M : \tau$}
+        \AxiomC{$P \mid \Delta \vdash N: \tau'$} \RightLabel{$[\with I]$}
+        \BinaryInfC{$P \mid \Gamma;\Delta \vdash \Pair{M;N} : \tau \with \tau'$}
+      \end{prooftree}
+    \end{minipage}
+
+    \begin{minipage}{.5\linewidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma \vdash M: \tau \with \tau'$} \RightLabel{$[\with E_1]$}
+        \UnaryInfC{$P \mid \Gamma \vdash \texttt{fst}\ M: \tau$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{.5\linewidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma \vdash M: \tau \with \tau'$} \RightLabel{$[\with E_2]$}
+        \UnaryInfC{$P \mid \Gamma \vdash \texttt{snd}\ M: \tau'$}
+      \end{prooftree}
+    \end{minipage}
+
+    \begin{minipage}{1\linewidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma  \vdash M : \tau$}
+        \AxiomC{$P \mid \Delta \vdash N: \tau'$} \RightLabel{$[\otimes I]$}
+        \BinaryInfC{$P \mid \Gamma,\Delta \vdash \Pair{M,N}: \tau \otimes \tau'$}
+      \end{prooftree}
+    \end{minipage}
+
+    \begin{minipage}{.5\linewidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma \vdash M: \tau \otimes \tau'$} \RightLabel{$[\otimes E_1]$}
+        \AxiomC{$P => \texttt{Un}\ \tau'$}
+        \BinaryInfC{$P \mid \Gamma \vdash \texttt{fst}\ M: \tau$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{.5\linewidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma \vdash M: \tau \otimes \tau'$} \RightLabel{$[\otimes E_2]$}
+        \AxiomC{$P => \texttt{Un}\ \tau$}
+        \BinaryInfC{$P \mid \Gamma \vdash \texttt{snd}\ M: \tau'$}
+      \end{prooftree}
+    \end{minipage}
+  \end{framed}
+  \caption{Typing rules for Pairs}
+  \label{fig:pair-typing-rules}
+\end{figure}
+
+
 
 
 % sum type E
@@ -252,7 +363,7 @@ The types of both these pair will be as shown in \ref{fig:bi-pairs-typing}
     \AxiomC{$P \mid \Gamma \vdash M: \tau_1 \oplus \tau_2$}
     \AxiomC{$P \mid \Delta_x\bullet x:\tau_1 \vdash N :\tau_i$}
     \AxiomC{$P \mid \Delta_x \bullet x:\tau_2 \vdash N':v$}\RightLabel{$[\oplus E]$}
-    \TrinaryInfC{$P \mid \Delta \bullet \Delta' \vdash \Case{M}{\{\texttt{inl}\ M \mapsto N; \texttt{inr}\ M \mapsto N'\}} : v $}
+    \TrinaryInfC{$P \mid \Delta \bullet \Delta' \vdash \Case{M}{\{\texttt{inl}\ x \mapsto N; \texttt{inr}\ x \mapsto N'\}} : v $}
   \end{prooftree}
 \end{minipage}
 % sum type I_l
@@ -317,27 +428,27 @@ The types of both these pair will be as shown in \ref{fig:bi-pairs-typing}
 
   \begin{minipage}{0.5\linewidth}
     \begin{prooftree}
-      \AxiomC{$P => \tau \leq \phi$}\RightLabel{[$\leq$-$\tau$]}
-      \UnaryInfC{$P \vdash \tau \leq \phi$}
+      \AxiomC{$P => \tau \geq \phi$}\RightLabel{[$\geq$-$\tau$]}
+      \UnaryInfC{$P \vdash \tau \geq \phi$}
     \end{prooftree}
   \end{minipage}
   \begin{minipage}{0.5\linewidth}
     \begin{prooftree}
-      \AxiomC{$P,\pi \vdash \rho \leq \phi$}\RightLabel{[$\leq$-$\rho$]}
-      \UnaryInfC{$P \vdash (\pi => \rho) \leq \phi$}
+      \AxiomC{$P,\pi \vdash \rho \geq \phi$}\RightLabel{[$\geq$-$\rho$]}
+      \UnaryInfC{$P \vdash (\pi => \rho) \geq \phi$}
     \end{prooftree}
   \end{minipage}
 
   \begin{minipage}{0.5\linewidth}
     \begin{prooftree}
-      \AxiomC{$P, \texttt{Un}\ t \vdash \sigma \leq \phi$}\RightLabel{[$\leq$-$\sigma$]}
-      \UnaryInfC{$P \vdash (\forall t.\sigma) \leq \phi$}
+      \AxiomC{$P, \texttt{Un}\ t \vdash \sigma \geq \phi$}\RightLabel{[$\geq$-$\sigma$]}
+      \UnaryInfC{$P \vdash (\forall t.\sigma) \geq \phi$}
     \end{prooftree}
   \end{minipage}
   \begin{minipage}{0.5\linewidth}
     \begin{prooftree}
-      \AxiomC{$\bigwedge_{x:\sigma \in \Gamma}P \vdash \rho \leq \phi$}\RightLabel{[$\leq$-$\Gamma$]}
-      \UnaryInfC{$P \vdash \Gamma \leq \phi$}
+      \AxiomC{$\bigwedge_{x:\sigma \in \Gamma}P \vdash \rho \geq \phi$}\RightLabel{[$\geq$-$\Gamma$]}
+      \UnaryInfC{$P \vdash \Gamma \geq \phi$}
     \end{prooftree}
   \end{minipage}
 \end{framed}
@@ -345,55 +456,7 @@ The types of both these pair will be as shown in \ref{fig:bi-pairs-typing}
   \label{fig:bi-base-typing-rules}
 \end{figure}
 
-  \begin{figure}[h]
-  \begin{framed}
-  \begin{minipage}{1\linewidth}
-    \begin{prooftree}
-      \AxiomC{$P \mid H  \vdash M : \tau$}
-      \AxiomC{$P \mid H' \vdash N: \tau'$} \RightLabel{$[\with I]$}
-      \BinaryInfC{$P \mid H;H' \vdash (M;N): \tau \with \tau'$}
-    \end{prooftree}
-  \end{minipage}
-
-  \begin{minipage}{.5\linewidth}
-    \begin{prooftree}
-      \AxiomC{$P \mid H \vdash M: \tau \with \tau'$} \RightLabel{$[\with E_1]$}
-      \UnaryInfC{$P \mid H \vdash \texttt{fst}\ M: \tau$}
-    \end{prooftree}
-  \end{minipage}
-  \begin{minipage}{.5\linewidth}
-    \begin{prooftree}
-      \AxiomC{$P \mid H \vdash M: \tau \with \tau'$} \RightLabel{$[\with E_2]$}
-      \UnaryInfC{$P \mid H \vdash \texttt{snd}\ M: \tau'$}
-    \end{prooftree}
-  \end{minipage}
-
-  \begin{minipage}{1\linewidth}
-    \begin{prooftree}
-      \AxiomC{$P \mid H  \vdash M : \tau$}
-      \AxiomC{$P \mid H' \vdash N: \tau'$} \RightLabel{$[\otimes I]$}
-      \BinaryInfC{$P \mid H,H' \vdash (M,N): \tau \otimes \tau'$}
-    \end{prooftree}
-  \end{minipage}
-
-  \begin{minipage}{.5\linewidth}
-    \begin{prooftree}
-      \AxiomC{$P \mid H \vdash M: \tau \otimes \tau'$} \RightLabel{$[\otimes E_1]$}
-      \AxiomC{$P => \texttt{Un}\ \tau'$}
-      \BinaryInfC{$P \mid H \vdash \texttt{fst}\ M: \tau$}
-    \end{prooftree}
-  \end{minipage}
-  \begin{minipage}{.5\linewidth}
-    \begin{prooftree}
-      \AxiomC{$P \mid H \vdash M: \tau \otimes \tau'$} \RightLabel{$[\otimes E_2]$}
-      \AxiomC{$P => \texttt{Un}\ \tau$}
-      \BinaryInfC{$P \mid H \vdash \texttt{snd}\ M: \tau'$}
-    \end{prooftree}
-  \end{minipage}
-\end{framed}
-  \caption{Derivable Typing rules}
-  \label{fig:derivable-typing-rules}
-\end{figure}
+\TODO{Explain what does it mean for a type to be less that other type}
 
 \section{Modified Algorithm $\M$}
 The type inference algorithm is given in \cref{fig:algorithm-m}
@@ -407,7 +470,7 @@ We write $C \overset{U}{\sim}_{\kappa} C'$ for assertion that $U$ is the unifier
 of the constructor types $C$ and $C'$.
 
 \begin{flalign*}
-\tau \sim \tau' => \exists S. S \tau = \tau'
+  \tau \sim \tau' => \exists S. S \tau = \tau'
 \end{flalign*}
 \begin{figure}[h]
   \begin{framed}
@@ -424,15 +487,15 @@ of the constructor types $C$ and $C'$.
     \begin{minipage}{0.5\linewidth}
       \begin{flalign*}
         \texttt{Weaken}(x, \sigma, \Sigma)  = \begin{cases}
-             P\ \ \ \ &\text{if}\ x \notin \Sigma, P \vdash \sigma\ \texttt{un}\\
-             \emptyset\ \ \ &otherwise
+          P\ \ \ \ &\text{if}\ x \notin \Sigma, P \vdash \sigma\ \texttt{un}\\
+          \emptyset\ \ \ &otherwise
         \end{cases}
       \end{flalign*}
     \end{minipage}
     \begin{minipage}{0.5\linewidth}
       \begin{flalign*}
         \texttt{GenI}(\Gamma, P &=> \tau)  = \forall (ftv(S P, \tau)).S P => \tau \nonumber\\
-                                          \text{where}\ &S\ \text{improves}\ \texttt{ftv}(P) \backslash \texttt{ftv}(\Gamma, \tau)\ \text{in}\ P
+        \text{where}\ &S\ \text{improves}\ \texttt{ftv}(P) \backslash \texttt{ftv}(\Gamma, \tau)\ \text{in}\ P
       \end{flalign*}
     \end{minipage}
     \begin{minipage}{1\linewidth}
@@ -512,28 +575,28 @@ of the constructor types $C$ and $C'$.
       \begin{flalign*}
         \M(S, X;\Gamma \vdash \Case{M}{\{p_i \mapsto N_i\}_i}) &= (P_M \cup \{P_i\}), Q, \Sigma_M \cup \{\Sigma_i\} \nonumber\\
         \text{where}\ P_M, R_M, \Sigma_M &= \M(S, X;\Gamma \vdash M:u_1 \oplus u_2 \oplus \cdots \oplus u_n) \nonumber \\
-                      P_1, R_1, \Sigma_1 &= \M(R_M, X;\Gamma \vdash p_1:u_1 \vdash N_1: v) \nonumber \\
-                      P_i, R_i, \Sigma_i &= \M(R_{i-1}, X;\Gamma \vdash p_i:u_i \vdash N_i: v) \nonumber \\
-                                 \Sigma' &= \bigcup_{i,j \leq n} (\Sigma_i \cap \Sigma_{j}) \nonumber\\
-                                       Q &= \text{Un}(\Gamma|_{\Sigma'}) \cup \{\text{Weaken}(p_i, u_i, \Sigma_i)\}
+        P_1, R_1, \Sigma_1 &= \M(R_M, X;\Gamma \vdash p_1:u_1 \vdash N_1: v) \nonumber \\
+        P_i, R_i, \Sigma_i &= \M(R_{i-1}, X;\Gamma \vdash p_i:u_i \vdash N_i: v) \nonumber \\
+        \Sigma' &= \bigcup_{i,j \leq n} (\Sigma_i \cap \Sigma_{j}) \nonumber\\
+        Q &= \text{Un}(\Gamma|_{\Sigma'}) \cup \{\text{Weaken}(p_i, u_i, \Sigma_i)\}
       \end{flalign*}
     \end{minipage}
-\end{framed}
+  \end{framed}
   \caption{Type Inference Algorithm $\mathcal{M}$}
   \label{fig:algorithm-m}
 \end{figure}
 
 \begin{figure}[h]
   \begin{framed}
-      \begin{minipage}{1\linewidth}
+    \begin{minipage}{1\linewidth}
       \begin{flalign*}
         \M(S, X;\Gamma \vdash C\ x) &= (P_M \cup \{P_i\}), Q, \Sigma_M \cup \{\Sigma_i\} \nonumber\\
-          \text{where}\ C &= \forall \vec{t_1}. (\forall \vec{t_2}. \exists \vec{t_3}. Q => v') \sepimp v \nonumber\\
-       P_M, R_M, \Sigma_M &= \M(S, X;\Gamma \vdash M:u_1 \oplus u_2 \oplus \cdots \oplus u_n) \nonumber \\
-       P_1, R_1, \Sigma_1 &= \M(R_M, X;\Gamma \vdash p_1:u_1 \vdash N_1: v) \nonumber \\
-       P_i, R_i, \Sigma_i &= \M(R_{i-1}, X;\Gamma \vdash p_i:u_i \vdash N_i: v) \nonumber \\
-                  \Sigma' &= \bigcup_{i,j \leq n} (\Sigma_i \cap \Sigma_{j}) \nonumber\\
-                                                  Q &= \text{Un}(\Gamma|_{\Sigma'}) \cup \{\text{Weaken}(p_i, u_i, \Sigma_i)\}
+        \text{where}\ C &= \forall \vec{t_1}. (\forall \vec{t_2}. \exists \vec{t_3}. Q => v') \sepimp v \nonumber\\
+        P_M, R_M, \Sigma_M &= \M(S, X;\Gamma \vdash M:u_1 \oplus u_2 \oplus \cdots \oplus u_n) \nonumber \\
+        P_1, R_1, \Sigma_1 &= \M(R_M, X;\Gamma \vdash p_1:u_1 \vdash N_1: v) \nonumber \\
+        P_i, R_i, \Sigma_i &= \M(R_{i-1}, X;\Gamma \vdash p_i:u_i \vdash N_i: v) \nonumber \\
+        \Sigma' &= \bigcup_{i,j \leq n} (\Sigma_i \cap \Sigma_{j}) \nonumber\\
+        Q &= \text{Un}(\Gamma|_{\Sigma'}) \cup \{\text{Weaken}(p_i, u_i, \Sigma_i)\}
       \end{flalign*}
     \end{minipage}
   \end{framed}
@@ -557,7 +620,7 @@ or it is an application of 2 or more variables
 In case of application 2 new type variable:
 \begin{enumerate}
 \item introduce type variables for left expression and right expression
-    left expression a type $A \rightarrow B$ right expression gets the type $A$
+  left expression a type $A \rightarrow B$ right expression gets the type $A$
 \item recursively type check both of them
 \item return the type of the complete application as $B$ if the type checking in previous step is successfully
 \end{enumerate}
@@ -576,8 +639,8 @@ This means that x and y may share resources
 A separating pair is represented as\\
 $sePair = \lambda^{*} x \rightarrow \lambda^{*}y \rightarrow \lambda^{*}se \rightarrow se\ x\ y$\\
 This means that x and y do not share resources.
-%By default we may assume that resources are always separating unless explicitly specified
-%that they are sharing.
+% By default we may assume that resources are always separating unless explicitly specified
+% that they are sharing.
 
 \section{Typing environment}
 
@@ -644,9 +707,9 @@ We stop recursing at application. where we compute whether we have complete shar
 While folding out of of the recursion we do 2 things:
 1) keep track of the used variables (including implicitly used variables due to sharing)
 2) generate new goals
-   a) depending on whether the the introduced variable was used
-      or its sharing member was used. Assign Un predicates and weaken if it is not used at all
-   b) introduce lesser-restricted predicates
+a) depending on whether the the introduced variable was used
+or its sharing member was used. Assign Un predicates and weaken if it is not used at all
+b) introduce lesser-restricted predicates
 3) Generate other new assumptions
 
 We cannot determine when to get rid of the complete bunch.
@@ -659,7 +722,7 @@ hence, when we are folding out of the final recursive but 1 call ie. for Lambda 
 What do we exactly mean by sharing?
 There are 2 interpretations of sharing that i can think of
 1) We have a resource $\mathcal{R}$, and 2 pointers $\alpha$, $\beta$. we say $alpha$, $\beta$ share if both of them point to the same resource $\mathcal{R}$
-   $\mathcal{R}$ is never exposed to the user space and can be manipulated only by using $\alpha$, $\beta$.
+$\mathcal{R}$ is never exposed to the user space and can be manipulated only by using $\alpha$, $\beta$.
 2) We have resource 
 
 

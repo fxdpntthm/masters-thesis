@@ -25,6 +25,10 @@
 \usepackage{cmll}
 \usepackage{amsthm}
 \usepackage{pdflscape}
+\usepackage{tikz-qtree}
+\usepackage{verbatim}
+\usepackage{stmaryrd}
+
 \renewcommand\qedsymbol{$\blacksquare$}
 
 \newtheorem{theorem}{Theorem}
@@ -63,9 +67,9 @@
 \newcommand{\Un}[1]{\texttt{Un}\ #1}
 \newcommand{\Let}[3]{\texttt{let}\ #1 = #2\ \texttt{in}\ #3}
 \newcommand{\Case}[2]{\texttt{case}\ #1\ \texttt{of}\ #2}
-
+\newcommand{\Pair}[1]{\langle #1 \rangle}
 \newcommand{\TODO}[1]{{\begin{framed}{\color{red} #1}\end{framed}}}
-
+\newcommand{\HaskellF}[1]{\mintinline{haskell}{#1}}
 % used to align decimals in tables according to APA style
 \usepackage{dcolumn}
 \usepackage{booktabs}
@@ -115,33 +119,32 @@
 
 \maketitle
 \begin{abstract}
-  In current setting of programming languages, resources are treated as normal values.
-  They have a different semantics in execution stage that does not match with static
-  semantics. For example file handles or database connections are treated as integers
-  in C. Modern functional programming languages like Haskell try to improve on this
-  by making them a bit more resource-aware and wrapping them in IO monads. Though it is an
-  improvement over imperative languages, it still lacks the the appropriate treatment.
-  Linear logic[\cite{girard_linear_1987}] promised a way to introduce the efficient resource handling in programs.
-  There have been numerous attempts to make use of linear logic in programming languages.
-  It has made its way into some parts of programming languages
-  such as garbage collectors and also type systems (Rust and Clean). While the logic
-  is more expressive than intuistionistic logic, there are various practical issues
-  that prohibit leveraging it to its fullest degree. In this thesis, we take a
-  different view over the resource management problem by concentrating
+  Modern programming languages treat resources as normal values.
+  They have different semantics at runtime that does not match with its static
+  semantics. For example, file handles or database connections are treated as integers
+  in C. Modern functional programming languages like Haskell try to improve this
+  by wrapping them in IO monads. While it is an improvement over imperative languages,
+  well typed programs may have runtime errors. Type systems based on linear logic[\cite{girard_linear_1987}]
+  promise a way to introduce the efficient resource handling in programs.
+  %There have been numerous attempts to make use of linear logic in programming languages.
+  %It has made its way into some parts of programming languages
+  %such as garbage collectors and also type systems (Rust and Clean).
+  While the these is more expressive than intuistionistic logic, there are various practical issues
+  that prohibit leveraging it to its fullest degree in programming languages.
+  In this thesis, we take a different view over the resource management problem by concentrating
   on sharing or separation of resources. This has been studied in a theoritical
   setting as a logic of bunched implications (\BI)[\cite{ohearn_logic_1999}].
 
-  We build a prototype of a Curry-Howard interpretation of the logic of \BI\ called
-  the $\alpha\lambda$ calculus [\cite{ohearn_bunched_2003}] by
-  introducing 2 new type constructors of arrow type: sharing arrow and separating arrow to replace
-  the usual notion of function arrows of simply typed lambda calculus.
-  Sharing arrows imply that functions may share resources with
-  its arguments, while separating arrows imply that functions do not share resources with its arguments.
-  The basis of our work is Quill [\cite{morris_best_2016}] that has a notion of unrestricted types.
+  We build a prototype of a Curry-Howard interpretation of the logic of \BI\ [\cite{ohearn_bunched_2003}]---$\alpha\lambda$-calculus---
+  by introducing 2 new type constructors of arrow type: sharing arrow ($\rightarrow$) and separating arrow($\sepimp$) to replace
+  the usual notion of function arrows of simply typed lambda calculus. Sharing arrows imply that functions
+  share resources with its arguments, while separating arrows imply that functions do not share resources with its arguments.
+  We base our work on Quill [\cite{morris_best_2016}] that has a notion of unrestricted types.
   We realize that the interaction of unrestricted types and sharing and separating is harmless
   as program entities that do not have a sense of resourcefulness can be
-  duplicated or dropped anytime without any adverse implications. Thus all unrestricted types
-  are realizations of existing purely functional programs.
+  duplicated or dropped anytime without any adverse implications and all existing programs typecheck.
+  % haivng unrestricted types
+  % are realizations of existing purely functional programs.
 
   % Complexity of software systems has been increasing forever. Automation of tasks
   % provides consistency, correctness and speed at a much greater degree than humans.

@@ -145,7 +145,7 @@ from \cref{fig:stlc-logic} to add 2 new rules for qualified types as shown in \c
       \end{prooftree}
     \end{minipage}
   \end{framed}
-  \caption{Modified Typing Rules}
+  \caption{Typing Rules for Qualified Types}
   \label{fig:qualified-types-rules}
 \end{figure}
 \section{Linear Logic}
@@ -155,7 +155,7 @@ from \cref{fig:stlc-logic} to add 2 new rules for qualified types as shown in \c
 While classical logic deals with truth of propositions, linear logic deals with availability of resources.
 Linear logic [\cite{girard_linear_1987}] promises to help cope with the resource and resource control problem.
 It is refinement of classical intuistionistic logic. The core idea is that propositions
-cannot be freely duplicated or discarded as in classical instuistionistic logic.
+cannot be freely duplicated or discarded as allowed in classical instuistionistic logic.
 In formal terms, the contraction and weakening of logical rules are restricted.
 This instigates a view of propositions to behave like resources. In real world software applications,
 resources may not be freely copied or dropped from a program context.
@@ -167,8 +167,8 @@ the system gets overly restrictive. Wadler describes a refinement of
 linear logic based on Girard's Logic of Unity [\cite{wadler_taste_1993}, \cite{girard_unity_1993}].
 It works around the problem of linear logic being too restrictive by allowing
 instuistionistic rules in fragments. It can be considered as a disjoint union
-of classical linear logic and intuistionistic logic. The grammar of classical intuistionistic logic is shown in \ref{fig:intu-logic-grammar}
-where $A \rightarrow B$ implies implication, $A \times B$ is conjunction and $A \plus B$ is disjunction.
+of classical linear logic and intuistionistic logic. The grammar of intuistionistic logic is shown in \ref{fig:intu-logic-grammar}
+where $A \rightarrow B$ denotes implication, $A \times B$ denotes conjunction and $A \plus B$ denotes disjunction.
 \begin{figure}
   \centering
   \begin{framed}
@@ -180,8 +180,8 @@ where $A \rightarrow B$ implies implication, $A \times B$ is conjunction and $A 
 \label{fig:intu-logic-grammar}
 \end{figure}
 
-In a pure linear logic setting, none of the assumptions can be used more than once (weakening prohibited) and they cannot be discarded
-(contraction prohibited) This gives rise to a different flavor of all the logical connectives.
+In a pure linear logic setting, none of the assumptions can be used more than once (weakening is prohibited)
+and they cannot be discarded as well (contraction prohibited). This gives rise to two different flavor of all the logical connectives.
 $A \rightspoon B$ describes the new implication meaning and is read as {\em``consume A to give B''} its logical rules
 is given by $\rightspoon I$ and $\rightspoon E$. Similarly there are 2 kinds of connectives, multiplicative and additive that
 arise in this logic system. More symbols are added inplace of $\plus$ and $\times$ to differentiate between the
@@ -296,12 +296,14 @@ While working in intuistionistic linear logic, $\parr$ is dropped from the syste
 To escape linearity, exponential $\oc$ is used, which signifies that an assumption can
 be duplicted or dropped without restriction. $\oc A$ can be thought of as {\em``as many A's as needed''}.
 Thus the intitionsistic $A \rightarrow B$ can be encoded in linear logic by $\oc A \rightspoon B$.
-Similarly $A \plus B$ would be represented as $\oc A \otimes \oc B$ and $A \times B$ would be represented as $A \with B$. We clearly see that
-this is a much powerful system in contrast to classical intuistionistic logic because of its enhanced expressivity.
+Similarly $A \plus B$ would be represented as $\oc A \otimes \oc B$ and $A \times B$ would be represented as $A \with B$.
+We clearly see that this is a much powerful system in contrast to intuistionistic logic because of its enhanced expressivity.
+But there is an awakward asymmetry between the multiplicative and additive constructs. While $\rightspoon$ is a right adjoint
+for multiplicative $\times$, there is no such right adjoint counter part for additive $\with$.
 
 \section{Bunched Implications and $\alpha\lambda$ Calculus}
 
-In intuitionistic linear logic, the context is considered as a list or a set. In the theory of
+In intuitionistic logic, the context is considered as a list or a set. In the theory of
 bunched implications (\textbf{\em BI}), the context is treated as a tree in contrast to other logics. Contexts are syntactically
 combined using 2 connectives comma ($,$) or a semicolon ($;$) and are called bunches. The logic of \textbf{\em BI}
 tries to glue together intuistionistic linear logic with intuistionistic logic by
@@ -319,17 +321,20 @@ There are two flavours of implication---additive and multiplicative---which is c
 \end{framed}
 In the logic of {\textbf{\em BI}} the question then faced is choosing what kind of
 implication should be used inplace of $\lozenge$---the additive kind or the multiplicative kind.
-O'Hearn and Pym [\cite{ohearn_logic_1999}] argue by introducing 2 kinds of arrows
-and using them depending on the connectives used for the context. A multiplicative implication ($\sepimp$)
+O'Hearn and Pym [\cite{ohearn_logic_1999}] introduce 2 kinds of arrows
+and using them depending on the connectives used in the context. A multiplicative implication ($\sepimp$)
 is used when the context is connected with a comma and an additive implication ($\rightarrow$) is used when the
 context is connected using semicolon. This gives rise to 2 rules
 \begin{framed}
+\noindent
 \begin{minipage}{0.5\linewidth}
+\noindent
   \begin{prooftree}
     \AxiomC{$\Gamma, A \vdash B$} \RightLabel{$[\sepimp I]$}
     \UnaryInfC{$\Gamma \vdash A \sepimp B$}
   \end{prooftree}
 \end{minipage}
+\noindent
 \begin{minipage}{0.5\linewidth}
   \begin{prooftree}
     \AxiomC{$\Gamma; A \vdash B$} \RightLabel{$[\rightarrow I]$}
@@ -342,17 +347,19 @@ As we see in $[\sepimp I]$ $\Gamma, A$ cannot under go weakening or contraction 
 or get rid of either $A$ or $\Gamma$. This hints to a notion that multiplicative implication ($\sepimp$)
 exhibits property of the linear implication ($\rightspoon$). The linear implication cannot however
 be directly converted to a multiplicative implication as the later does not exhibit properties of
-counting the number of uses of its arguments. The logic of \textbf{\em BI} tries to combine the
+counting the number of uses of its arguments. Also, in contrast to linear logic, the multiplicative implication
+cannot be converted into an intuitionsistic implication by using modality. The logic of \textbf{\em BI} tries to combine the
 additive logic i.e. intuistionistic logic with the multiplicative side i.e. intuistionistic linear logic seemlessly.
 The multiplicative side can be used to model the behaviour of resources in the programming language
-while the additive side would help the programmers fall back to the non-resource intuistionsitic parts. The logic of \textbf{\em BI}
-argues that instead of looking at the number of times an argument is used within the function, it should
-be viewed in terms of {\em sharing}.
-$\alpha \lambda$ calculus[\cite{ohearn_resource_1999}] is interpretation of the logic of \textbf{\em BI}.
-It introduces 2 kinds of arrows by modifiying the the syntax of lambda calculus:
+while the additive side would help the programmers fall back to the non-resource intuistionsitic parts. This patches
+up the awakward asymmetry experienced in linear logic. The multiplicative conjunction $\otimes$ has a right adjoint
+counter part as $\sepimp$ while additive conjuntion $\with$ has a right adjoint counterpart of $\rightarrow$.
+The logic of \textbf{\em BI} argues that instead of looking at the number of times an argument is used within the function,
+it should be viewed in terms of {\em sharing}. $\alpha \lambda$-calculus[\cite{ohearn_resource_1999}]
+is interpretation of the logic of \textbf{\em BI}. It introduces 2 kinds of arrows by modifiying the the syntax of lambda calculus:
 \begin{enumerate}
-  \item $\sepimp$     : Function do not share resources with their arguments
-  \item $\rightarrow$ : Function may share resources with their arguments
+  \item $\sepimp$     : Functions do not share resources with their arguments
+  \item $\rightarrow$ : Functions share resources with their arguments
 \end{enumerate}
 
 \begin{figure}[h]
@@ -444,8 +451,10 @@ It introduces 2 kinds of arrows by modifiying the the syntax of lambda calculus:
 \end{figure}
 
 
-% This is kind of a big jump here.
-% probably shift qualified types after linear logic section to have better continuity
+\begin{comment}
+ This is kind of a big jump here.
+ probably shift qualified types after linear logic section to have better continuity
+ \end{comment}
 \section{Linear logic with Qualified Types: Quill}
 We start our work based on Quill [\cite{morris_best_2016}]. It tries
 to implement linear types using qualified types. The novelty of using a qualified

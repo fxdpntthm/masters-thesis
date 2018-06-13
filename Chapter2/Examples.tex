@@ -1,12 +1,8 @@
 \chapter{Programming in Quill}
 In the following chapter we illustrate using different examples to show how Quill is different
 from other functional languages and how a powerful type system backed by logic of Bunched Implications
-would be useful in keeping track of resources. The theme of the the examples have two main
-points to focus on. A resource has to be used in a linear fashion and cannot be dropped or duplicated i.e. resource
-does not qualify to be an unrestricted type. This will be illuminated in \cref{sec:file-handle-example}.
-The second being we should have atleast one access point or view of the shared resource in our program.
-We may create new views or drop the views we have created but the view count cannot go to zero. This will
-be illustrated in \cref{sec:dll-example} and \cref{sec:queue-example}.
+would be useful in keeping track of resources. The examples show how a resource can be tracked at compile
+time and resource leaks can be avoided.
 
 \section{File Handles}\label{sec:file-handle-example}
 In an imperative language file handles are treated as normal variables
@@ -22,10 +18,10 @@ a line from it and then closes the file handle is shown in \cref{fig:file-read-c
 \begin{figure}[h]
   \begin{framed}
     \begin{minted}{haskell}
-openFile :: FilePath -> IO FileHandle
-closeFile :: FileHandle -> IO ()
-readFile :: FileHandle -> IO (String, FileHandle)
-writeFile :: String -> FileHandle -> IO ((), FileHandle)
+openFile :: FilePath -*> IO FileHandle
+closeFile :: FileHandle -*> IO ()
+readFile :: FileHandle -*> IO (String, FileHandle)
+writeFile :: String -*> FileHandle -> IO ((), FileHandle)
     \end{minted}
   \end{framed}
   \caption{File Handling functions}
@@ -35,9 +31,9 @@ writeFile :: String -> FileHandle -> IO ((), FileHandle)
 \begin{figure}[h]
   \begin{framed}
     \begin{minted}{haskell}
-      do f  <- openFile "sample.txt"
-         (s, f)  <- readLine f
-         () <- close f
+do f  <- openFile "sample.txt"
+   (s, f)  <- readLine f
+   () <- close f
     \end{minted}
   \end{framed}
   \caption{Reading from a file in Haskell}
@@ -52,10 +48,10 @@ Haskell's type system would happily accept this program but it might generate a 
 \begin{figure}[h]
   \begin{framed}
     \begin{minted}{haskell}
-      do f  <- openFile "sample.txt"
-         (s, f)  <- readLine f
-         () <- close f
-         () <- close f
+do f  <- openFile "sample.txt"
+   (s, f)  <- readLine f
+   () <- close f
+   () <- close f
     \end{minted}
   \end{framed}
   \caption{Reading from a file and closing it twice}
@@ -71,15 +67,14 @@ written on the file system.
 \begin{figure}[h]
   \begin{framed}
     \begin{minted}{haskell}
-      do f <- openFile "sample.txt"
-         (s, f)  <- readLine f
-         return s
+do f <- openFile "sample.txt"
+   (s, f)  <- readLine f
+   return s
     \end{minted}
   \end{framed}
   \caption{Reading from a file and not closing file handle}
   \label{fig:file-read-noclose}
 \end{figure}
-
 We take a deeper dive into this problem by seeing the desugared version of the ``do'' notation.
 Both the programs would be translated into bind ($>>=$) operations . Recall that type signature of bind function is given as
 \mintinline{haskell}{(>>=) :: (Monad m) => m t -> (t -> m u) -> m u}. Desugared version of \cref{fig:file-read-close-2times}
@@ -89,9 +84,9 @@ and the desugared version of \cref{fig:file-read-noclose} would look like \cref{
 \begin{figure}[h]
   \begin{framed}
     \begin{minted}[escapeinside=||,mathescape=true]{haskell}
-      (>>=|$_1$|) (openFile "sample.txt") (\f ->
-                  (>>=|$_2$|) (readLine f) (\ (s, f) ->
-                              (>>=|$_3$|) (close f) (\_ -> close f)))
+(>>=|$_1$|) (openFile "sample.txt") (\f ->
+            (>>=|$_2$|) (readLine f) (\ (s, f) ->
+                        (>>=|$_3$|) (close f) (\_ -> close f)))
     \end{minted}
   \end{framed}
   \caption{Reading from a file in Haskell and closing twice}
@@ -100,9 +95,10 @@ and the desugared version of \cref{fig:file-read-noclose} would look like \cref{
 
 \begin{figure}[h]
   \begin{framed}
-    \begin{minted}{haskell}
-      (>>=) (openFile "sample.txt" ReadMode) (\ f -> readLine f)
-    \end{minted}
+\begin{minted}{haskell}
+(>>=) (openFile "sample.txt" ReadMode) (\ f ->
+       >>= (readLine f) (\ (s, f) -> return s)
+\end{minted}
   \end{framed}
   \caption{Reading from a file in Haskell and not closing it}
   \label{fig:file-read-noclose-desugared}
@@ -117,7 +113,7 @@ forced to describe the bind operator in terms of $\sepimp$ or $\rightarrow$. In 
 be typed as given in \cref{fig:quill-bind-type}. This means all resources used by the funtion are separate.
 \begin{figure}[h]
   \begin{framed}
-    \begin{minted}[escapeinside=||,python3=true,mathescape=true]{haskell}
+    \begin{minted}{haskell}
           (>>=) :: m t -*> (t -!*> m u) -*> m u
     \end{minted}
   \end{framed}
@@ -146,103 +142,112 @@ The bind operations will have the signatures as shown in \cref{fig:bind-signatur
 \label{fig:bind-signatures}
 \end{figure}
 
-% The first bind has a type signature of\\
-% \mintinline[escapeinside=||,mathescape=true]{haskell}{(>>=|$_1$|) (openFile "sample.txt" ReadMode) (\f -> ...)}\\
-% \mintinline{haskell}{:: IO FileHandle -*> (FileHandle -!*> IO ()) -*> IO ()}
-% second bind has a type signature of\\
-% \mintinline[escapeinside=||,mathescape=true]{haskell}{(>>=|$_2$|) (readLine f) (\s -> ... )}\\
-% \mintinline{haskell}{:: IO FileHandle -*> (FileHandle -!*> IO (String, Filehandle)) -*> IO (String, FileHandle)}
-% and the third bind operation has the type signature of\\
-% \mintinline[escapeinside=||,mathescape=true]{haskell}{(>>=|$_3$|) (closeFile f) (\_ -> closeFile f)}\\
-% \mintinline{haskell}{:: IO () -*> (() -!*> IO ()) -&> IO ()}
-% This would be raised as a compiler error as the type of the third bind operation does
-% not match the expected type of bind function.
-% The arguments of the third bind operation are \mintinline{haskell}{close f}
-% and \mintinline{haskell}{\_ -> close f} where they share the only resource \texttt{f}
 The type of the third bind would be computed as \\
 \mintinline{haskell}{IO () -*> (() -!*> IO ()) -&> IO ()} which would be a type error
 as the bind operation should have a type signature of
 \mintinline{haskell}{IO () -*> (() -!*> IO ()) -*> IO ()}. The types here would not match.
+The types do match up for the correct implementation of the file read and close shown in \cref{fig:file-read-close}.
+The first bind \mintinline{haskell}{(>>=) (openFile "sample.txt" ReadMode) (\ f -> ...)} has a type signature of
+\mintinline{haskell}{IO FileHandle -*> (FileHandle -!*> IO ()) -*> IO ()} and the second bind
+\mintinline{haskell}{(>>=) (readLine f) (\ (s, f) -> close f)} has a type signature of\\
+\mintinline{haskell}{IO (String, FileHandle) -*> (FileHandle -!*> IO ()) -*> IO ()}
 
-The types do match up for the correct implementation of the file read and close described in \cref{fig:file-read-close}.
-      % (>>=) (openFile "sample.txt" ReadMode)
-      %       (\f -> (>>=) (readLine f)
-      %                    (\s -> (close f)))
-The first bind has a type signagure of\\
-\mintinline{haskell}{(>>=) (openFile "sample.txt" ReadMode) (\ f -> ...)}\\
-\mintinline{haskell}{:: IO FileHandle -*> (FileHandle -!*> IO ()) -*> IO ()}
-
-and the second bind has a type signature of\\
-\mintinline{haskell}{(>>=) (readLine f) (\ (s, f) -> close f)}\\
-\mintinline{haskell}{:: IO (String, FileHandle) -*> (FileHandle -!*> IO ()) -*> IO ()}
-
-Similarly, in \cref{fig:file-read-noclose-desugared} the file handle \texttt{f} is not closed thus it is declared, but not used
-in the scope, it would be tagged as an unrestricted value by the Quill type checker.
+In \cref{fig:file-read-noclose-desugared} the file handle \texttt{f} is not closed. It is declared, but not used
+in its scope, it would be tagged as an unrestricted value by the Quill type checker.
 This is in voilation of our assumption that resources cannot be of the unrestricted type. Thus
 the program would not typecheck due to mismatch of the file handle type to be unrestricted.
 
 \section{Exception handling}
+We expand on the file handling scenario and consider the code that can throw runtime exceptions.
+The motivation to do so lies in the fact that memory leaks are caused becuase of runtime
+exceptions where the part of code that is responsible to clean up resources or in this case
+closing the file is skipped due to an alternate execution path.
 
-What is the return type?
+The \HaskellF{IOMonad} is a class that encapsulates two kinds of IOs. \HaskellF{IO} that does not fail
+or throw exceptions, and \HaskellF{IOF} that can fail and throw exceptions.
+For a concrete example we will assume that \HaskellF{readLine} can throw an exception during runtime, where
+it might fail to read a line due to the file mode being used has incorrect permissions.
+For the sake of simplicity \HaskellF{openFile} and \HaskellF{closeFile} do not throw exceptions.
+\HaskellF{onExcept} accepts a code that can fail and executes the second
+parameter only if the actual code throws an exception. The \HaskellF{onExcept} gives a chance
+to clean up resources in a systematic way. It may convert a code that can fail to a code
+that does not fail by using \HaskellF{catch} function, or it may re throw the exception after
+cleaning up the resources.
+
+In the exceptionless execution path in \cref{fig:file-exceptions}, a single line would be read from the file and its uppercased
+version would be returned after closing it. If suppose, an exception is thrown by \HaskellF{readLine}
+the \HaskellF{onExcept} would close the filehandle. Notice that \HaskellF{onExcept}
+shares the context with the file readline code, thus the appropriate file handle would be closed and
+we would not have any memory leak.
+
 \begin{figure}[h]
   \begin{framed}
     \begin{minted}{haskell}
-       or :: IO a -*> IO a -&> IO b
-       m `or` n = m `catch` \e -> n
+openFile :: FilePath -*> IO FileHandle
+closeFile :: FileHandle -*> IO ()
+readFile :: FileHandle -*> IOF (String, FileHandle)
+writeFile :: String -*> FileHandle -*> IOF ((), FileHandle)
 
-       throw :: Exception -> IO a
-       catch :: IO a -> (IO a -> IO b) -&> IO b
+throw :: Exception -> IO a
+catch :: IOMonad IOM => IO a -*> (IO a -> IOM b) -&> IOM b
 
-      do f  <- openFile "sample.txt" WriteMode
-         (s, f)  <- readLine f `or` close f
-         let l = caps s
-         () <- close f
-         return l
+onExcept :: IOF a -*> IOF () -&> IOF a
+m `onExcept` n = m `catch` (\e -> n >> throw e)
 
+readFromFile :: String -*> IO (Either String String)
+readFromFile f =
+do fh  <- openFile f WriteMode
+   ((s, fh)  <- readLine fh
+   let l = caps s
+   () <- close fh
+   return $ Right l) `onExcept` (do () <- closeFile fh)
+                     `catch` (\e ->
+                              return $ Left "Could not read file")
     \end{minted}
   \end{framed}
-  \caption{playground}
-  \label{fig:playground}
+  \caption{Exception Handling in Files}
+  \label{fig:file-exceptions}
 \end{figure}
 
 
 
-\section{Non Empty List}\label{sec:dll-example}
-A non empty list in Quill would look like
-\begin{minted}{haskell}
-data NEList a = Last a | Cons a (NEList a)
-\end{minted}
+% \section{Non Empty List}\label{sec:dll-example}
+% A non empty list in Quill would look like
+% \begin{minted}{haskell}
+% data NEList a = Last a | Cons a (NEList a)
+% \end{minted}
 
-The operations one could perfrom on a non-empty list are
-\begin{minted}{haskell}
-head :: NEList a -&> a
-head (Last h) = h
-head (Cons h t) = h
+% The operations one could perfrom on a non-empty list are
+% \begin{minted}{haskell}
+% head :: NEList a -&> a
+% head (Last h) = h
+% head (Cons h t) = h
 
-tail :: NEList a -&> a
-tail (Last h) = h
-tail (Cons h t) = tail t
+% tail :: NEList a -&> a
+% tail (Last h) = h
+% tail (Cons h t) = tail t
 
-concat :: NEList a -*> NEList a -&> NEList a
-concat (Last h') t = Cons h' t
-concat (Cons h t') t'' = Cons h (concat t' t'')
+% concat :: NEList a -*> NEList a -&> NEList a
+% concat (Last h') t = Cons h' t
+% concat (Cons h t') t'' = Cons h (concat t' t'')
 
-append :: a -*> NEList a -&> NEList a
-append a t = Cons a t
-\end{minted}
+% append :: a -*> NEList a -&> NEList a
+% append a t = Cons a t
+% \end{minted}
 
-The underlying implementation of this list can be thought of a doubly
-linked list. There would be pointers that would connect the the individual nodes to form a doubly linked list.
-The programmer would be agnostic of the pointer handling as we expect the type system to be powerful enough to
-make sure that the lower level code generated would be free of memory leaks and runtime exceptions.
-It makes sense for this doubly linked list implementation to fit the description of a shared resource as nodes
-are interconnected. Getting access to one node gives us access to the whole list.
+% The underlying implementation of this list can be thought of a doubly
+% linked list. There would be pointers that would connect the the individual nodes to form a doubly linked list.
+% The programmer would be agnostic of the pointer handling as we expect the type system to be powerful enough to
+% make sure that the lower level code generated would be free of memory leaks and runtime exceptions.
+% It makes sense for this doubly linked list implementation to fit the description of a shared resource as nodes
+% are interconnected. Getting access to one node gives us access to the whole list.
 
 
 
-\section{Circular Linked List as a Queue}\label{sec:queue-example}
+% \section{Circular Linked List as a Queue}\label{sec:queue-example}
 
-Circular list as a queue example
+% Circular list as a queue example
+
 
 
 %%% Local Variables:

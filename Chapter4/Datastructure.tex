@@ -29,7 +29,7 @@ We would want the programmer to specify whether the arguments are shared or sepa
 For current purposes this syntactical specification is given via a modified syntax
 
 data SeparatingPair a b = MkSeP a, b
-data SharingPair a b = MkShP a; b
+data SharingPair a b = MkShP !! a b
 
 We can of-course mix and match the sharing or separation.
 
@@ -69,11 +69,11 @@ What happens when lesser unrestrictedness with datatypes? Choice a b >:= f
 
 \section{Examples}
 
-example datatypes.
+\subsection{Pairs}
 
-Functor, Monad, Applicative
+Our language has a notion of 2 kinds of pairs. The pairs representing resources that do not share
+are denoted using separating pair $A \otimes B$. This means that when ever 
 
-Pair NonEmpty List, List
 
 
 %%% Local Variables:
