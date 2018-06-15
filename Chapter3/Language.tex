@@ -4,45 +4,129 @@
   \begin{framed}
     \begin{flalign*}
       \text{Type Variables}\ \ \      t, u, v         &\in \text{TVar}  \nonumber\\
-      \text{Kinds}\ \ \               \kappa          &::= * \mid \kappa \rightarrow \kappa \nonumber\\
+      \text{Kinds}\ \ \               \kappa          &::= \star \mid \kappa \rightarrow \kappa \nonumber\\
       \text{Type constructors}\ \ \   T^{\kappa}       &::= \mathcal{T}^{\kappa}\ \text{where}
-                                                      \{\overset{!}{\sepimp}, \sepimp, \xrightarrow{!}, \rightarrow \} \subseteq \mathcal{T}^{* \rightarrow * \rightarrow *}\nonumber\\
+                                                      \{\otimes, \with, \oplus, \parr, \overset{!}{\sepimp}, \sepimp, \xrightarrow{!}, \rightarrow \} \subseteq \mathcal{T}^{* \rightarrow * \rightarrow *}\nonumber\\
       \text{Types}\ \ \               \tau^{\kappa}    &::= t \mid T^{\kappa} \mid \tau^{\kappa' \rightarrow \kappa} \tau^{\kappa'}\nonumber\\
       \text{Predicates}\ \ \          \pi             &::= \texttt{Un}\ \tau \mid \texttt{SeFun}\ \tau \mid \texttt{ShFun}\ \tau \mid \tau \leq \tau' \nonumber\\
       \text{Qualified Types}\ \ \     \rho            &::= \tau^{*} \mid \pi => \rho \nonumber\\
       \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma \nonumber
     \end{flalign*}
   \end{framed}
-  \caption{Types in Language}
-  \label{fig:quill-types}
+  \caption{Types and Kinds in \qub}
+  \label{fig:qub-types}
 \end{figure}
 % Describe types
-We extend the type language described in [\cite{morris_best_2016}] by adding four new binary
-type constructors $\sepimp$, $\overset{!}{\sepimp}$, $\rightarrow$ and $\xrightarrow{!}$
-which we write in infix format instead of the two $\overset{\circ}{\rightarrow}$
-and $\overset{\bullet}{\rightarrow}$ constructors which describe restricted and unrestricted
-versions of function types. We write $\sepimp$ when the function does not share any resources
-with its arguments and $\rightarrow$ when the function may share resources
-with its arguments. $\overset{!}{\sepimp}$ and $\xrightarrow{!}$
-mean that they are unrestricted versions of $\sepimp$ and $\rightarrow$ respectively.
-We use $\tau$, $v$ and $\phi$ to denote types of any kind. We support user defined data types following
-Jones' [\cite{jones_system_1993}] by adding kind support to our language.
+The type language consists of type variables and two kinds of binary type constructors the
+sharing arrow ($\rightarrow$) and the separating arrow ($\sepimp$). The sharing arrow
+would mean that the function shares resources with its argument and the separating
+arrow would mean that the function does not share resources with its arguments.
+We would write both the arrows in an infix notation. The kind system is simple where we use
+$\star$ to denote all the types. We use $\tau$, $v$ and $\phi$ to denote types of any kind.
+We also include additive and multiplicative sums or product types in our core language. The
+definitions of all the four type constructors is described in \cref{sec:pairs} and \cref{sec:sums}.
+The system is powerful enough to let programmers define their own types using the type constructors.
+% We support user defined data types following
+% Jones' [\cite{jones_system_1993}] by adding kind support to our language.
 
 % Describe Predicates
-The \texttt{Un} $\tau$ denotes that the type $\tau$ is unrestricted.
-We write \texttt{ShFun} $\tau$ to describe that type $\tau$ may share resources with its
+The predicate system enhances the expressibility of the type system. Following the same route taken
+by Quill [\cite{morris_best_2016}] we use the predicate \texttt{Un} $\tau$ to denote
+that the type $\tau$ is unrestricted. We write \texttt{ShFun} $\tau$ to describe that type $\tau$ may share resources with its
 argument types and \texttt{SeFun} $\tau$ to describe that $\tau$ is
 does not share any resources from its argument types. The function types can also be of the unrestricted type.
-Thus if a type $\tau$ is unrestricted i.e. it qualifies with predicate \texttt{Un} and it is also a function types
+Thus if a type $\tau$ is unrestricted i.e. it qualifies with predicate \texttt{Un} and it is also one of the function types
 i.e. \texttt{SeFun} or \texttt{ShFun}, we write them as $\overset{!}{\sepimp}$ and $\xrightarrow{!}$ respectively.
-This can be considered as an improving substitution following Jone's notion of improvement of qualified types [\cite{jones_simplifying_1995}].
+This can be considered as an improving substitution following Jones notion of improvement of qualified types [\cite{jones_simplifying_1995}].
 We also define an ordering on types by using the predicate $\geq$. The predicate $\tau \geq \tau'$ holds if the type $\tau'$
-is less restricting than $\tau$.
+is less restricting than $\tau$. The predicate entailment relations $P => Q$ are given in \cref{fig:entailment-rules}.
+\TODO{Explain what does it mean for a type to be less that other type}
+\begin{figure}[h]
+  \begin{framed}
+    \begin{minipage}{0.20\linewidth}
+      \begin{prooftree}
+        \AxiomC{$\pi \in P$}
+        \UnaryInfC{$P => \pi$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{0.20\linewidth}
+      \begin{prooftree}
+        \AxiomC{$\bigwedge_{\pi \in Q} P => \pi$}
+        \UnaryInfC{$P => Q$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{0.20\linewidth}
+      \begin{prooftree}
+        \AxiomC{}
+        \UnaryInfC{$P => \Un{(\tau \sepimp \tau')}$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{0.20\linewidth}
+      \begin{prooftree}
+        \AxiomC{}
+        \UnaryInfC{$P => \Un{(\tau \rightarrow \tau')}$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{0.20\linewidth}
+      \begin{prooftree}
+        \AxiomC{$\tau = \sepimp \vee \tau = \overset{!}{\sepimp}$}
+        \UnaryInfC{$P => \SeFun{\tau}$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{0.20\linewidth}
+      \begin{prooftree}
+        \AxiomC{$\tau = \rightarrow \vee \tau = \overset{!}{\rightarrow}$}
+        \UnaryInfC{$P => \ShFun{\tau}$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{0.20\linewidth}
+      \begin{prooftree}
+        \AxiomC{$P => \Un{\tau}$}
+        \UnaryInfC{$P => \tau \geq (v \overset{!}{\sepimp} v')$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{0.20\linewidth}
+      \begin{prooftree}
+        \AxiomC{$P => \Un{\tau}$}
+        \UnaryInfC{$P => \tau \geq (v \overset{!}{\rightarrow} v')$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{0.5\linewidth}
+      \begin{prooftree}
+        \AxiomC{$$}
+        \UnaryInfC{$P => \tau \geq (v \sepimp v')$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{0.5\linewidth}
+      \begin{prooftree}
+        \AxiomC{$$}
+        \UnaryInfC{$P => \tau \geq (v \rightarrow v')$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{0.5\linewidth}
+      \begin{prooftree}
+        \AxiomC{$P => \tau \geq \phi t$}
+        \AxiomC{$t\ \text{fresh}$}
+        \BinaryInfC{$P => \tau \geq \phi$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{0.5\linewidth}
+      \begin{prooftree}
+        \AxiomC{$P => \tau t \geq \phi$}
+        \AxiomC{$t\ \text{fresh}$}
+        \BinaryInfC{$P => \tau \geq \phi$}
+      \end{prooftree}
+    \end{minipage}
+  \end{framed}
+  \caption{Entailment Rules}
+  \label{fig:entailment-rules}
+\end{figure}
+
 
 \begin{figure}[h]
   \begin{framed}
     \begin{flalign*}
-      \text{Environments}\ \ \      \Gamma,\Delta     &::= \epsilon \mid x:\sigma \mid \Gamma, \Delta \mid \Gamma; \Delta \nonumber\\
+      \text{Environments}\ \ \      \Gamma,\Delta     &::= \epsilon \mid x^{\bar{y}}:\sigma \mid \Gamma, \Delta \mid \Gamma; \Delta \nonumber\\
       \text{Environment Context}\ \ \ H, H'           &::= \epsilon \mid H,H' \mid H;H' \mid \square \nonumber\\
   \end{flalign*}
 \end{framed}
@@ -54,11 +138,11 @@ In normal type systems, the contexts are represented as sets or lists. In \BI\ t
 The leaf nodes contain the pair of variable and types. Internal nodes of the context tree are
 connectives which can either be a semicolon ($;$) or a comma ($,$).
 If a bunch $\Delta$ is a subtree of $\Gamma$, then we denote a subtree relation by $\Gamma(\Delta)$.
-Two contex are equivalent ($\Gamma \equiv \Delta$)if they can be transformed into one another by renaming the identifiers.
+Two context are equivalent ($\Gamma \equiv \Delta$)if they can be transformed into one another by renaming the identifiers.
 The bunches have a restriction that no identifier appears more than once. We restrict certain structural rules on the context
 depending on the connectives being used. If contexts are combined using a comma ($,$), contraction and weakening is not admissible,
 but if the contexts are combined using a semicolon ($;$) then it can undergo contraction and weakening. Exchange rule is admissible
-in both the connectives. This distinction enables us to have a special treatement for resources in our language.
+in both the connectives. This distinction enables us to have a special treatment for resources in our language.
 By associating a resource with a comma constructor, our type system will not disposed it off by using the contraction rule.
 While, non-resourceful objects (or normal propositions) can be combined using the semi-colon constructor.
 An example bunch is shown in \cref{fig:bunches-bi}. a and b have a shared context while c is separate from the bunch a and b.
@@ -82,134 +166,9 @@ then $\Gamma \equiv \Delta,\Delta'$ and $\Gamma(\Delta)$.
     [.c:C ]
     ]
 \end{tikzpicture}
-
 \caption{Bunches in \textbf{\em BI}}
 \label{fig:bunches-bi}
 \end{figure}
-
-\begin{figure}[h]
-  \begin{framed}
-    \begin{flalign*}
-      \text{Term Variables}\ \ \  x, y, z  &\in \text{Var} \nonumber\\
-      \text{Patterns}\ \ \        p        &::= x \mid C \vec{x}\nonumber\\
-      \text{Expressions}\ \ \     M, N     &::= x \mid \lambda^{*}x. M \mid \lambda^{\alpha}x. M \mid M N\nonumber\\
-                                           &\mid \Case{M}{\{\texttt{inl}\ M \mapsto N ; \texttt{inr}\ M \mapsto N'\}}\mid \texttt{inl}\ M \mid \texttt{inr}\ M \nonumber\\
-                                           &\mid \Let{x}{M}{N} \mid \nonumber
-    \end{flalign*}
-  \end{framed}
-  \caption{Language Syntax}
-  \label{fig:quill-terms}
-\end{figure}
-% Describe the language here
-
-% Describe terms and patterns
-Our term language is similar to that of simply typed lambda calculus involving variables and application
-but we have 2 different kind of lambdas. The alpha lambda ($\lambda^{\alpha} x. M$) denotes sharing
-of the argument term with the expression $M$ and the separating lambda term ($\lambda^{*} x. M$) that implies
-the argument term has a separating context with the expression $M$. We also have polymorphic $\texttt{let}$
-expressions to be able to define functions with a limited scope.
-
-\begin{figure}[h]
-  \begin{framed}\centering
-    \begin{minipage}{0.45\linewidth}
-      \begin{prooftree}
-        \AxiomC{$\pi \in P$}
-        \UnaryInfC{$P => \pi$}
-      \end{prooftree}
-    \end{minipage}
-    \begin{minipage}{0.45\linewidth}
-      \begin{prooftree}
-        \AxiomC{$\bigwedge_{\pi \in Q} P => \pi$}
-        \UnaryInfC{$P => Q$}
-      \end{prooftree}
-    \end{minipage}
-
-    \begin{minipage}{0.45\linewidth}
-      \begin{prooftree}
-        \AxiomC{$$}
-        \UnaryInfC{$P => \Un{(\tau \sepimp \tau')}$}
-      \end{prooftree}
-    \end{minipage}
-    \begin{minipage}{0.45\linewidth}
-      \begin{prooftree}
-        \AxiomC{$$}
-        \UnaryInfC{$P => \Un{(\tau \rightarrow \tau')}$}
-      \end{prooftree}
-    \end{minipage}
-
-    \begin{minipage}{0.450\linewidth}
-      \begin{prooftree}
-        \AxiomC{$\tau = \sepimp \vee \tau = \overset{!}{\sepimp}$}
-        \UnaryInfC{$P => \SeFun{\tau}$}
-      \end{prooftree}
-    \end{minipage}
-    \begin{minipage}{0.450\linewidth}
-      \begin{prooftree}
-        \AxiomC{$\tau = \rightarrow \vee \tau = \overset{!}{\rightarrow}$}
-        \UnaryInfC{$P => \ShFun{\tau}$}
-      \end{prooftree}
-    \end{minipage}
-
-    \begin{minipage}{0.450\linewidth}
-      \begin{prooftree}
-        \AxiomC{$P => \Un{\tau}$}
-        \UnaryInfC{$P => \tau \geq (v \overset{!}{\sepimp} v')$}
-      \end{prooftree}
-    \end{minipage}
-    \begin{minipage}{0.450\linewidth}
-      \begin{prooftree}
-        \AxiomC{$P => \Un{\tau}$}
-        \UnaryInfC{$P => \tau \geq (v \overset{!}{\rightarrow} v')$}
-      \end{prooftree}
-    \end{minipage}
-
-    \begin{minipage}{0.450\linewidth}
-      \begin{prooftree}
-        \AxiomC{$$}
-        \UnaryInfC{$P => \tau \geq (v \sepimp v')$}
-      \end{prooftree}
-    \end{minipage}
-    \begin{minipage}{0.450\linewidth}
-      \begin{prooftree}
-        \AxiomC{$$}
-        \UnaryInfC{$P => \tau \geq (v \rightarrow v')$}
-      \end{prooftree}
-    \end{minipage}
-
-    \begin{minipage}{0.450\linewidth}
-      \begin{prooftree}
-        \AxiomC{$P => \tau \geq \phi t$}
-        \AxiomC{$t\ \text{fresh}$}
-        \BinaryInfC{$P => \tau \geq \phi$}
-      \end{prooftree}
-    \end{minipage}
-    \begin{minipage}{0.450\linewidth}
-      \begin{prooftree}
-        \AxiomC{$P => \tau t \geq \phi$}
-        \AxiomC{$t\ \text{fresh}$}
-        \BinaryInfC{$P => \tau \geq \phi$}
-      \end{prooftree}
-    \end{minipage}
-
-  \end{framed}
-  \caption{Entailment Rules}
-  \label{fig:entailment-rules}
-\end{figure}
-
-
-% The type constructors are added in order to allow programmers to define their own data types. They can be used to define sum and product types.
-% \texttt{case} expression can be used to pattern match on the expression to express it in terms
-% of individual sum types. Patterns are either term variables or constructor terms.
-
-
-\section{Conventions and Notations}
-The type assignment $\Gamma$ is a finite multiset of pairs of terms and types such that if two term variables occur
-more than once, all of them must have same type. i.e. if $x:\sigma \in \Gamma$ and $x:\sigma' \in \Gamma$ then $\sigma \equiv \sigma'$.
-The expression $P \mid \Gamma \vdash M : \sigma$ denotes the assersion that the term $M$ is of type $\sigma$
-when the predicates in $P$ are satisfied and the free type variables in $M$ are specifed in type assigment $\Gamma$.
-$\Gamma_{x}$ denotes the type assigment excluding the type variable $x$. $TV(\Gamma)$ denotes free type
-variables in the environment $\Gamma$. $\Gamma \odot \Delta$ means that the contexts can either
-be sharing union ($\Gamma \varoplus \Delta$) or separating union ($\Gamma \circledast \Delta$).
 
 We try to emulate the behaviour of bunches using multisets and denote multiset union using $\Gamma \sqcup \Gamma'$.
 The type assignment will be a collection of variables with an added annotation of sharing. If a resource $x$ is in
@@ -249,12 +208,50 @@ If the type assignments have an exact overlapping of terms being used, it is sai
   \label{fig:context-operation}
 \end{figure}
 
+
+\begin{figure}[h]
+  \begin{framed}
+    \begin{flalign*}
+      \text{Term Variables}\ \ \  x, y, z  &\in \text{Var} \nonumber\\
+      % \text{Patterns}\ \ \        p        &::= x \mid C \vec{x}\nonumber\\
+      \text{Expressions}\ \ \     M, N     &::= x \mid \lambda^{*}x. M \mid \lambda^{\alpha}x. M \mid M N\nonumber\\
+      &\mid \CaseSh{M}{\{\texttt{inl}_{sh}\ x \mapsto N ; \texttt{inr}_{sh}\ y \mapsto N'\}}\mid \texttt{inl}_{sh}\ x \mid \texttt{inr}_{sh}\ y \nonumber\\
+      &\mid \CaseSe{M}{\{\texttt{inl}_{se}\ x \mapsto N ; \texttt{inr}_{se}\ y \mapsto N'\}}\mid \texttt{inl}_{se}\ x \mid \texttt{inr}_{se}\ y \nonumber\\
+      &\mid \Let{x}{M}{N} \mid \Pair{M,N} \mid \Pair{M;N} \mid \texttt{fst}_{sh}\ M \mid \texttt{snd}_{sh}\ M \mid \texttt{fst}_{se}\ M
+      \mid \texttt{snd}_{se}\ M \nonumber
+    \end{flalign*}
+  \end{framed}
+  \caption{Language Syntax}
+  \label{fig:quill-terms}
+\end{figure}
+% Describe the language here
+
+% Describe terms and patterns
+Our term language is similar to that of simply typed lambda calculus involving variables and application
+but we have 2 different kind of lambdas. The alpha lambda ($\lambda^{\alpha} x. M$) denotes sharing
+of the argument term with the expression $M$ and the separating lambda term ($\lambda^{*} x. M$) that implies
+the argument term has a separating context with the expression $M$. We also have polymorphic $\texttt{let}$
+expressions to be able to define functions with a limited scope.
+
+% The type constructors are added in order to allow programmers to define their own data types. They can be used to define sum and product types.
+% \texttt{case} expression can be used to pattern match on the expression to express it in terms
+% of individual sum types. Patterns are either term variables or constructor terms.
+
+
+\section{Conventions and Notations}
+The type assignment $\Gamma$ is a finite multiset of pairs of terms and types such that if two term variables occur
+more than once, all of them must have same type. i.e. if $x:\sigma \in \Gamma$ and $x:\sigma' \in \Gamma$ then $\sigma \equiv \sigma'$.
+The expression $P \mid \Gamma \vdash M : \sigma$ denotes the assersion that the term $M$ is of type $\sigma$
+when the predicates in $P$ are satisfied and the free type variables in $M$ are specifed in type assigment $\Gamma$.
+$\Gamma_{x}$ denotes the type assigment excluding the type variable $x$. $TV(\Gamma)$ denotes free type
+variables in the environment $\Gamma$. $\Gamma \odot \Delta$ means that the contexts can either
+be sharing union ($\Gamma \varoplus \Delta$) or separating union ($\Gamma \circledast \Delta$).
+
 \section{Typing Rules}
 % Structural Rules
 % Connective Rules
 % forall, => Qualified type rules
-% Entailment rules
-We split our rules into multiple sections for legibility. The first section includes structrual rules
+We split our type system into multiple sections for legibility. The first section includes structrual rules
 as shown in \cref{fig:structural-rules} and the second section includes connectives with introduction and elemination rules
 as shown in \cref{fig:typing-rules}.
 
@@ -460,8 +457,6 @@ the ($\Delta$ \texttt{un}) predicate on the type that is dropped or duplicated.
   \caption{Typing Rules for Base cases}
   \label{fig:bi-base-typing-rules}
 \end{figure}
-
-\TODO{Explain what does it mean for a type to be less that other type}
 
 \section{Syntax Directed Typing rules}
 The typing rules explained in the previous section are not syntax directed and will not be fit
