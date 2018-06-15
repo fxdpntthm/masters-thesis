@@ -73,12 +73,14 @@
 \newcommand{\Pair}[1]{\langle #1 \rangle}
 \newcommand{\TODO}[1]{{\begin{framed}{\color{red} #1}\end{framed}}}
 \newcommand{\HaskellF}[1]{\mintinline{haskell}{#1}}
+\newcommand{\qub}{QuB}
+
 % used to align decimals in tables according to APA style
 \usepackage{dcolumn}
 \usepackage{booktabs}
 
 % Set the title and author info
-\title{Resource Aware Functional Language}
+\title{\qub : A Resource Aware Functional Language}
 \author{Apoorv Ingle}
 
 
@@ -135,17 +137,18 @@
   While the these is more expressive than intuistionistic logic, there are various practical issues
   that prohibit leveraging it to its fullest degree in programming languages.
   In this thesis, we take a different view over the resource management problem by concentrating
-  on sharing or separation of resources. This has been studied in a theoritical
-  setting as a logic of bunched implications (\BI)[\cite{ohearn_logic_1999}].
+  on sharing or separation of resources which been studied in a theoritical
+  setting as the logic of bunched implications (\BI)[\cite{ohearn_logic_1999}].
 
-  We build a prototype of a Curry-Howard interpretation of the logic of \BI\ [\cite{ohearn_bunched_2003}]---$\alpha\lambda$-calculus---
-  by introducing 2 new type constructors of arrow type: sharing arrow ($\rightarrow$) and separating arrow($\sepimp$) to replace
+  We design and implement \qub\, a prototype language that is Curry-Howard interpretation of the logic
+  of \BI\ [\cite{ohearn_bunched_2003}]---$\alpha\lambda$-calculus---by introducing 2 new type
+  constructors of arrow type: sharing arrow ($\rightarrow$) and separating arrow($\sepimp$) to replace
   the usual notion of function arrows of simply typed lambda calculus. Sharing arrows imply that functions
   share resources with its arguments, while separating arrows imply that functions do not share resources with its arguments.
-  We base our work on Quill [\cite{morris_best_2016}] that has a notion of unrestricted types.
-  We realize that the interaction of unrestricted types and sharing and separating is harmless
-  as program entities that do not have a sense of resourcefulness can be
-  duplicated or dropped anytime without any adverse implications and all existing programs typecheck.
+  We base our work on Quill [\cite{morris_best_2016}] which express linear types in a functional language.
+  We realize that the interaction of unrestricted types and sharing and separating is harmless as program entities that
+  do not have a sense of resourcefulness can be duplicated or dropped anytime without
+  any adverse implications and all existing programs typecheck.
   % haivng unrestricted types
   % are realizations of existing purely functional programs.
 

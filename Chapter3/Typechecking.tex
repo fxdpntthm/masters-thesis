@@ -6,7 +6,7 @@
       \text{Type Variables}\ \ \      t, u, v         &\in \text{TVar}  \nonumber\\
       \text{Kinds}\ \ \               \kappa          &::= * \mid \kappa \rightarrow \kappa \nonumber\\
       \text{Type constructors}\ \ \   T^{\kappa}       &::= \mathcal{T}^{\kappa}\ \text{where}
-                                                      \{\oplus, \overset{!}{\sepimp}, \sepimp, \xrightarrow{!}, \rightarrow \} \subseteq \mathcal{T}^{* \rightarrow * \rightarrow *}\nonumber\\
+                                                      \{\overset{!}{\sepimp}, \sepimp, \xrightarrow{!}, \rightarrow \} \subseteq \mathcal{T}^{* \rightarrow * \rightarrow *}\nonumber\\
       \text{Types}\ \ \               \tau^{\kappa}    &::= t \mid T^{\kappa} \mid \tau^{\kappa' \rightarrow \kappa} \tau^{\kappa'}\nonumber\\
       \text{Predicates}\ \ \          \pi             &::= \texttt{Un}\ \tau \mid \texttt{SeFun}\ \tau \mid \texttt{ShFun}\ \tau \mid \tau \leq \tau' \nonumber\\
       \text{Qualified Types}\ \ \     \rho            &::= \tau^{*} \mid \pi => \rho \nonumber\\
@@ -25,9 +25,10 @@ versions of function types. We write $\sepimp$ when the function does not share 
 with its arguments and $\rightarrow$ when the function may share resources
 with its arguments. $\overset{!}{\sepimp}$ and $\xrightarrow{!}$
 mean that they are unrestricted versions of $\sepimp$ and $\rightarrow$ respectively.
-We use $\tau$, $\nu$ and $\phi$ to denote types of any kind. We support user defined data types following
-Jones' [\cite{jones_system_1993}] by adding kind support to our language. Sum types can be represented
-in the language using $\oplus$ notation.
+We use $\tau$, $v$ and $\phi$ to denote types of any kind. We support user defined data types following
+Jones' [\cite{jones_system_1993}] by adding kind support to our language.
+
+
 % Describe Predicates
 The \texttt{Un} $\tau$ denotes that the type $\tau$ is unrestricted.
 We write \texttt{ShFun} $\tau$ to describe that type $\tau$ may share resources with its
@@ -41,13 +42,13 @@ is less restricting than $\tau$.
 
 \begin{figure}[h]
   \begin{framed}
-  \begin{flalign*}
-    \text{Environments}\ \ \      \Gamma,\Delta     &::= \epsilon \mid x:\sigma \mid \Gamma, \Delta \mid \Gamma; \Delta \nonumber\\
-    \text{Environment Context}\ \ \ H, H'           &::= \epsilon \mid H,H' \mid H;H' \mid \square \nonumber\\
+    \begin{flalign*}
+      \text{Environments}\ \ \      \Gamma,\Delta     &::= \epsilon \mid x:\sigma \mid \Gamma, \Delta \mid \Gamma; \Delta \nonumber\\
+      \text{Environment Context}\ \ \ H, H'           &::= \epsilon \mid H,H' \mid H;H' \mid \square \nonumber\\
   \end{flalign*}
 \end{framed}
-  \caption{Language Context}
-  \label{fig:quill-context}
+  \caption{Typing Context}
+  \label{fig:typing-context}
 \end{figure}
 % Describe Typing judgments
 In normal type systems, the contexts are represented as sets or lists. In \BI\ they are represented as binary trees.
@@ -101,11 +102,128 @@ then $\Gamma \equiv \Delta,\Delta'$ and $\Gamma(\Delta)$.
   \label{fig:quill-terms}
 \end{figure}
 % Describe the language here
-We try to emulate the behaviour of bunches using multisets and denote multiset union using $\Gamma \sqcup \Gamma'$.
-Our contexts will be a collection of variables with an added annotation of sharing. If a resource $x$ is in
-sharing with one or many resources $\bar{y}$ we would represent it as $x^{\bar{y}}:\tau$. Further $\Gamma, x^{\bar{y}}:\tau$ would mean $\Gamma \sqcup x^{\bar{y}}:\tau$.
-Next we define auxilary definions to compute sharing.
 
+% Describe terms and patterns
+Our term language is similar to that of simply typed lambda calculus involving variables and application
+but we have 2 different kind of lambdas. The alpha lambda ($\lambda^{\alpha} x. M$) denotes sharing
+of the argument term with the expression $M$ and the separating lambda term ($\lambda^{*} x. M$) that implies
+the argument term has a separating context with the expression $M$. We also have polymorphic $\texttt{let}$
+expressions to be able to define functions with a limited scope. Due to the rules of $\alpha\lambda$-calculus
+it is easy to see that $f: \tau \sepimp \tau'; x:\tau \nvdash f x:\tau'$. As $f$ needs an argument that does
+not share any resources with its context.
+
+\begin{figure}[h]
+  \begin{framed}\centering
+    \begin{minipage}{0.45\linewidth}
+      \begin{prooftree}
+        \AxiomC{$\pi \in P$}
+        \UnaryInfC{$P => \pi$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{0.45\linewidth}
+      \begin{prooftree}
+        \AxiomC{$\bigwedge_{\pi \in Q} P => \pi$}
+        \UnaryInfC{$P => Q$}
+      \end{prooftree}
+    \end{minipage}
+
+    \begin{minipage}{0.45\linewidth}
+      \begin{prooftree}
+        \AxiomC{$$}
+        \UnaryInfC{$P => \Un{(\tau \sepimp \tau')}$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{0.45\linewidth}
+      \begin{prooftree}
+        \AxiomC{$$}
+        \UnaryInfC{$P => \Un{(\tau \rightarrow \tau')}$}
+      \end{prooftree}
+    \end{minipage}
+
+    \begin{minipage}{0.450\linewidth}
+      \begin{prooftree}
+        \AxiomC{$\tau = \sepimp \vee \tau = \overset{!}{\sepimp}$}
+        \UnaryInfC{$P => \SeFun{\tau}$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{0.450\linewidth}
+      \begin{prooftree}
+        \AxiomC{$\tau = \rightarrow \vee \tau = \overset{!}{\rightarrow}$}
+        \UnaryInfC{$P => \ShFun{\tau}$}
+      \end{prooftree}
+    \end{minipage}
+
+    \begin{minipage}{0.450\linewidth}
+      \begin{prooftree}
+        \AxiomC{$P => \Un{\tau}$}
+        \UnaryInfC{$P => \tau \geq (v \overset{!}{\sepimp} v')$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{0.450\linewidth}
+      \begin{prooftree}
+        \AxiomC{$P => \Un{\tau}$}
+        \UnaryInfC{$P => \tau \geq (v \overset{!}{\rightarrow} v')$}
+      \end{prooftree}
+    \end{minipage}
+
+    \begin{minipage}{0.450\linewidth}
+      \begin{prooftree}
+        \AxiomC{$$}
+        \UnaryInfC{$P => \tau \geq (v \sepimp v')$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{0.450\linewidth}
+      \begin{prooftree}
+        \AxiomC{$$}
+        \UnaryInfC{$P => \tau \geq (v \rightarrow v')$}
+      \end{prooftree}
+    \end{minipage}
+
+    \begin{minipage}{0.450\linewidth}
+      \begin{prooftree}
+        \AxiomC{$P => \tau \geq \phi t$}
+        \AxiomC{$t\ \text{fresh}$}
+        \BinaryInfC{$P => \tau \geq \phi$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{0.450\linewidth}
+      \begin{prooftree}
+        \AxiomC{$P => \tau t \geq \phi$}
+        \AxiomC{$t\ \text{fresh}$}
+        \BinaryInfC{$P => \tau \geq \phi$}
+      \end{prooftree}
+    \end{minipage}
+
+  \end{framed}
+  \caption{Entailment Rules}
+  \label{fig:entailment-rules}
+\end{figure}
+
+
+% The type constructors are added in order to allow programmers to define their own data types. They can be used to define sum and product types.
+% \texttt{case} expression can be used to pattern match on the expression to express it in terms
+% of individual sum types. Patterns are either term variables or constructor terms.
+
+
+\section{Conventions and Notations}
+The type assignment $\Gamma$ is a finite multiset of pairs of terms and types such that if two term variables occur
+more than once, all of them must have same type. i.e. if $x:\sigma \in \Gamma$ and $x:\sigma' \in \Gamma$ then $\sigma \equiv \sigma'$.
+The expression $P \mid \Gamma \vdash M : \sigma$ denotes the assersion that the term $M$ is of type $\sigma$
+when the predicates in $P$ are satisfied and the free type variables in $M$ are specifed in type assigment $\Gamma$.
+$\Gamma_{x}$ denotes the type assigment excluding the type variable $x$. $TV(\Gamma)$ denotes free type
+variables in the environment $\Gamma$. $\Gamma \odot \Delta$ means that the contexts can either
+be sharing union ($\Gamma \varoplus \Delta$) or separating union ($\Gamma \circledast \Delta$).
+
+We try to emulate the behaviour of bunches using multisets and denote multiset union using $\Gamma \sqcup \Gamma'$.
+The type assignment will be a collection of variables with an added annotation of sharing. If a resource $x$ is in
+sharing with one or many resources $\bar{y}$ we would represent it as $x^{\bar{y}}:\tau$.
+Further $\Gamma, x^{\bar{y}}:\tau$ would mean $\Gamma \sqcup \{x^{\bar{y}}:\tau\}$. We define a few auxilary functions on the
+type assigments. Vars($\Gamma$) is the set of all the term variables in $\Gamma$. Shared($\Gamma$) computes
+the set of all the term variables that are in sharing with each other. Used($\Gamma$) computes the
+union of all the term variables in the type assignment and the term variables shared by each of those.
+We define two partial operators on type assigments as shown in \cref{fig:context-operation}.
+Two type assigments are said to be in disjoint union ($\circledast$) if they have no common used term.
+If the type assignments have an exact overlapping of terms being used, it is said to be in a sharing union ($\varoplus$).
 \begin{figure}[h]
   \begin{framed}
     \noindent
@@ -123,8 +241,6 @@ Next we define auxilary definions to compute sharing.
   \caption{Auxilary Functions on Multisets}
   \label{fig:multiset-aux-function}
 \end{figure}
-
-We also define two partial operators on contexts as shown in \cref{fig:context-operation}.
 \begin{figure}[h]
   \begin{framed}
     \begin{flalign*}
@@ -135,36 +251,21 @@ We also define two partial operators on contexts as shown in \cref{fig:context-o
   \caption{Context Operations}
   \label{fig:context-operation}
 \end{figure}
-% Describe terms and patterns
-Our term language is similar to that of simply typed lambda calculus involving variables and application
-but we have 2 different kind of lambdas. The alpha lambda ($\lambda^{\alpha} x. M$) denotes sharing
-of the argument term with the expression $M$ and the separating lambda term ($\lambda^{*} x. M$) that implies
-the argument term has a separating context with the expression $M$. We also have polymorphic $\texttt{let}$
-expressions to be able to define functions with a limited scope. Due to the rules of $\alpha\lambda$-calculus
-it is easy to see that $f: \tau \sepimp \tau'; x:\tau \nvdash f x:\tau'$. As $f$ needs an argument that does
-not share any resources with its context.
-
-% The type constructors are added in order to allow programmers to define their own data types. They can be used to define sum and product types.
-% \texttt{case} expression can be used to pattern match on the expression to express it in terms
-% of individual sum types. Patterns are either term variables or constructor terms.
-
-
-\section{Conventions and Notations}
-$\Gamma_{x}$ is the typing environment excluding the type variable $x$. $TV(\Gamma)$ denotes free type
-variables in the environment $\Gamma$. $\Gamma \odot \Delta$ means that the contexts can either
-be sharing union ($\Gamma \varoplus \Delta$) or separating union ($\Gamma \circledast \Delta$).
 
 \section{Typing Rules}
-
+% Structural Rules
+% Connective Rules
+% forall, => Qualified type rules
+% Entailment rules
 We split our rules into multiple sections for legibility. The first section includes structrual rules
 as shown in \cref{fig:structural-rules} and the second section includes connectives with introduction and elemination rules
 as shown in \cref{fig:typing-rules}.
 
-The tautology rule ([ID]) is a simple context lookup for checking the type of the term.
-The exchange rule ([EXCH]) justifies that the order in which the typing judgements are witnessed
+The tautology rule ([ID]) is a simple type assigment lookup for checking the type of the term.
+The exchange rule ([EXCH]) justifies the fact that the order in which the type assignments are witnessed
 in the multiset is insignificant and we can commute the individual term typing schemes within the multiset context
-with no effect to the typing derivations. The contraction sharing rule [CTR-SH] and weakening sharing rule [WKN-SH] say that we can duplicate
-or drop judgements from the typing contexts as per our will as we know they are in sharing with other
+with no effect to the typing derivations. The contraction sharing rule [CTR-SH] and weakening sharing rule [WKN-SH]
+says that we can duplicate or drop certain pairs of type assigments as per our convience as we know they are in sharing with other
 terms that remain in the context. The contraction separation rule [CTR-UN] and weakening separation rule [WKN-SH] can be
 applied to terms only if we can prove that they are of unrestricted type which is captured by introducting
 the ($\Delta$ \texttt{un}) predicate on the type that is dropped or duplicated.
@@ -364,6 +465,13 @@ the ($\Delta$ \texttt{un}) predicate on the type that is dropped or duplicated.
 \end{figure}
 
 \TODO{Explain what does it mean for a type to be less that other type}
+
+\section{Syntax Directed Typing rules}
+The typing rules explained in the previous section are not syntax directed and will not be fit
+to develop an algorithm to develop a type inference algorithm. In this section we
+will define syntax directed typing rules that will simplify our system.
+
+\TODO{We will also prove equivance between the typing rules and syntax directed typing rules of our system}
 
 \section{Modified Algorithm $\M$}
 The type inference algorithm is given in \cref{fig:algorithm-m}
