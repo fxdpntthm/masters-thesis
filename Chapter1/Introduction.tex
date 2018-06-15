@@ -361,6 +361,12 @@ is interpretation of the logic of \textbf{\em BI}. It introduces 2 kinds of arro
   \item $\sepimp$     : Functions do not share resources with their arguments
   \item $\rightarrow$ : Functions share resources with their arguments
 \end{enumerate}
+The affine varient of \BI\ takes a slightly different route. The sharing interpretation is relaxed and the new defition
+looks like:
+\begin{enumerate}
+  \item $\sepimp$     : Functions do not share resources with their arguments
+  \item $\rightarrow$ : Functions may share resources with their arguments
+\end{enumerate}
 
 \begin{figure}[h]
 \begin{framed}
@@ -451,10 +457,9 @@ is interpretation of the logic of \textbf{\em BI}. It introduces 2 kinds of arro
 \end{figure}
 
 
-\begin{comment}
- This is kind of a big jump here.
+\TODO{ This is kind of a big jump here.
  probably shift qualified types after linear logic section to have better continuity
- \end{comment}
+}
 \section{Linear logic with Qualified Types: Quill}
 We start our work based on Quill [\cite{morris_best_2016}]. It tries
 to implement linear types using qualified types. The novelty of using a qualified

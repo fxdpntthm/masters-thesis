@@ -42,7 +42,7 @@ is less restricting than $\tau$.
 \begin{figure}[h]
   \begin{framed}
   \begin{flalign*}
-    \text{Environments}\ \ \      \Gamma,\Delta     &::= \epsilon \mid x:\sigma \mid \Gamma, \Delta \mid \Gamma; \Delta \nonumber
+    \text{Environments}\ \ \      \Gamma,\Delta     &::= \epsilon \mid x:\sigma \mid \Gamma, \Delta \mid \Gamma; \Delta \nonumber\\
     \text{Environment Context}\ \ \ H, H'           &::= \epsilon \mid H,H' \mid H;H' \mid \square \nonumber\\
   \end{flalign*}
 \end{framed}
@@ -140,21 +140,34 @@ Our term language is similar to that of simply typed lambda calculus involving v
 but we have 2 different kind of lambdas. The alpha lambda ($\lambda^{\alpha} x. M$) denotes sharing
 of the argument term with the expression $M$ and the separating lambda term ($\lambda^{*} x. M$) that implies
 the argument term has a separating context with the expression $M$. We also have polymorphic $\texttt{let}$
-expressions to be able to define functions with a limited scope. The type constructors are added
-in order to allow programmers to define their own data types. They can be used to define sum and product types.
-\texttt{case} expression can be used to pattern match on the expression to express it in terms
-of individual sum types. Patterns are either term variables or constructor terms.
+expressions to be able to define functions with a limited scope. Due to the rules of $\alpha\lambda$-calculus
+it is easy to see that $f: \tau \sepimp \tau'; x:\tau \nvdash f x:\tau'$. As $f$ needs an argument that does
+not share any resources with its context.
 
-\TODO{How do we write about type constructors?}
-\TODO{Encode sum types in this calculus}
-\TODO{4 types of pairs. 2 of them are church encodeable. 2 of them are not.}
+% The type constructors are added in order to allow programmers to define their own data types. They can be used to define sum and product types.
+% \texttt{case} expression can be used to pattern match on the expression to express it in terms
+% of individual sum types. Patterns are either term variables or constructor terms.
+
 
 \section{Conventions and Notations}
 $\Gamma_{x}$ is the typing environment excluding the type variable $x$. $TV(\Gamma)$ denotes free type
 variables in the environment $\Gamma$. $\Gamma \odot \Delta$ means that the contexts can either
-be sharing union($\Gamma \varoplus \Delta$) or separating union $\Gamma \circledast \Delta$.
+be sharing union ($\Gamma \varoplus \Delta$) or separating union ($\Gamma \circledast \Delta$).
 
-\section{Syntax Directed Typing Judgments}
+\section{Typing Rules}
+
+We split our rules into multiple sections for legibility. The first section includes structrual rules
+as shown in \cref{fig:structural-rules} and the second section includes connectives with introduction and elemination rules
+as shown in \cref{fig:typing-rules}.
+
+The tautology rule ([ID]) is a simple context lookup for checking the type of the term.
+The exchange rule ([EXCH]) justifies that the order in which the typing judgements are witnessed
+in the multiset is insignificant and we can commute the individual term typing schemes within the multiset context
+with no effect to the typing derivations. The contraction sharing rule [CTR-SH] and weakening sharing rule [WKN-SH] say that we can duplicate
+or drop judgements from the typing contexts as per our will as we know they are in sharing with other
+terms that remain in the context. The contraction separation rule [CTR-UN] and weakening separation rule [WKN-SH] can be
+applied to terms only if we can prove that they are of unrestricted type which is captured by introducting
+the ($\Delta$ \texttt{un}) predicate on the type that is dropped or duplicated.
 
 \begin{figure}[h]
   \begin{framed}
@@ -172,6 +185,47 @@ be sharing union($\Gamma \varoplus \Delta$) or separating union $\Gamma \circled
         \UnaryInfC{$P \mid \Delta \odot \Gamma \vdash M : \sigma $}
       \end{prooftree}
     \end{minipage}
+        % CTR UN
+    \begin{minipage}{.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma \circledast \Delta \vdash M : \sigma$}
+        \AxiomC{$P'\vdash \Delta\ \texttt{un}$} \RightLabel{[CTR-UN]}
+        \BinaryInfC{$P \mid \Gamma \vdash M : \sigma$}
+      \end{prooftree}
+    \end{minipage}
+    % WKN UN
+    \begin{minipage}{.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma \vdash M : \sigma$}
+        \AxiomC{$P' \vdash \Delta\ \texttt{un}$} \RightLabel{[WKN-UN]}
+        \BinaryInfC{$P \mid \Gamma \circledast \Delta \vdash M : \sigma$}
+      \end{prooftree}
+    \end{minipage}
+    % CTR Sh
+    \begin{minipage}{.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma \varoplus \Delta \vdash M : \sigma$} \RightLabel{[CTR-SH]}
+        \AxiomC{$P \mid \Gamma \vdash M : \sigma$} \RightLabel{[CTR-SH]}
+        \BinaryInfC{$P \mid \Gamma \vdash M : \sigma$}
+      \end{prooftree}
+    \end{minipage}
+    % WKN Sh
+    \begin{minipage}{.5\textwidth}
+      \begin{prooftree}
+        \AxiomC{$P  \mid \Gamma \vdash M : \sigma$} \RightLabel{[WKN-SH]}
+        \UnaryInfC{$P \mid \Gamma \varoplus \Delta \vdash M : \sigma$}
+      \end{prooftree}
+    \end{minipage}
+   \end{framed}
+    \caption{Structural Typing Rules}
+    \label{fig:structural-rules}
+  \end{figure}
+
+  The connective rules explained here.
+
+
+  \begin{figure}[h]
+    \begin{framed}
     % let
     \begin{minipage}{1\textwidth}
       \begin{prooftree}
@@ -208,37 +262,6 @@ be sharing union($\Gamma \varoplus \Delta$) or separating union $\Gamma \circled
         \AxiomC{$P \mid \Gamma \vdash M : \pi \Rightarrow \rho$}
         \AxiomC{$P \Rightarrow \pi$} \RightLabel{$[=> E]$}
         \BinaryInfC{$P \mid \Gamma \vdash M: \rho$}
-      \end{prooftree}
-    \end{minipage}
-    % CTR UN
-    \begin{minipage}{.5\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \circledast \Delta \vdash M : \sigma$}
-        \AxiomC{$P'\vdash \Delta\ \texttt{un}$} \RightLabel{[CTR-UN]}
-        \BinaryInfC{$P \mid \Gamma \vdash M : \sigma$}
-      \end{prooftree}
-    \end{minipage}
-    % WKN UN
-    \begin{minipage}{.5\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash M : \sigma$}
-        \AxiomC{$P' \vdash \Delta\ \texttt{un}$} \RightLabel{[WKN-UN]}
-        \BinaryInfC{$P \mid \Gamma \circledast \Delta \vdash M : \sigma$}
-      \end{prooftree}
-    \end{minipage}
-    % CTR Sh
-    \begin{minipage}{.5\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \varoplus \Delta \vdash M : \sigma$} \RightLabel{[CTR-SH]}
-        \AxiomC{$P \mid \Gamma \vdash M : \sigma$} \RightLabel{[CTR-SH]}
-        \BinaryInfC{$P \mid \Gamma \vdash M : \sigma$}
-      \end{prooftree}
-    \end{minipage}
-    % WKN Sh
-    \begin{minipage}{.5\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P  \mid \Gamma \vdash M : \sigma$} \RightLabel{[WKN-SH]}
-        \UnaryInfC{$P \mid \Gamma \varoplus \Delta \vdash M : \sigma$}
       \end{prooftree}
     \end{minipage}
     % -&> I
@@ -280,147 +303,9 @@ be sharing union($\Gamma \varoplus \Delta$) or separating union $\Gamma \circled
       \end{prooftree}
     \end{minipage}
   \end{framed}
-    \caption{Typing Rules}
+    \caption{Connective Typing Rules}
     \label{fig:typing-rules}
 \end{figure}
-
-We now see that we have two kinds of pairs. A sharing pair (\texttt{Pair$_{sh}$}) and a separating pair (\texttt{Pair$_{sep}$}) depending on
-which arrow we use. The church encoding of both the pairs and their respective types are given in \ref{fig:bi-pairs-typing}.
-Derivation proofs of both the pairs are given in \cref{sec:pairs}.
-\begin{figure}
-  \centering
-  \begin{framed}
-    \begin{flalign*}
-      \text{Pair}_{sh} &: \tau \sepimp \tau' \rightarrow (\tau \sepimp \tau' \rightarrow \nu) \rightarrow \nu\\
-      \text{Pair}_{sh} &= \lambda^{*} x. \lambda^{\alpha} by. \lambda^{\alpha} f. f x y\\
-      \text{Pair}_{sep} &: \tau \sepimp \tau' \sepimp (\tau \sepimp \tau' \sepimp \nu) \sepimp \nu\\
-      \text{Pair}_{sep} &= \lambda^{*} x. \lambda^{*} y. \lambda^{*} f. f x y
-    \end{flalign*}
-  \end{framed}
-  \caption{Typing for Pairs in \textbf{\em BI}}
-  \label{fig:bi-pairs-typing}
-\end{figure}
-We can now introduce 2 new type constructors in our type language $\otimes$ and $\with$
-which represent separating pair and sharing pair respectively as shown in \cref{fig:pair-typing-rules}.
-Simlar to products we have two flavors of sum types. multiplicative sum type ($\oplus$) when both the
-types are separate and additive sum type ($\parr$) when both the types have sharing resources. Their
-typing rules are shown in \cref{fig:bi-sum-types}. Proof derivation and definitions for
-both the sum types are given in \cref{sec:sums}.
-
-\begin{figure}[h]
-  \begin{framed}
-    \begin{minipage}{1\linewidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma  \vdash M : \tau$}
-        \AxiomC{$P \mid \Delta \vdash N: \tau'$} \RightLabel{$[\with I]$}
-        \BinaryInfC{$P \mid \Gamma \oplus \Delta \vdash \Pair{M;N} : \tau \with \tau'$}
-      \end{prooftree}
-    \end{minipage}
-    \begin{minipage}{.5\linewidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash M: \tau \with \tau'$} \RightLabel{$[\with E_1]$}
-        \UnaryInfC{$P \mid \Gamma \vdash \texttt{fst}_{sh}\ M: \tau$}
-      \end{prooftree}
-    \end{minipage}
-    \begin{minipage}{.5\linewidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash M: \tau \with \tau'$} \RightLabel{$[\with E_2]$}
-        \UnaryInfC{$P \mid \Gamma \vdash \texttt{snd}_{sh}\ M: \tau'$}
-      \end{prooftree}
-    \end{minipage}
-    \begin{minipage}{1\linewidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma  \vdash M : \tau$}
-        \AxiomC{$P \mid \Delta \vdash N: \tau'$} \RightLabel{$[\otimes I]$}
-        \BinaryInfC{$P \mid \Gamma \circledast \Delta \vdash \Pair{M,N}: \tau \otimes \tau'$}
-      \end{prooftree}
-    \end{minipage}
-    \begin{minipage}{.5\linewidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash M: \tau \otimes \tau'$} \RightLabel{$[\otimes E_1]$}
-        \AxiomC{$P => \texttt{Un}\ \tau'$}
-        \BinaryInfC{$P \mid \Gamma \vdash \texttt{fst}_{sep}\ M: \tau$}
-      \end{prooftree}
-    \end{minipage}
-    \begin{minipage}{.5\linewidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash M: \tau \otimes \tau'$} \RightLabel{$[\otimes E_2]$}
-        \AxiomC{$P => \texttt{Un}\ \tau$}
-        \BinaryInfC{$P \mid \Gamma \vdash \texttt{snd}_{sep}\ M: \tau'$}
-      \end{prooftree}
-    \end{minipage}
-  \end{framed}
-  \caption{Typing rules for Pairs}
-  \label{fig:pair-typing-rules}
-\end{figure}
-
-\begin{figure}[h]
-\begin{framed}
-\begin{minipage}[h]{0.5\linewidth}
-  \begin{prooftree}
-    \AxiomC{$\emptyset \mid \texttt{inl}_{sh}: \tau \sepimp \tau \parr \tau' \vdash x : \tau$}\RightLabel{[$\parr$I$_1$]}
-    \UnaryInfC{$\emptyset \mid I \vdash \texttt{inl}_{sh}\ x: \tau \parr \tau'$}
-  \end{prooftree}
-\end{minipage}
-\begin{minipage}[h]{0.5\linewidth}
-  \begin{prooftree}
-    \AxiomC{$\emptyset \mid \texttt{inr}_{sh}: \tau' \sepimp \tau \parr \tau' \vdash y : \tau'$}\RightLabel{[$\parr$I$_2$]}
-    \UnaryInfC{$\emptyset \mid I \vdash \texttt{inr}_{sh}\ y: \tau \parr \tau'$}
-  \end{prooftree}
-\end{minipage}
-\begin{minipage}[h]{1.0\linewidth}
-  \begin{prooftree}
-    \AxiomC{$\emptyset \mid \Gamma \vdash M : \tau \parr \tau'$}\RightLabel{[$\parr$E]}
-    \AxiomC{$\emptyset \mid \Gamma \varoplus x:\tau \vdash N_1 : \nu$}
-    \AxiomC{$\emptyset \mid \Gamma \varoplus y:\tau' \vdash N_2 : \nu$}
-    \TrinaryInfC{$\emptyset \mid \Gamma \vdash \CaseSh{M}{\{ \texttt{inl}_{sh}\ x \mapsto N_1; \texttt{inr}_{sh}\ y \mapsto N_2\}}:\nu$}
-  \end{prooftree}
-\end{minipage}
-% sum type I_l
-\begin{minipage}{0.5\textwidth}
-  \begin{prooftree}
-    \AxiomC{$P \mid \Gamma \vdash M: \tau$}
-    \UnaryInfC{$P \mid \Delta \vdash \texttt{inl}_{se}\ M: \tau \oplus \tau'$}
-  \end{prooftree}
-\end{minipage}
-% sum type I_r
-\begin{minipage}{0.5\textwidth}
-  \begin{prooftree}
-    \AxiomC{$P \mid \Gamma \vdash M: \tau_2$}
-    \UnaryInfC{$P \mid \Delta \vdash \texttt{inr}_{se}\ M: \tau \oplus \tau'$}
-  \end{prooftree}
-\end{minipage}
-% sum type E
-\begin{minipage}{1\textwidth}
-  \begin{prooftree}
-    \AxiomC{$P \mid \Gamma \vdash M: \tau \oplus \tau'$}
-    \AxiomC{$P \mid \Gamma \circledast x:\tau \vdash N :\nu$}
-    \AxiomC{$P \mid \Gamma \circledast y:\tau' \vdash N':\nu$}\RightLabel{[$\oplus$E]}
-    \TrinaryInfC{$P \mid \Gamma \vdash \CaseSe{M}{\{\texttt{inl}_{se}\ x \mapsto N; \texttt{inr}_{se}\ y \mapsto N'\}} : v $}
-  \end{prooftree}
-\end{minipage}
-\end{framed}
-\caption{Sum Types}
-\label{fig:bi-sum-types}
-\end{figure}
-
-
-% sharing constructor
-\begin{minipage}{1\textwidth}
-  \begin{prooftree}
-    \AxiomC{$P \mid \Gamma \vdash C: \tau_1 \sepimp \tau_2 \rightarrow \tau_3 \rightarrow \dots \rightarrow \tau_n \rightarrow T$}
-    \AxiomC{$\Delta \equiv H(x_1 : \tau_1 ; x_2 : \tau_2 ; \ldots ; x_n:\tau_n)$}\RightLabel{$[\text{C-sh}]$}
-    \BinaryInfC{$P \mid \Gamma; \Delta \vdash C \vec{x} : T $}
-  \end{prooftree}
-\end{minipage}
-% Separating constructor
-\begin{minipage}{1\textwidth}
-  \begin{prooftree}
-    \AxiomC{$P \mid \Gamma \vdash C: \tau_1 \sepimp \tau_2 \sepimp \tau_3 \sepimp \dots \sepimp \tau_n \sepimp T$}
-    \AxiomC{$\Delta \equiv H(x_1: \tau_1, x_2:\tau_2, \dots ,x_n:\tau_n)$}\RightLabel{$[\text{C-se}]$}
-    \BinaryInfC{$P \mid \Gamma, \Delta \vdash C \vec{x} : T $}
-  \end{prooftree}
-\end{minipage}
 
 \begin{figure}[h]
   \begin{framed}
@@ -436,7 +321,6 @@ both the sum types are given in \cref{sec:sums}.
       \UnaryInfC{$P \vdash \pi => \rho\ \texttt{un}$}
     \end{prooftree}
   \end{minipage}
-
   \begin{minipage}{0.5\linewidth}
     \begin{prooftree}
       \AxiomC{$P, \texttt{Un}\ t \vdash \sigma\ \texttt{Un}$}\RightLabel{[\texttt{Un}-$\sigma$]}
@@ -462,7 +346,6 @@ both the sum types are given in \cref{sec:sums}.
       \UnaryInfC{$P \vdash (\pi => \rho) \geq \phi$}
     \end{prooftree}
   \end{minipage}
-
   \begin{minipage}{0.5\linewidth}
     \begin{prooftree}
       \AxiomC{$P, \texttt{Un}\ t \vdash \sigma \geq \phi$}\RightLabel{[$\geq$-$\sigma$]}
