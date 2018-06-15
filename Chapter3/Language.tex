@@ -28,7 +28,6 @@ mean that they are unrestricted versions of $\sepimp$ and $\rightarrow$ respecti
 We use $\tau$, $v$ and $\phi$ to denote types of any kind. We support user defined data types following
 Jones' [\cite{jones_system_1993}] by adding kind support to our language.
 
-
 % Describe Predicates
 The \texttt{Un} $\tau$ denotes that the type $\tau$ is unrestricted.
 We write \texttt{ShFun} $\tau$ to describe that type $\tau$ may share resources with its
@@ -108,9 +107,7 @@ Our term language is similar to that of simply typed lambda calculus involving v
 but we have 2 different kind of lambdas. The alpha lambda ($\lambda^{\alpha} x. M$) denotes sharing
 of the argument term with the expression $M$ and the separating lambda term ($\lambda^{*} x. M$) that implies
 the argument term has a separating context with the expression $M$. We also have polymorphic $\texttt{let}$
-expressions to be able to define functions with a limited scope. Due to the rules of $\alpha\lambda$-calculus
-it is easy to see that $f: \tau \sepimp \tau'; x:\tau \nvdash f x:\tau'$. As $f$ needs an argument that does
-not share any resources with its context.
+expressions to be able to define functions with a limited scope.
 
 \begin{figure}[h]
   \begin{framed}\centering
