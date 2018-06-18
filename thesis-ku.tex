@@ -32,7 +32,10 @@
 
 \renewcommand\qedsymbol{$\blacksquare$}
 
-\newtheorem{theorem}{Theorem}
+\newtheorem{thm}{Theorem}
+
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}
 
 \doublespacing
 \usepackage[unicode=true,
@@ -75,6 +78,8 @@
 \newcommand{\HaskellF}[1]{\mintinline{haskell}{#1}}
 \newcommand{\qub}{QuB}
 
+
+\newcommand{\vdashs}{\vdash^s}
 % used to align decimals in tables according to APA style
 \usepackage{dcolumn}
 \usepackage{booktabs}
@@ -196,10 +201,11 @@
 \end{romanpages}
 
 \include{Chapter1/Introduction}       % description of algorithm M linear logic, BI, qualified types
-\include{Chapter2/Examples}           % file handles, doubly linked list, circular linked list as a queue
-\include{Chapter3/Language}       % Core syntax and Types with modified Algorithm M and unification
-\include{Chapter4/Datastructure}      % sharing pair and weakening example Monad etc
-\include{Chapter5/Futurework}
+\include{Chapter2/Examples}           % file handles and exceptions
+\include{Chapter3/Language}           % Core language syntax and Types, contexts and related definitions
+\include{Chapter4/Typechecking}       % typing rules, syntax directed typing rules and Algorithm M
+\include{Chapter5/Datastructure}      % sharing pair and weakening example Monad etc
+\include{Chapter6/Futurework}
 \global\long\def\bibname{References}
 
 \bibliographystyle{apalike2}
