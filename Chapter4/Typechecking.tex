@@ -44,7 +44,7 @@ introduction and elemination rules as shown in \cref{fig:typing-rules}.
     \begin{minipage}{.5\textwidth}
       \begin{prooftree}
         \AxiomC{} \RightLabel{[ID]}
-        \UnaryInfC{$P \mid x^{\bar{y}} : \sigma \vdash x : \sigma $}
+        \UnaryInfC{$P \mid x^{\vec{y}} : \sigma \vdash x : \sigma $}
       \end{prooftree}
     \end{minipage}
     % EXCH
@@ -191,7 +191,7 @@ rule for shared and separating resources respectively. [$=>$I] and [$=>$E] are t
 qualified types that would add constraints on the type being compluted. [$\forall$I] introduces
 polymorphism and [$\forall$E] eleminates it. We assume that the free type variables that
 would be substituted in the type scheme would not interfere with the sharing and separation
-of resources of the fully realized type. {\color{blue} is this justifiable?.}
+of resources of the fully concretized type. {\color{red} is this justifiable?.}
 The reason to use multisets can now be explained as the elimiation rule ([$\rightarrow$E]) can be expressed
 by simply duplicating the typing judgements that are in sharing after we split the type assignment into two parts,
 for typing each sub expression individually.
@@ -281,32 +281,34 @@ We would add the introduced abstraction variable into the sharing context in cas
 The type variable $\tau$ in both [$\sepimp$I$^s$] and [$\rightarrow$I$^s$] are new. We collapse the application rules
 [$\sepimp$E] and [$\rightarrow$E] into one rule [App$^s$] where we check for sharing of the used variables in both
 the expressions and then assign a predicate of $\texttt{ShFun}$ or $\texttt{SeFun}$ depending on whether the variables
-are shared or not.
+are shared or not. The \texttt{un} predicates are added to the types of the terms that are not used direclty in the expression
+or do which are not in sharing with the terms used.
 
 \begin{figure}
   \begin{framed}
     % VAR^s
     \begin{minipage}{1.0\textwidth}
       \begin{prooftree}
-        \AxiomC{$P \vdash \Gamma\ \texttt{un}$}
+        \AxiomC{$P \vdash \Gamma_{\vec{y}}\ \texttt{un}$}
         \AxiomC{$(P => \tau) \sqsubseteq \sigma$} \RightLabel{[VAR$^s$]}
-        \BinaryInfC{$P \mid \Gamma, x^{\bar{y}} : \sigma \vdashs x : \tau $}
+        \BinaryInfC{$P \mid \Gamma, x^{\vec{y}} : \sigma \vdashs x : \tau $}
       \end{prooftree}
     \end{minipage}
     % Let^s
     \begin{minipage}{1.0\textwidth}
       \begin{prooftree}
-        \AxiomC{$Q \mid \Gamma_x',\Delta \vdashs M: v$}
-        \AxiomC{$\sigma = \texttt{Gen}(\{\Gamma' \cup \Delta\}, Q => v)$}
-        \AxiomC{$P \mid \Gamma_x,x:\sigma, \Delta \vdashs N:\tau$}
-        \AxiomC{$P \vdash \Delta\ \texttt{un}$}\RightLabel{[Let$^s$]}
-        \QuaternaryInfC{$P \mid \Gamma,\Gamma',\Delta \vdashs \Let{x}{M}{N} : \tau $}
+        \AxiomC{$Q \mid (\Gamma_x' \varoplus \Gamma_x'') \circledast \Delta \vdashs M: v\ \ \ \ \
+          P \vdash \Delta\ \texttt{un}$}
+        \noLine
+        \UnaryInfC{$P \mid (\Gamma_x {\color{red}\circledast} x:\sigma) \varoplus \Gamma_x'' \circledast \Delta \vdashs N:\tau\ \ \ \ \
+          \sigma = \texttt{Gen}(\{\Gamma' \varoplus \Gamma_x'' \circledast \Delta \}, Q => v)$}\RightLabel{[Let$^s$]}
+        \UnaryInfC{$P \mid (\Gamma \circledast \Gamma') \varoplus \Gamma'' \circledast \Delta \vdashs \Let{x}{M}{N} : \tau $}
       \end{prooftree}
     \end{minipage}
     % -*>I^s
     \begin{minipage}{1.0\textwidth}
       \begin{prooftree}
-        \AxiomC{$P \mid \Gamma, x^{\emptyset}:\tau \vdashs M: v$}
+        \AxiomC{$P \mid \Gamma \circledast x^{\emptyset}:\tau \vdashs M: v$}
         \AxiomC{$P => \SeFun{\phi}$}
         \AxiomC{$P \vdash \Gamma \geq \phi$}\RightLabel{[$\sepimp$I$^s$]}
         \TrinaryInfC{$P \mid \Gamma \vdashs \lambda^{*}x. M : \phi \tau v$}
@@ -315,7 +317,7 @@ are shared or not.
     % -&>I^s
     \begin{minipage}{1.0\textwidth}
       \begin{prooftree}
-        \AxiomC{$P \mid \Gamma^{[\emptyset \mapsto \{x\}]}, x^{\texttt{Vars}(\Gamma)}:\tau \vdashs M: v$}
+        \AxiomC{$P \mid \Gamma^{[\emptyset \mapsto \{x\}]} \varoplus x^{\texttt{Vars}(\Gamma)}:\tau \vdashs M: v$}
         \AxiomC{$P => \ShFun{\phi}$}
         \AxiomC{$P \vdash \Gamma \geq \phi$}\RightLabel{[$\rightarrow$I$^s$]}
         \TrinaryInfC{$P \mid \Gamma \vdashs \lambda^{\alpha}x. M : \phi \tau v$}
@@ -324,11 +326,11 @@ are shared or not.
     % App^s
     \begin{minipage}{1.0\textwidth}
       \begin{prooftree}
-        \AxiomC{$P \vdash \Delta\ \texttt{un}$}
-        \AxiomC{$P \mid \Gamma,\Delta \vdashs M: \phi v \tau\ \ \ \ \
-          P \mid  \Gamma',\Delta \vdashs N: v$}\noLine
+        \AxiomC{$P \mid \Gamma \circledast \Delta \vdashs M: \phi v \tau\ \ \ \ \
+          P \mid  \Gamma' \circledast \Delta \vdashs N: v$}
+        \AxiomC{$P \vdash \Delta\ \texttt{un}$} \noLine
         \BinaryInfC{if \texttt{Used}($\Gamma$) = \texttt{Used}($\Gamma'$) then ($P => \ShFun{\phi}$) else ($P => \SeFun{\phi}$)}\RightLabel{[App$^s$]}
-        \UnaryInfC{$P \mid \Gamma,\Gamma',\Delta \vdashs M N: \tau$}
+        \UnaryInfC{$P \mid \Gamma \sqcup \Gamma' \circledast \Delta \vdashs M N: \tau$}
       \end{prooftree}
     \end{minipage}
     % sum types
@@ -346,13 +348,17 @@ are shared or not.
     \end{minipage}
     \begin{minipage}{1.0\textwidth}
       \begin{prooftree}
-        \AxiomC{$P \vdash  \Delta\ \texttt{un}$}
-        \AxiomC{$P \mid  \Gamma,\Delta \vdashs M: \tau \oplus \tau'$}
-        \AxiomC{$P \mid  \Gamma'_x,\Delta,x:\tau \vdashs N: v$}
-        \AxiomC{$P \mid  \Gamma'_y,\Delta, y:\tau' \vdashs N': v$}\RightLabel{[$\oplus$E$^s$]}
-        \QuaternaryInfC{$P \mid \Gamma,\Gamma', \Delta \vdashs \Case{M}{\{\texttt{inl}\ x \mapsto N; \texttt{inr}\ y \mapsto N'\}}:v$}
+        \AxiomC{$P \vdash  \Delta\ \texttt{un}\ \ \ \ \ 
+          P \mid  \Gamma \circledast \Delta \vdashs M: \tau \oplus \tau'$}\noLine
+        \UnaryInfC{$P \mid  \Gamma'_x \circledast \Delta,x:\tau \vdashs N: v\ \ \ \ \
+          P \mid  \Gamma'_y \circledast \Delta, y:\tau' \vdashs N': v$}\RightLabel{[$\oplus$E$^s$]}
+        \UnaryInfC{$P \mid (\Gamma \sqcup \Gamma') \circledast \Delta \vdashs \Case{M}{\{\texttt{inl}\ x \mapsto N; \texttt{inr}\ y \mapsto N'\}}:v$}
       \end{prooftree}
-      \end{minipage}
+    \end{minipage}
+    \begin{minipage}{1\linewidth}
+      \centering
+      \TODO{get rid of the red symbols}
+    \end{minipage}
     \end{framed}
   \caption{Syntax Directed Typing Rules}
   \label{fig:syntax-typing-rules}
@@ -406,14 +412,10 @@ of the constructor types $C$ and $C'$.
     \end{minipage}
     \begin{minipage}{1\linewidth}
       \begin{flalign*}
-        \mathcal{C}(P, \Gamma, \Sigma)  = \{ x_i, x_j \mid \Gamma(x_i:\tau_1;x_j:\tau_2) \}
+        \mathcal{C}(P, \Gamma, \Sigma)  = \texttt{Used}(\Gamma, \Sigma)
       \end{flalign*}
     \end{minipage}
   \end{framed}
-  % Un
-  % Weaken
-  % GenI
-  % \mathcal{C}(\Gamma, \Sigma)
   \caption{Auxilary definitions}
   \label{fig:aux-defs}
 \end{figure}
@@ -548,23 +550,23 @@ of the constructor types $C$ and $C'$.
 % % By default we may assume that resources are always separating unless explicitly specified
 % % that they are sharing.
 
-% \section{Typing environment}
+\section{Implementing Algorithm $\M$}
 
-% The typing environment in standard Milner-Damas algorithm
-% is a pair of identifier and its type.
-% We need to modify the typing environment so that it describes sharing.
-% % There can be many different ways of doing it.
-% In the current implementation we have
-% extended the typing environment to hold 2 more entities along with the
-% type of the identifier, a list of list of identifiers --- that describes the sharing of variables,
-% a scope tag---that identifies if the variable is global in the complete module or local to the definition.
-% Global variables can be used anywhere in the file or other code file if it is imported
-% All function names will be defaulted to global scope.
-% Local variables can be used only after they have been bound in the typing environment.
-% The new typing environment can be realized as:
-% \begin{minted}{haskell}
-%   type Env = Map Id (Type, [[Id]], Scope)
-% \end{minted}
+The typing environment in standard Milner-Damas algorithm
+is a pair of identifier and its type.
+We need to modify the typing environment so that it describes sharing.
+% There can be many different ways of doing it.
+In the current implementation we have
+extended the typing environment to hold 2 more entities along with the
+type of the identifier, a list of list of identifiers --- that describes the sharing of variables,
+a scope tag---that identifies if the variable is global in the complete module or local to the definition.
+Global variables can be used anywhere in the file or other code file if it is imported
+All function names will be defaulted to global scope.
+Local variables can be used only after they have been bound in the typing environment.
+The new typing environment can be realized as:
+\begin{minted}{haskell}
+  type Env = Map Id (Type, [[Id]], Scope)
+\end{minted}
 
 % % how is the list of list of ids help in identifying sharing
 

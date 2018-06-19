@@ -92,7 +92,7 @@ lookup of the term variable $x$ in the context $\Gamma$. The $[LET]$ allows crea
 definitions within an expression term. $[\rightarrow I]$ and $[\rightarrow E]$ are rules
 for typing lambda terms and application respectively. We also include the rules for
 type application and abstraction $[\forall I]$ and $[\forall E]$ to introduce second order
-quantification in predicate logic.
+quantification in predicate logic i.e. polymorphism.
 
 % This simple type sytem is powerful in its
 % expressivity and can encode a large variety of computations. The type checking algorithm
@@ -300,6 +300,43 @@ Similarly $A \plus B$ would be represented as $\oc A \otimes \oc B$ and $A \time
 We clearly see that this is a much powerful system in contrast to intuistionistic logic because of its enhanced expressivity.
 But there is an awakward asymmetry between the multiplicative and additive constructs. While $\rightspoon$ is a right adjoint
 for multiplicative $\times$, there is no such right adjoint counter part for additive $\with$.
+\section{Linear logic with Qualified Types: Quill}
+We start our work based on Quill [\cite{morris_best_2016}]. It tries
+to implement linear types using qualified types. The novelty of using a qualified
+types is that it gives a complete and decidable type inference system. By using
+a modified version of Algorithm M we can compute principal types of the terms.
+In reality due to higher ordered kind system, we may not be able to deduce the
+type of the terms but we can work around it by annotating some or all parts of
+the terms. This is usually done at a top level function declaration. Specifying types
+also serves as some kind of documentation for the programmers.
+The key idea of Morris is to introduce 2 types of predicates into the language: \texttt{Un} and \texttt{Fun}.
+\texttt{Un $\tau$} implies that the type $\tau$ is unrestricted, meaning it does not
+contain any resources or the resources that it captures can be easily duplicated and dropped.
+The \texttt{Fun $\tau$} implies that the type $\tau$ is of a function type. The function
+depending on its use, may or may not capture resources in its closure. Thus the functions
+themselves can be of restricted or unrestricted type. In traditional sense of typeclasses
+in haskell, we can think of the \texttt{Un} to be a typeclass with methods supporting the operation
+of duplication and dropping.
+\begin{figure}[h]
+  \centering
+  \begin{framed}
+    \begin{minted}[escapeinside=||,mathescape=true]{haskell}
+      class Un where
+          dup  :: t |$\overset{!}{\rightarrow}$| (t |$\otimes$| t)
+          drop :: t |$\overset{!}{\rightarrow}$| 1
+    \end{minted}
+  \end{framed}
+  \caption{\texttt{Un} as a Typeclass}
+  \label{fig:un-typeclass}
+\end{figure}
+
+Simple types such as integers and booleans are all of unrestricted type as
+they can be duplicated or dropped freely.
+While program resources such as file handles, database connections
+should be treated as restricted type as we cannot freely duplicate it
+or drop it. Although there would be certain portions of the program where we would
+like to close the file handle or free the memory space allocated on the heap.
+(This is where we expected the bunched implications would play a crucial role. I guess.)
 
 \section{Bunched Implications and $\alpha\lambda$ Calculus}
 
@@ -466,45 +503,7 @@ As $f$ needs an argument that does not share any resources with its context.
 \TODO{ This is kind of a big jump here.
  probably shift qualified types after linear logic section to have better continuity
 }
-\section{Linear logic with Qualified Types: Quill}
-We start our work based on Quill [\cite{morris_best_2016}]. It tries
-to implement linear types using qualified types. The novelty of using a qualified
-types is that it gives a complete and decidable type inference system. By using
-a modified version of Algorithm M we can compute principal types of the terms.
-In reality due to higher ordered kind system, we may not be able to deduce the
-type of the terms but we can work around it by annotating some or all parts of
-the terms. This is usually done at a top level function declaration. Specifying types
-also serves as some kind of documentation for the programmers.
-The key idea of Morris is to introduce 2 types of predicates into the language: \texttt{Un} and \texttt{Fun}.
-\texttt{Un $\tau$} implies that the type $\tau$ is unrestricted, meaning it does not
-contain any resources or the resources that it captures can be easily duplicated and dropped.
-The \texttt{Fun $\tau$} implies that the type $\tau$ is of a function type. The function
-depending on its use, may or may not capture resources in its closure. Thus the functions
-themselves can be of restricted or unrestricted type. In traditional sense of typeclasses
-in haskell, we can think of the \texttt{Un} to be a typeclass with methods supporting the operation
-of duplication and dropping.
-\begin{figure}[h]
-  \centering
-  \begin{framed}
-    \begin{minted}[escapeinside=||,mathescape=true]{haskell}
-      class Un where
-          dup  :: t |$\overset{!}{\rightarrow}$| (t |$\otimes$| t)
-          drop :: t |$\overset{!}{\rightarrow}$| 1
-    \end{minted}
-  \end{framed}
-  \caption{\texttt{Un} as a Typeclass}
-  \label{fig:un-typeclass}
-\end{figure}
 
-Simple types such as integers and booleans are all of unrestricted type as
-they can be duplicated or dropped freely.
-While program resources such as file handles, database connections
-should be treated as restricted type as we cannot freely duplicate it
-or drop it. Although there would be certain portions of the program where we would
-like to close the file handle or free the memory space allocated on the heap.
-(This is where we expected the bunched implications would play a crucial role. I guess.)
-
-Combining linear logic with qualified types in Quill
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../thesis-ku"
