@@ -9,14 +9,14 @@ to a multiset inorder to simplify our type assignment algorithm.
       \text{Type Variables}\ \ \      t, u, v         &\in \text{TVar}  \nonumber\\
       \text{Kinds}\ \ \               \kappa          &::= \star \mid \kappa \rightarrow \kappa \nonumber\\
       \text{Type constructors}\ \ \   T^{\kappa}       &::= \mathcal{T}^{\kappa}\ \text{where}
-                                                      \{\otimes, \with, \oplus, \parr, \overset{!}{\sepimp}, \sepimp, \xrightarrow{!}, \rightarrow \} \subseteq \mathcal{T}^{* \rightarrow * \rightarrow *}\nonumber\\
+                                                      \{\overset{!}{\sepimp}, \sepimp, \xrightarrow{!}, \rightarrow \} \subseteq \mathcal{T}^{* \rightarrow * \rightarrow *}\nonumber\\
       \text{Types}\ \ \               \tau^{\kappa}    &::= t \mid T^{\kappa} \mid \tau^{\kappa' \rightarrow \kappa} \tau^{\kappa'}\nonumber\\
       \text{Predicates}\ \ \          \pi             &::= \texttt{Un}\ \tau \mid \texttt{SeFun}\ \tau \mid \texttt{ShFun}\ \tau \mid \tau \leq \tau' \nonumber\\
       \text{Qualified Types}\ \ \     \rho            &::= \tau^{*} \mid \pi => \rho \nonumber\\
       \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma \nonumber
     \end{flalign*}
   \end{framed}
-  \caption{Types and Kinds in \qub}
+  \caption{Types and Kinds in \qub{}}
   \label{fig:qub-types}
 \end{figure}
 % Describe types
@@ -34,13 +34,13 @@ The system is powerful enough to let programmers define their own types using th
 
 % Describe Predicates
 The predicate system enhances the expressibility of the type system. Following the same route taken
-by Quill [\cite{morris_best_2016}] we use the predicate \texttt{Un} $\tau$ to denote
+by Quill \citep{morris_best_2016} we use the predicate \texttt{Un} $\tau$ to denote
 that the type $\tau$ is unrestricted. We write \texttt{ShFun} $\tau$ to describe that type $\tau$ may share resources with its
 argument types and \texttt{SeFun} $\tau$ to describe that $\tau$ is
 does not share any resources from its argument types. The function types can also be of the unrestricted type.
 Thus if a type $\tau$ is unrestricted i.e. it qualifies with predicate \texttt{Un} and it is also one of the function types
 i.e. \texttt{SeFun} or \texttt{ShFun}, we write them as $\overset{!}{\sepimp}$ and $\xrightarrow{!}$ respectively.
-This can be considered as an improving substitution following Jones notion of improvement of qualified types [\cite{jones_simplifying_1995}].
+This can be considered as an improving substitution following Jones notion of improvement of qualified types \citep{jones_simplifying_1995}.
 We also define an ordering on types by using the predicate $\geq$. The predicate $\tau \geq \tau'$ holds if the type $\tau'$
 is less restricting than $\tau$. The predicate entailment relations $P => Q$ are given in \cref{fig:entailment-rules}.
 \TODO{Explain what does it mean for a type to be less that other type}

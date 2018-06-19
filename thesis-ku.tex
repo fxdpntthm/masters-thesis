@@ -29,6 +29,7 @@
 \usepackage{pdflscape}
 \usepackage{tikz-qtree}
 \usepackage{stmaryrd}
+\usepackage{xspace}
 
 \renewcommand\qedsymbol{$\blacksquare$}
 
@@ -76,7 +77,7 @@
 \newcommand{\Pair}[1]{\langle #1 \rangle}
 \newcommand{\TODO}[1]{{\begin{framed}{\color{red} #1}\end{framed}}}
 \newcommand{\HaskellF}[1]{\mintinline{haskell}{#1}}
-\newcommand{\qub}{QuB}
+\newcommand{\qub}{QuB\xspace}
 
 
 \newcommand{\vdashs}{\vdash^s}
@@ -85,7 +86,7 @@
 \usepackage{booktabs}
 
 % Set the title and author info
-\title{\qub : A Resource Aware Functional Language}
+\title{\qub{}: A Resource Aware Functional Language}
 \author{Apoorv Ingle}
 
 
@@ -145,8 +146,8 @@
   on sharing or separation of resources which been studied in a theoritical
   setting as the logic of bunched implications (\BI)[\cite{ohearn_logic_1999}].
 
-  We design and implement \qub\, a prototype language that is Curry-Howard interpretation of the logic
-  of \BI\ [\cite{ohearn_bunched_2003}]---$\alpha\lambda$-calculus---by introducing 2 new type
+  We design and implement \qub, a prototype language that is Curry-Howard interpretation of the logic
+  based on \BI\ [\cite{ohearn_bunched_2003}]---$\alpha\lambda$-calculus---by introducing 2 new type
   constructors of arrow type: sharing arrow ($\rightarrow$) and separating arrow($\sepimp$) to replace
   the usual notion of function arrows of simply typed lambda calculus. Sharing arrows imply that functions
   share resources with its arguments, while separating arrows imply that functions do not share resources with its arguments.

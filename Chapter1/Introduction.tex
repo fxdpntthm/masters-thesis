@@ -2,7 +2,7 @@
 % TODO should change title
 
 \section{Type Inference Algorithm}
-Algorithm $\mathcal{W}$ [\cite{damas_principal_1982}] and its varient algorithm $\mathcal{M}$ [\cite{lee_proofs_1998}]
+Algorithm $\mathcal{W}$ \citep{damas_principal_1982} and its varient algorithm $\mathcal{M}$ \citep{lee_proofs_1998}
 are the basis of most of the modern statically typed programming languages. Type inference
 is decidable in the sense, type checking algorithm always completes with a success or failure.
 The algorithms also gurantee a most general typing scheme for an expression in
@@ -22,7 +22,7 @@ and a type language specified by
 where $\alpha$ is a type variable, $\iota$ are primitive types in the language, $\rightarrow$
 is a type constructor and $\sigma$ is a typing scheme.
 
-Robinson's unification algorithm [\cite{robinson_machine-oriented_1965}] plays a key role
+Robinson's \citeyearpar{robinson_machine-oriented_1965} unification algorithm plays a key role
 in ensuring that types are well formed. Its purely syntactic approach in creating
 substitutions to unify types keeps the complete process elegent.
 The algorithm works in an interesting way where the types of all well-typed terms can be
@@ -106,13 +106,13 @@ quantification in predicate logic i.e. polymorphism.
 % TODO Give examples? and come up with a Curry-Howard interpretation of
 
 \section{Qualified Types}
-Jones [\cite{jones_theory_1994}] proposed incorporating predicates in the type language.
+Jones \citeyearpar{jones_theory_1994} proposed incorporating predicates in the type language.
 Predicates are used to build constraints on the domain of the type of a term in the language expression.
 It introduces additional layer between polymorphic and monomorphic typing of programs.
 A modification of Milner-Damas algorithm to encorporate predicates ensures that type inference
 is sound and complete. The types that satisfy all the predicates are called qualified types for the term.
 Qualified types are powerful enough to expresses type classes with functional dependencies,
-record types and subtyping [\cite{mark_type_2000}]. The type language is modified to contain
+record types and subtyping \citep{mark_type_2000}. The type language is modified to contain
 qualified types. $P$ and $T$ range over finite set of predicates. We slightly modify the typing rules
 from \cref{fig:stlc-logic} to add 2 new rules for qualified types as shown in \cref{fig:qualified-types-rules}
 \begin{figure}[h]
@@ -153,7 +153,7 @@ from \cref{fig:stlc-logic} to add 2 new rules for qualified types as shown in \c
 % what is linearity
 % restricting weakening and contraction
 While classical logic deals with truth of propositions, linear logic deals with availability of resources.
-Linear logic [\cite{girard_linear_1987}] promises to help cope with the resource and resource control problem.
+Linear logic \citep{girard_linear_1987} promises to help cope with the resource and resource control problem.
 It is refinement of classical intuistionistic logic. The core idea is that propositions
 cannot be freely duplicated or discarded as allowed in classical instuistionistic logic.
 In formal terms, the contraction and weakening of logical rules are restricted.
@@ -164,7 +164,7 @@ in memory shared state are pet peeves for programmers writing
 industry grade software. Linear logic hopes to be a remedy for
 these problems. If contraction and weakening is completely abandoned,
 the system gets overly restrictive. Wadler describes a refinement of
-linear logic based on Girard's Logic of Unity [\cite{wadler_taste_1993}, \cite{girard_unity_1993}].
+linear logic based on Girard's Logic of Unity \citep{wadler_taste_1993, girard_unity_1993}.
 It works around the problem of linear logic being too restrictive by allowing
 instuistionistic rules in fragments. It can be considered as a disjoint union
 of classical linear logic and intuistionistic logic. The grammar of intuistionistic logic is shown in \ref{fig:intu-logic-grammar}
@@ -301,7 +301,7 @@ We clearly see that this is a much powerful system in contrast to intuistionisti
 But there is an awakward asymmetry between the multiplicative and additive constructs. While $\rightspoon$ is a right adjoint
 for multiplicative $\times$, there is no such right adjoint counter part for additive $\with$.
 \section{Linear logic with Qualified Types: Quill}
-We start our work based on Quill [\cite{morris_best_2016}]. It tries
+We start our work based on Quill \citep{morris_best_2016}. It tries
 to implement linear types using qualified types. The novelty of using a qualified
 types is that it gives a complete and decidable type inference system. By using
 a modified version of Algorithm M we can compute principal types of the terms.
@@ -358,7 +358,7 @@ There are two flavours of implication---additive and multiplicative---which is c
 \end{framed}
 In the logic of {\textbf{\em BI}} the question then faced is choosing what kind of
 implication should be used inplace of $\lozenge$---the additive kind or the multiplicative kind.
-O'Hearn and Pym [\cite{ohearn_logic_1999}] introduce 2 kinds of arrows
+O'Hearn et al. \citeyearpar{ohearn_logic_1999} introduce 2 kinds of arrows
 and using them depending on the connectives used in the context. A multiplicative implication ($\sepimp$)
 is used when the context is connected with a comma and an additive implication ($\rightarrow$) is used when the
 context is connected using semicolon. This gives rise to 2 rules
@@ -392,7 +392,7 @@ while the additive side would help the programmers fall back to the non-resource
 up the awakward asymmetry experienced in linear logic. The multiplicative conjunction $\otimes$ has a right adjoint
 counter part as $\sepimp$ while additive conjuntion $\with$ has a right adjoint counterpart of $\rightarrow$.
 The logic of \textbf{\em BI} argues that instead of looking at the number of times an argument is used within the function,
-it should be viewed in terms of {\em sharing}. $\alpha \lambda$-calculus[\cite{ohearn_resource_1999}]
+it should be viewed in terms of {\em sharing}. $\alpha \lambda$-calculus \citep{ohearn_resource_1999}
 is interpretation of the logic of \textbf{\em BI}. It introduces 2 kinds of arrows by modifiying the the syntax of lambda calculus:
 \begin{enumerate}
   \item $\sepimp$     : Functions do not share resources with their arguments
