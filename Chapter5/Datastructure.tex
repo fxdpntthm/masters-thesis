@@ -120,10 +120,11 @@ both the sum types are given in \cref{sec:sums}.
 \label{fig:bi-sum-types}
 \end{figure}
 
-\TODO{How do we write about type constructors?}
 
 \begin{figure}[h]
   % sharing constructor
+  \begin{framed}
+    \TODO{How do we write about type constructors?}
 \begin{minipage}{1\textwidth}
   \begin{prooftree}
     \AxiomC{$P \mid \Gamma \vdash C: \tau_1 \sepimp \tau_2 \rightarrow \tau_3 \rightarrow \dots \rightarrow \tau_n \rightarrow T$}
@@ -139,11 +140,10 @@ both the sum types are given in \cref{sec:sums}.
     \BinaryInfC{$P \mid \Gamma, \Delta \vdash C \vec{x} : T $}
   \end{prooftree}
 \end{minipage}
-
+\end{framed}
   \caption{User Defined Datatypes}
   \label{fig:ud-datatypes}
 \end{figure}
-
 
 The datatypes are user defined types:
 There are 2 main kinds of non-recursive datatypes

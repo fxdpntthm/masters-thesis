@@ -435,29 +435,29 @@ looks like:
         \UnaryInfC{$\Gamma \vdash x : \sigma $}
       \end{prooftree}
     \end{minipage}
-    % let
-    \begin{minipage}{.5\textwidth}
-      \begin{prooftree}
-        \AxiomC{$\Gamma \vdash M : \sigma \ \ \ \ \
-          \Gamma_{x}, x: \sigma \vdash N: \tau$} \RightLabel{$[LET]$}
-        \UnaryInfC{$\Gamma \vdash (\texttt{let}\ x\ \texttt{=}\ M\ \texttt{in}\ N) : \tau$}
-      \end{prooftree}
-    \end{minipage}
-    % forall I
-    \begin{minipage}{0.5\textwidth}
-      \begin{prooftree}
-        \AxiomC{$\Gamma \vdash M : \sigma$}\RightLabel{$[\forall I]$}
-        \AxiomC{$t \notin \text{fvs}(\Gamma)$}
-        \BinaryInfC{$\Gamma \vdash \lambda t. M : \forall t. \sigma$}
-      \end{prooftree}
-    \end{minipage}
-    % forall E
-    \begin{minipage}{0.5\textwidth}
-      \begin{prooftree}
-        \AxiomC{$\Gamma \vdash M : \forall t. \sigma$} \RightLabel{$[\forall E]$}
-        \UnaryInfC{$\Gamma \vdash M \tau : [\tau \backslash t] \sigma$}
-      \end{prooftree}
-    \end{minipage}
+    % % let
+    % \begin{minipage}{.5\textwidth}
+    %   \begin{prooftree}
+    %     \AxiomC{$\Gamma \vdash M : \sigma \ \ \ \ \
+    %       \Gamma_{x}, x: \sigma \vdash N: \tau$} \RightLabel{$[LET]$}
+    %     \UnaryInfC{$\Gamma \vdash (\texttt{let}\ x\ \texttt{=}\ M\ \texttt{in}\ N) : \tau$}
+    %   \end{prooftree}
+    % \end{minipage}
+    % % forall I
+    % \begin{minipage}{0.5\textwidth}
+    %   \begin{prooftree}
+    %     \AxiomC{$\Gamma \vdash M : \sigma$}\RightLabel{$[\forall I]$}
+    %     \AxiomC{$t \notin \text{fvs}(\Gamma)$}
+    %     \BinaryInfC{$\Gamma \vdash \lambda t. M : \forall t. \sigma$}
+    %   \end{prooftree}
+    % \end{minipage}
+    % % forall E
+    % \begin{minipage}{0.5\textwidth}
+    %   \begin{prooftree}
+    %     \AxiomC{$\Gamma \vdash M : \forall t. \sigma$} \RightLabel{$[\forall E]$}
+    %     \UnaryInfC{$\Gamma \vdash M \tau : [\tau \backslash t] \sigma$}
+    %   \end{prooftree}
+    % \end{minipage}
     % -> I
     \begin{minipage}{0.5\textwidth}
       \begin{prooftree}

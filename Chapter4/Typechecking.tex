@@ -9,8 +9,8 @@ Vector $\vec{t}$ is a shorthand for a finite set of variables $\{t_1, t_2, \dots
 abbreviates $\forall t_1 \dots \forall t_n. P_1 => \dots => P_m => \tau$.
 The typing context $\mathcal{H}$ is a finite multiset of pairs of terms and types such that if two term variables occur
 more than once, all of them must have same type. i.e. if $(x:\sigma) \in \mathcal{H}$ and $x:\sigma' \in \mathcal{H}$ then $\sigma \approx \sigma'$.
-The equality ($\approx$) on typing schemes is upto renaming of bound variables.
-$\Gamma_{x}$ denotes the type assigment excluding the type variable $x$.
+The equality ($\approx$) on typing schemes is up-to renaming of bound variables.
+$\Gamma_{x}$ denotes the type assignment excluding the type variable $x$.
 We write $\sigma = \Gamma(x)$ for the type scheme assigned to the term x in $\Gamma$.
 \texttt{dom}($\Gamma$) is the set of identifiers in the type assignment i.e.
 \texttt{dom}($\Gamma$) = $\{ x \mid (x:\sigma) \in \Gamma\}$.
@@ -24,18 +24,18 @@ Similar to Jones' \citeyearpar{jones_theory_1994} qualified types and type schem
   $\texttt{fvs}(\Gamma)$ is the set of free type variables in the type assignment $\Gamma$.\\
   $\texttt{fvs}(\Gamma) = \bigcup_{x \in \texttt{dom}(\Gamma)} \{ \texttt{fvs}(\Gamma(x)) \}$
 \end{defn}
-\begin{defn}[Type Assignment]
-The expression $P \mid \Gamma \vdash M : \sigma$ denotes the assertion that the term $M$ is of type $\sigma$
-when the predicates in $P$ are satisfied and the free type variables in $M$ are specifed in type assigment $\Gamma$.
+\begin{defn}[Typing Judgment]
+The expression $P \mid \Gamma \vdash M : \sigma$ denotes the assertion that the term $M$ has a typing scheme $\sigma$
+when the predicates in $P$ are satisfied and the free type variables in $M$ are specified in type assignment $\Gamma$.
 \end{defn}
 
 \section{Type System of  \BI}\label{sec:type-system}
 % Structural Rules
 % Connective Rules
 % forall, => Qualified type rules
-We split our type system into multiple sections for legibility. The first section includes structrual rules
-as shown in \cref{fig:structural-rules} and the second section includes connectives with
-introduction and elemination rules as shown in \cref{fig:typing-rules}.
+We split our type system into multiple parts for legibility. The first part includes structural rules
+shown in \cref{fig:structural-rules} and the second part includes connectives with
+introduction and elimination rules shown in \cref{fig:typing-rules}.
 
 % structural rules
 \begin{figure}[h]
@@ -90,18 +90,17 @@ introduction and elemination rules as shown in \cref{fig:typing-rules}.
     \label{fig:structural-rules}
   \end{figure}
 
-The tautology rule ([ID]) is a simple type assigment lookup for checking the type of the term.
+The tautology rule ([ID]) is a simple type assignment lookup for checking the type of the term.
 The exchange rule ([EXCH]) justifies the fact that the order in which the type assignments are witnessed
 in the multiset is insignificant and we can commute the individual term typing schemes within the multiset context
 with no effect to the typing derivations. The weakening and contraction rules are made explicit in contrast to standard
 Hindley-Milner type system. The contraction sharing rule [CTR-SH] and weakening sharing rule [WKN-SH]
-says that we can duplicate or drop certain pairs of type assigments as per our convience as we know they are in sharing with other
+says that we can duplicate or drop certain pairs of type assignments as per our convenience as we know they are in sharing with other
 terms that remain in the context. The contraction separation rule [CTR-UN] and weakening separation rule [WKN-SH] can be
-applied to terms only if we can prove that they are of unrestricted type which is captured by introducting
+applied to terms only if we can prove that they are of unrestricted type which is captured by introducing
 the ($\Delta$ \texttt{un}) predicate on the type that is dropped or duplicated.
 
 % Connective rules
-
   \begin{figure}[h]
     \begin{framed}
     % let
@@ -112,11 +111,12 @@ the ($\Delta$ \texttt{un}) predicate on the type that is dropped or duplicated.
         \BinaryInfC{$P \cup P' \mid \Gamma \vdash \Let{x}{M}{N}: \tau$}
       \end{prooftree}
     \end{minipage}
+    \newline\newline\newline
     % forall I
     \begin{minipage}{0.5\textwidth}
       \begin{prooftree}
         \AxiomC{$P \mid \Gamma \vdash M: \sigma$}
-        \AxiomC{$t \notin TV(\Gamma) \cup TV(P)$}\RightLabel{$[\forall I]$}
+        \AxiomC{$t \notin \texttt{fvs}(\Gamma) \cup \texttt{fvs}(P)$}\RightLabel{$[\forall I]$}
         \BinaryInfC{$P \mid \Gamma \vdash M: \forall t. \sigma$}
       \end{prooftree}
     \end{minipage}
@@ -127,6 +127,7 @@ the ($\Delta$ \texttt{un}) predicate on the type that is dropped or duplicated.
         \UnaryInfC{$P \mid \Gamma \vdash M: [\tau \backslash t] \sigma $}
       \end{prooftree}
     \end{minipage}
+    \newline\newline\newline
     % => I
     \begin{minipage}{0.5\textwidth}
       \begin{prooftree}
@@ -142,42 +143,41 @@ the ($\Delta$ \texttt{un}) predicate on the type that is dropped or duplicated.
         \BinaryInfC{$P \mid \Gamma \vdash M: \rho$}
       \end{prooftree}
     \end{minipage}
+    \newline\newline\newline
     % -&> I
-    \begin{minipage}{1\textwidth}
+    \begin{minipage}{0.5\textwidth}
       \begin{prooftree}
-        \AxiomC{$P \mid \Gamma^{[\emptyset\mapsto \{x\}]},x^{\text{Vars}(\Gamma)}: \tau \vdash M : \tau'$}
-        \AxiomC{$P \Rightarrow \texttt{ShFun}\ \phi$}
-        \AxiomC{$P \vdash \Gamma \geq \phi$} \RightLabel{$[\rightarrow I]$}
-        \TrinaryInfC{$P \mid \Gamma \vdash \lambda^{\alpha}x. M : \phi \tau \tau'$}
+        \AxiomC{$P \Rightarrow \texttt{ShFun}\ \phi\ \ \ \ \
+          P \vdash \Gamma \geq \phi$}\noLine
+        \UnaryInfC{$P \mid \Gamma^{[\emptyset\mapsto \{x\}]},x^{\text{Vars}(\Gamma)}: \tau \vdash M : \tau'$}\RightLabel{$[\rightarrow I]$}
+        \UnaryInfC{$P \mid \Gamma \vdash \lambda^{\alpha}x. M : \phi \tau \tau'$}
       \end{prooftree}
     \end{minipage}
     % -&> E
-    \begin{minipage}{1\textwidth}
+    \begin{minipage}{0.5\textwidth}
       \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash M : \phi \tau \tau'$}
-        \AxiomC{$P \mid \Delta \vdash N : \tau'$}
-        \AxiomC{$P => \texttt{ShFun}\ \phi$}
-        \AxiomC{$P \vdash \Gamma \geq \phi$} \RightLabel{$[\rightarrow E]$}
-        \QuaternaryInfC{$P \mid \Gamma \varoplus \Delta \vdash M N : \tau'$}
+        \AxiomC{$P => \texttt{ShFun}\ \phi\ \ \ \ \
+          P \vdash \Gamma \geq \phi$}\noLine
+        \UnaryInfC{$P \mid \Gamma \vdash M : \phi \tau \tau'\ \ \ \ \
+          P \mid \Delta \vdash N : \tau'$} \RightLabel{$[\rightarrow E]$}
+        \UnaryInfC{$P \mid \Gamma \varoplus \Delta \vdash M N : \tau'$}
       \end{prooftree}
     \end{minipage}
+    \newline\newline\newline
     % -*> I
-    \begin{minipage}{1\textwidth}
+    \begin{minipage}{0.5\textwidth}
       \begin{prooftree}
-        \AxiomC{$P \mid \Gamma,x^{\emptyset}: \tau \vdash M : \tau'$}
-        \AxiomC{$P => \texttt{SeFun}\ \phi$}
-        \AxiomC{$ P \vdash \Gamma \geq \phi$} \RightLabel{$[\sepimp I]$}
-        \TrinaryInfC{$P \mid \Gamma \vdash \lambda^{*}x. M : \phi \tau \tau'$}
+        \AxiomC{$P => \texttt{SeFun}\ \phi\ \ \ \ \ P \vdash \Gamma \geq \phi$}\noLine
+        \UnaryInfC{$P \mid \Gamma,x^{\emptyset}: \tau \vdash M : \tau'$} \RightLabel{$[\sepimp I]$}
+        \UnaryInfC{$P \mid \Gamma \vdash \lambda^{*}x. M : \phi \tau \tau'$}
       \end{prooftree}
     \end{minipage}
     % -*> E
-    \begin{minipage}{1\textwidth}
+    \begin{minipage}{0.5\textwidth}
       \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash M : \phi \tau \tau'$}
-        \AxiomC{$P \mid \Delta \vdash N : \tau$}
-        \AxiomC{$P => \texttt{SeFun}\ \phi$}
-        \AxiomC{$P \vdash \Gamma \geq \phi$} \RightLabel{$[\sepimp E]$}
-        \QuaternaryInfC{$P \mid \Gamma \circledast \Delta \vdash M N : \tau'$}
+        \AxiomC{$P => \texttt{SeFun}\ \phi\ \ \ \ \ P \vdash \Gamma \geq \phi$}\noLine
+        \UnaryInfC{$P \mid \Gamma \vdash M : \phi \tau \tau'\ \ \ \ P \mid \Delta \vdash N : \tau$} \RightLabel{$[\sepimp E]$}
+        \UnaryInfC{$P \mid \Gamma \circledast \Delta \vdash M N : \tau'$}
       \end{prooftree}
     \end{minipage}
   \end{framed}
@@ -188,14 +188,16 @@ the ($\Delta$ \texttt{un}) predicate on the type that is dropped or duplicated.
 The rules of [$\rightarrow$I] and [$\sepimp$I] describes the abstraction over shared and
 separating resources respectively, while [$\rightarrow$E] and [$\sepimp$E] is the application
 rule for shared and separating resources respectively. [$=>$I] and [$=>$E] are the rules for
-qualified types that would add constraints on the type being compluted. [$\forall$I] introduces
-polymorphism and [$\forall$E] eleminates it. We assume that the free type variables that
+qualified types that would add constraints on the type being computed. [$\forall$I] introduces
+polymorphism and [$\forall$E] eliminates it. We assume that the free type variables that
 would be substituted in the type scheme would not interfere with the sharing and separation
-of resources of the fully concretized type. The reason to use multisets can now be explained
-as the elimiation rule ([$\rightarrow$E]) can be expressed by simply duplicating the typing
-judgements that are in sharing after we split the type assignment into two parts,
-for typing each sub expression individually.
-
+of resources of the fully concretized type. The $\lambda$ abstractions $\lambda^{*} x. M$ and $\lambda^{\alpha}.M$
+have a function type $\ShFun{\phi}$ or $\SeFun{phi}$ only if it is more restricting that its environment.
+This is specified in the judgments $\cdot \geq \cdot$. To avoid name shadowing, we would assume that
+the binders would introduce fresh names. The reason to use multisets can now be explained
+as the elimination rule ([$\rightarrow$E]) can be expressed by simply duplicating the typing
+judgments that are in sharing after we split the type assignment into two parts,
+for typing each sub expression individually.{\color{red} I am not sure about this}.
 \begin{figure}[h]
   \begin{framed}
   \begin{minipage}{0.5\linewidth}
@@ -251,15 +253,16 @@ for typing each sub expression individually.
   \label{fig:bi-base-typing-rules}
 \end{figure}
 The rules given in \cref{fig:bi-base-typing-rules}
-are convinence rules for base cases that compute predicate constraints for types within a context.
+are convenience rules for base cases that compute predicate constraints for types within a context.
+The $P \mid \cdot \geq \cdot$ lifts $\geq$ predicate into the typing environment.
 
 \section{Syntax Directed Typing rules}\label{sec:syntax-typing-rules}
 The type system explained in the previous section are not syntax directed and will not be fit
 to develop a type inference algorithm. Ideally the typing rules and syntactic forms should have one-to-one
 correspondence. In this section we will define syntax directed typing rules
-that will simplify our type inference system.
+that will simplify our type inference system shown in \cref{fig:syntax-typing-rules}
 
-We define generalization and instantiation to express introduction and elemination of polymorphism in our
+We define generalization and instantiation to express introduction and elimination of polymorphism in our
 syntax direct typing rules as follows:
 \begin{defn}[Instantiation]
   For a type scheme $\sigma := \forall \vec{t}. P => \tau'$, we say $(Q => \tau)$ is
@@ -272,19 +275,31 @@ syntax direct typing rules as follows:
   $\texttt{Gen}(\Gamma, \rho) = \forall (\texttt{fvs}(\rho) \backslash \texttt{fvs}(\Gamma)). \rho$.
 \end{defn}
 
+\begin{defn}[Qualified Type Scheme]
+  A qualified type scheme is a pair of type scheme with a set of predicates written as $(P \mid \sigma)$,
+  where $\sigma = \forall \vec{t}. Q => \tau$.
+\end{defn}
+\begin{defn}[Qualified Type Scheme Instantiation]
+  For two qualified type schemes $(P \mid \sigma)$ where $\sigma = \forall \vec{t}. Q => \tau$ and
+  $(P' \mid \sigma')$ where $\sigma' = \forall \vec{t'}. Q' => \tau'$ we say $(P' \mid \sigma')$ is an
+  instance of $(P \mid \sigma)$ iff there exists $\vec{v}$ such that $\tau' = [\vec{v}/ \vec{t}]\tau$ and
+  $P',Q' => P, [\vec{v}/ \vec{t}]Q$. We write it as $(P' \mid \sigma') \sqsubseteq (P \mid \sigma)$. A type scheme
+  $\sigma$ is an abbreviation of $(\emptyset \mid \sigma)$.
+\end{defn}
+
+
 Similar to Quill typing system \citep{morris_best_2016} elimination of polymorphism [$\forall$E] and qualified
 types[$=>$E] is always done in the [Var$^s$], introduction of polymorphism [$\forall$I] and qualified types[$=>$I] is
 done at let bindings [Let$^s$]. This collapses the rules [$\forall$E], [$=>$E] and [ID] in one rule [VAR$^s$] where
 we use instantiation, and [$\forall$I], [$=>$I] and [Let] in one rule [Let$^s$] where we use generalization.
-[$\sepimp$I$^s$] is used in occurance of $\lambda^{*}$, and [$\rightarrow$I$^s$] is used in occurance of $\lambda^{\alpha}$.
+[$\sepimp$I$^s$] is used in occurence of $\lambda^{*}$, and [$\rightarrow$I$^s$] is used in occurence of $\lambda^{\alpha}$.
 We would add the introduced abstraction variable into the sharing context in case of [$\rightarrow$I$^s$].
 The type variable $\tau$ in both [$\sepimp$I$^s$] and [$\rightarrow$I$^s$] are new. We collapse the application rules
 [$\sepimp$E] and [$\rightarrow$E] into one rule [App$^s$] where we check for sharing of the used variables in both
 the expressions and then assign a predicate of $\texttt{ShFun}$ or $\texttt{SeFun}$ depending on whether the variables
-are shared or not. The \texttt{un} predicates are added to the types of the terms that are not used direclty in the expression
+are shared or not. The \texttt{un} predicates are added to the types of the terms that are not used directly in the expression
 or do which are not in sharing with the terms used.
-
-\begin{figure}
+\begin{figure}[h]
   \begin{framed}
     % VAR^s
     \begin{minipage}{1.0\textwidth}
@@ -294,78 +309,90 @@ or do which are not in sharing with the terms used.
         \BinaryInfC{$P \mid \Gamma, x^{\vec{y}} : \sigma \vdashs x : \tau $}
       \end{prooftree}
     \end{minipage}
+    \newline\newline\newline
     % Let^s
     \begin{minipage}{1.0\textwidth}
       \begin{prooftree}
         \AxiomC{$Q \mid (\Gamma_x' \varoplus \Gamma_x'') \circledast \Delta \vdashs M: v\ \ \ \ \
           P \vdash \Delta\ \texttt{un}$}
         \noLine
-        \UnaryInfC{$P \mid (\Gamma_x {\color{red}\circledast} x:\sigma) \varoplus \Gamma_x'' \circledast \Delta \vdashs N:\tau\ \ \ \ \
+        \UnaryInfC{$P \mid (\Gamma_x \sqcup x:\sigma) \varoplus \Gamma_x'' \circledast \Delta \vdashs N:\tau\ \ \ \ \
           \sigma = \texttt{Gen}(\{\Gamma' \varoplus \Gamma_x'' \circledast \Delta \}, Q => v)$}\RightLabel{[Let$^s$]}
-        \UnaryInfC{$P \mid (\Gamma \circledast \Gamma') \varoplus \Gamma'' \circledast \Delta \vdashs \Let{x}{M}{N} : \tau $}
+        \UnaryInfC{$P \mid (\Gamma \circledast \Gamma') \varoplus \Gamma'' \circledast \Delta \vdashs (\Let{x}{M}{N} : \tau) $}
       \end{prooftree}
     \end{minipage}
+    \newline\newline\newline
     % -*>I^s
-    \begin{minipage}{1.0\textwidth}
+    \begin{minipage}{0.5\textwidth}
       \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \circledast x^{\emptyset}:\tau \vdashs M: v$}
         \AxiomC{$P => \SeFun{\phi}$}
-        \AxiomC{$P \vdash \Gamma \geq \phi$}\RightLabel{[$\sepimp$I$^s$]}
-        \TrinaryInfC{$P \mid \Gamma \vdashs \lambda^{*}x. M : \phi \tau v$}
+        \AxiomC{$P \vdash \Gamma \geq \phi$}\noLine
+        \BinaryInfC{$\ \ \ \ \ \ \ P \mid \Gamma \circledast x^{\emptyset}:\tau \vdashs M: v\ \ \ \ \ \ \ $} \RightLabel{[$\sepimp$I$^s$]}
+        \UnaryInfC{$P \mid \Gamma \vdashs \lambda^{*}x. M : \phi \tau v$}
       \end{prooftree}
     \end{minipage}
     % -&>I^s
-    \begin{minipage}{1.0\textwidth}
+    \begin{minipage}{0.5\textwidth}
       \begin{prooftree}
-        \AxiomC{$P \mid \Gamma^{[\emptyset \mapsto \{x\}]} \varoplus x^{\texttt{Vars}(\Gamma)}:\tau \vdashs M: v$}
-        \AxiomC{$P => \ShFun{\phi}$}
-        \AxiomC{$P \vdash \Gamma \geq \phi$}\RightLabel{[$\rightarrow$I$^s$]}
-        \TrinaryInfC{$P \mid \Gamma \vdashs \lambda^{\alpha}x. M : \phi \tau v$}
+        \AxiomC{$P => \ShFun{\phi}\ \ \ \ \ P \vdash \Gamma \geq \phi$}\noLine
+        \UnaryInfC{$P \mid \Gamma^{[\emptyset \mapsto \{x\}]} \varoplus x^{\texttt{Vars}(\Gamma)}:\tau \vdashs M: v$}\RightLabel{[$\rightarrow$I$^s$]}
+        \UnaryInfC{$P \mid \Gamma \vdashs \lambda^{\alpha}x. M : \phi \tau v$}
       \end{prooftree}
     \end{minipage}
+    \newline\newline\newline
     % App^s
     \begin{minipage}{1.0\textwidth}
       \begin{prooftree}
         \AxiomC{$P \mid \Gamma \circledast \Delta \vdashs M: \phi v \tau\ \ \ \ \
           P \mid  \Gamma' \circledast \Delta \vdashs N: v$}
-        \AxiomC{$P \vdash \Delta\ \texttt{un}$} \noLine
-        \BinaryInfC{if \texttt{Used}($\Gamma$) = \texttt{Used}($\Gamma'$) then ($P => \ShFun{\phi}$) else ($P => \SeFun{\phi}$)}\RightLabel{[App$^s$]}
+        \AxiomC{$P \vdash \Delta\ \texttt{un}$}\noLine
+        \BinaryInfC{$((\texttt{Used}(\Gamma) = \texttt{Used}(\Gamma')) \wedge (P => \ShFun{\phi}))$}\noLine
+        \UnaryInfC{$ \vee ((\texttt{Vars}(\Gamma) \# \texttt{Used}(\Gamma') \wedge \texttt{Vars}(\Gamma') \# \texttt{Used}(\Gamma)) \wedge (P => \SeFun{\phi})))$}\RightLabel{[App$^s$]}
         \UnaryInfC{$P \mid \Gamma \sqcup \Gamma' \circledast \Delta \vdashs M N: \tau$}
       \end{prooftree}
     \end{minipage}
     % sum types
-    \begin{minipage}{0.5\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid  \Gamma \vdashs M: \tau$}\RightLabel{[$\oplus_l$I$^s$]}
-        \UnaryInfC{$P \mid \Gamma \vdashs \texttt{inl}\ M: \tau \oplus \tau' $}
-      \end{prooftree}
-    \end{minipage}
-    \begin{minipage}{0.5\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid  \Gamma \vdashs M: \tau'$}\RightLabel{[$\oplus_r$I$^s$]}
-        \UnaryInfC{$P \mid \Gamma \vdashs \texttt{inr}\ M: \tau \oplus \tau' $}
-      \end{prooftree}
-    \end{minipage}
-    \begin{minipage}{1.0\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P \vdash  \Delta\ \texttt{un}\ \ \ \ \ 
-          P \mid  \Gamma \circledast \Delta \vdashs M: \tau \oplus \tau'$}\noLine
-        \UnaryInfC{$P \mid  \Gamma'_x \circledast \Delta,x:\tau \vdashs N: v\ \ \ \ \
-          P \mid  \Gamma'_y \circledast \Delta, y:\tau' \vdashs N': v$}\RightLabel{[$\oplus$E$^s$]}
-        \UnaryInfC{$P \mid (\Gamma \sqcup \Gamma') \circledast \Delta \vdashs \Case{M}{\{\texttt{inl}\ x \mapsto N; \texttt{inr}\ y \mapsto N'\}}:v$}
-      \end{prooftree}
-    \end{minipage}
-    \begin{minipage}{1\linewidth}
-      \centering
-      \TODO{get rid of the red symbols}
-    \end{minipage}
+    % \begin{minipage}{0.5\textwidth}
+    %   \begin{prooftree}
+    %     \AxiomC{$P \mid  \Gamma \vdashs M: \tau$}\RightLabel{[$\oplus_l$I$^s$]}
+    %     \UnaryInfC{$P \mid \Gamma \vdashs \texttt{inl}\ M: \tau \oplus \tau' $}
+    %   \end{prooftree}
+    % \end{minipage}
+    % \begin{minipage}{0.5\textwidth}
+    %   \begin{prooftree}
+    %     \AxiomC{$P \mid  \Gamma \vdashs M: \tau'$}\RightLabel{[$\oplus_r$I$^s$]}
+    %     \UnaryInfC{$P \mid \Gamma \vdashs \texttt{inr}\ M: \tau \oplus \tau' $}
+    %   \end{prooftree}
+    % \end{minipage}
+    % \begin{minipage}{1.0\textwidth}
+    %   \begin{prooftree}
+    %     \AxiomC{$P \vdash  \Delta\ \texttt{un}\ \ \ \ \ 
+    %       P \mid  \Gamma \circledast \Delta \vdashs M: \tau \oplus \tau'$}\noLine
+    %     \UnaryInfC{$P \mid  \Gamma'_x \circledast \Delta,x:\tau \vdashs N: v\ \ \ \ \
+    %       P \mid  \Gamma'_y \circledast \Delta, y:\tau' \vdashs N': v$}\RightLabel{[$\oplus$E$^s$]}
+    %     \UnaryInfC{$P \mid (\Gamma \sqcup \Gamma') \circledast \Delta \vdashs \Case{M}{\{\texttt{inl}\ x \mapsto N; \texttt{inr}\ y \mapsto N'\}}:v$}
+    %   \end{prooftree}
+    % \end{minipage}
+    % \begin{minipage}{1\linewidth}
+    %   \TODO{get rid of the red symbols}
+    % \end{minipage}
     \end{framed}
   \caption{Syntax Directed Typing Rules}
   \label{fig:syntax-typing-rules}
 \end{figure}
 
+The [Let$^s$] rule defines an expression within another expression locally i.e. x would
+not be in scope out of $N$. We divide the typing context into multiple parts. $\Gamma$ contains the variables that exists exclusively in $M$ and $\Gamma'$ which
+are exclusively in $N$. $\Gamma''$ is common to both $M$ and $N$ while $\Delta$ is not used in both the expressions.
+Thus $\Gamma$ and $\Gamma'$ will be completely separate from each other while $\Gamma''$ would be in sharing with both $\Gamma$ and $\Gamma'$.
+$\Delta$ would have to be unrestricted as it is not being used either in $M$ or in $N$. The sharing of $x$ with $\Gamma$ would depend on
+whether $\Gamma$ and $\Gamma'$ are completely disjoint or empty. For the application rule [App$^s$] the type assignment $\Gamma$ would contain
+variables for $M$ and $\Gamma'$ for $N$. If they are completely separate, it would be a separating function application and $M$ would be
+assigned a type $\tau' \sepimp \tau$ else, they would have to be completely sharing and M would be assigned a type $\tau' \rightarrow \tau$.
+The conditions do not clearly look as if they are syntax directed and in the cases where the type checker cannot directly infer if the
+resources used are separate or shared, the user would be expected to provide it using type annotations  {\color{red} meh.}.
 
-\TODO{We will also prove equivance between the typing rules and syntax directed typing rules of our system?}
+\TODO{We will also prove equivalence between the typing rules and syntax directed typing rules of our system?}
 \begin{thm}[Soundness of $\vdash^s$]
   If $P \mid \Gamma \vdash^s M:\tau$ then $P \mid \Gamma \vdash M : \tau$
 \end{thm}
@@ -416,7 +443,7 @@ of the constructor types $C$ and $C'$.
       \end{flalign*}
     \end{minipage}
   \end{framed}
-  \caption{Auxilary definitions}
+  \caption{Auxiliary definitions}
   \label{fig:aux-defs}
 \end{figure}
 
