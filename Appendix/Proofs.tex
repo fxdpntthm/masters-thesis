@@ -4,12 +4,32 @@
 \end{thm}
 \begin{proof}
   Proof by structural induction on the derivation of $P \mid \Gamma \vdashs M:\tau$.
+
   \begin{itemize}
-  \item[Case (VAR$^s$)]. We have a derivation of $P \mid x:\sigma \vdash x:\sigma$.
-  \item[Case (Let$^s$)]. We have a derivation of $P \mid x:\sigma \vdash x:\sigma$.
-  \item[Case ($\rightarrow$I$^s$)]. We have a derivation of $P \mid x:\sigma \vdash x:\sigma$.
-  \item[Case ($\sepimp$I$^s$)]. We have a derivation of $P \mid x:\sigma \vdash x:\sigma$.
-  \item[Case (App$^s$)]. We have a derivation of $P \mid x:\sigma \vdash x:\sigma$.
+  \item{Case [VAR$^s$].}
+    By induction hypothesis we have a derivation of $P \mid x:\sigma \vdash x:\sigma$ by [VAR] rule.
+    We proceed by repeated application of [$\forall$E] as $(Q => \tau) \sqsubseteq \sigma$, and
+    we construct a derivation of $P \mid x:\sigma \vdash x: Q => \tau$. Then as $P => Q$ we can
+    repeatedly apply [$=>$E] to construct a derivation of $P \mid x:\sigma \vdash x:\tau$.
+    Finally, depending on whether the bindings are in sharing with or separate from
+    $x$ we repeatedly apply [WKN-SH] or [WKN-UN] respectively for all the bindings in $\Gamma$ to construct
+    a derivation of $P \mid \Gamma \sqcup x:\sigma \vdash x:\tau$.
+  \item{Case [$\rightarrow$I$^s$].}
+    By induction hypothesis we have a derivation of $P \mid \Gamma \varoplus x:\tau \vdash M:\tau'$.
+    We apply [$\rightarrow$I] and reuse the derivations for $\ShFun{\phi}$ and $\Gamma \geq \phi$  to
+    construct a derivation of $P \mid \Gamma \vdash \lambda^{\alpha}x. M: \phi \tau \tau'$.
+  \item{Case [$\sepimp$I$^s$].}
+    By induction hypothesis we have a derivation of $P \mid \Gamma \circledast x:\tau \vdash M:\tau'$.
+    Similar to previous case, we apply [$\sepimp$I] and reuse the derivations for $\SeFun{\phi}$ and $\Gamma \geq \phi$  to
+    construct a derivation of $P \mid \Gamma \vdash \lambda^{*}x. M: \phi \tau \tau'$.
+  \item{Case [App$^s$].}
+    By induction hypothesis we have derivations of $P \mid \Gamma \circledast \Delta \vdash M: \phi v \tau$ and
+    $P \mid \Gamma' \circledast \Delta \vdash: N:v$ we check for $\texttt{Used}(\Gamma) = \texttt{Used}(\Gamma')$ and if it is true
+    and apply [$\rightarrow$E] or check for $\texttt{Used}(\Gamma)\#\texttt{Shared}(\Gamma') \wedge \texttt{Shared}(\Gamma')\#\texttt{Used}(\Gamma)$
+    and if it is true we apply [$\sepimp$E] to reuse derivations of $\ShFun{\phi}$ or $\SeFun{\phi}$ respectively to construct the derivation
+    of $P \mid (\Gamma \varoplus \Gamma') \circledast \Delta \vdash M N:\tau$ or $P \mid (\Gamma \circledast \Gamma') \circledast \Delta \vdash M N:\tau$.
+  \item{Case [Let$^s$].}
+    By induction hypothesis have a derivation of $P \mid \Gamma \sqcup x:\tau \circledast \Delta \vdash M:\tau$ and $\P \mid \Gamma' \circledast \Delta$
   \end{itemize}
 \end{proof}
 
