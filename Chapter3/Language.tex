@@ -1,4 +1,4 @@
-\chapter{Language Syntax and Types}
+\chapter{Core Language Syntax and Types}
 In the following chapter we give the formal description of the language syntax and types. We explain what
 it means for a judgement to exist as binary trees and then how we approximate the tree judgement
 to a multiset inorder to simplify our type assignment algorithm.
@@ -6,17 +6,17 @@ to a multiset inorder to simplify our type assignment algorithm.
 \begin{figure}[h]
   \begin{framed}
     \begin{flalign*}
-      \text{Type Variables}\ \ \      t, u, v         &\in \text{TVar}  \nonumber\\
+      \text{Type Variables}\ \ \      t, u, v         &\in \text{Type Variables}  \nonumber\\
       \text{Kinds}\ \ \               \kappa          &::= \star \mid \kappa \rightarrow \kappa \nonumber\\
       \text{Type constructors}\ \ \   T^{\kappa}       &::= \mathcal{T}^{\kappa}\ \text{where}
                                                       \{\overset{!}{\sepimp}, \sepimp, \xrightarrow{!}, \rightarrow \} \subseteq \mathcal{T}^{* \rightarrow * \rightarrow *}\nonumber\\
       \text{Types}\ \ \               \tau^{\kappa}    &::= t \mid T^{\kappa} \mid \tau^{\kappa' \rightarrow \kappa} \tau^{\kappa'}\nonumber\\
-      \text{Predicates}\ \ \          \pi             &::= \texttt{Un}\ \tau \mid \texttt{SeFun}\ \tau \mid \texttt{ShFun}\ \tau \mid \tau \leq \tau' \nonumber\\
+      \text{Predicates}\ \ \          \pi             &::= \texttt{Un}\ \tau \mid \texttt{SeFun}\ \tau \mid \texttt{ShFun}\ \tau \mid \tau \geq \tau' \nonumber\\
       \text{Qualified Types}\ \ \     \rho            &::= \tau^{*} \mid \pi => \rho \nonumber\\
       \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma \nonumber
     \end{flalign*}
   \end{framed}
-  \caption{Types and Kinds in \qub{}}
+  \caption{Types \qub{}}
   \label{fig:qub-types}
 \end{figure}
 % Describe types
@@ -26,9 +26,9 @@ would mean that the function shares resources with its argument and the separati
 arrow would mean that the function does not share resources with its arguments.
 We would write both the arrows in an infix notation. The kind system is simple where we use
 $\star$ to denote all the types. We use $\tau$, $v$ and $\phi$ to denote types of any kind.
-We also include additive and multiplicative sums or product types in our core language. The
+We exclude additive and multiplicative product types and sum types in our core language. The
 definitions of all the four type constructors is described in \cref{sec:pairs} and \cref{sec:sums}.
-The system is powerful enough to let programmers define their own types using the type constructors.
+The system is powerful enough to let programmers define their own {\color{red} types using the type constructors.}
 % We support user defined data types following
 % Jones' [\cite{jones_system_1993}] by adding kind support to our language.
 
@@ -129,13 +129,14 @@ is less restricting than $\tau$. The predicate entailment relations $P => Q$ are
 \begin{figure}[h]
   \begin{framed}
     \begin{flalign*}
-      \text{Environments}\ \ \      \Gamma,\Delta     &::= \epsilon \mid x^{\bar{y}}:\sigma \mid \Gamma, \Delta \mid \Gamma; \Delta \nonumber\\
-      \text{Environment Context}\ \ \ \mathcal{H}     &::= \epsilon \mid \mathcal{H} \varoplus \Gamma \mid \mathcal{H} \circledast \Gamma \nonumber\\
+      \text{Environments}\ \ \      \Gamma,\Delta     &::= \epsilon \mid x^{\bar{y}}:\sigma \mid \Gamma \varoplus \Delta \mid \Gamma \circledast \Delta \nonumber\\
+      \text{Multienvironment}\ \ \ \mathcal{H}     &::= \epsilon \mid \mathcal{H};\Gamma \mid \mathcal{H}, \Gamma \mid \square \nonumber
   \end{flalign*}
 \end{framed}
   \caption{Typing Context}
   \label{fig:typing-context}
 \end{figure}
+\TODO{Need some more reading/writing about multienvironment}
 % Describe Typing judgments
 In normal type systems, the contexts are represented as sets or lists. In \BI\ they are represented as binary trees.
 The leaf nodes contain the pair of term and its associated type. Internal nodes of the context tree are
@@ -177,25 +178,31 @@ We try to emulate the behaviour of bunches using multisets and denote multiset u
 The type assignment will be a collection of variables with an added annotation of sharing. If a resource $x$ is in
 sharing with one or many resources $\bar{y}$ we would represent it as $x^{\bar{y}}:\tau$.
 Further $\Gamma, x^{\bar{y}}:\tau$ would mean $\Gamma \sqcup \{x^{\bar{y}}:\tau\}$. We define a few auxilary functions on the
-type assigments. Vars($\Gamma$) is the set of all the term variables in $\Gamma$. Shared($\Gamma$) computes
-the set of all the term variables that are in sharing with each other. Used($\Gamma$) computes the
+type assigments. \texttt{Vars}($\Gamma$) is the set of all the term variables in $\Gamma$. \texttt{Shared}($\Gamma$) computes
+the set of all the term variables that are in sharing with each other. \texttt{Used}($\Gamma$) computes the
 union of all the term variables in the type assignment and the term variables shared by each of those.
-We define two partial operators on type assigments as shown in \cref{fig:context-operation}.
-Two type assigments are said to be in disjoint union ($\circledast$) if they have no common used term.
-If the type assignments have an exact overlapping of terms being used, it is said to be in a sharing union ($\varoplus$).
+We define two partial operators on type assigments as shown in \cref{fig:type-assignment-operations}.
+The mapping function ($\Gamma^{[\vec{a} \mapsto \vec{b}]}$) extends the sharing relation between the terms. One can imagine the operation forming a graph, where
+node represents a term, and an undirected edge represents sharing.
+Two type assigments are said to be in disjoint union ($\circledast$) if either of the type assignments used terms are not in common
+with other type assignment's shared term. If the type assignments have an exact overlapping of terms being used,
+it is said to be in a sharing union ($\varoplus$). The ($\#$) in ($\circledast$) represents disjoint check and we use
+the standard notion of set equality for checking sharing union. {\color{red} TODO: The sharing relation is a symmetric, reflexive and transitive operation.
+  Thus we can partition the terms into disjoint union sets. Should we define it more fomally. Something like the separating function
+of \cite{atkey_lambda_sep_2004}}
 
 \begin{figure}[h]
   \begin{framed}
     \noindent
     \begin{flalign*}
-      \text{Vars}(\Gamma, x^{\bar{y}}) &= \text{Vars}(\Gamma) \cup \{ x \}\\
-      \text{Shared}(\Gamma, x^{\bar{y}}) &= \text{Shared}(\Gamma) \cup \{ \bar{y} \}\\
-      \text{Used}(\Gamma) &= \text{Vars}(\Gamma) \cup \text{Shared}(\Gamma)\\
-      (\Gamma, x^{\bar{y}})^{[a \mapsto \bar{b}]} &= \begin{cases}
-        x \notin \bar{y}\ \ \ \ (\Gamma^{[a \mapsto \bar{b}]}, x^{\bar{y}}:\tau)\\
-        x \in \bar{y}\ \ \ \  (\Gamma^{[a \mapsto \bar{b}]}, x^{(\bar{y}\backslash a)\cup\bar{b}}:\tau)
+      \texttt{Vars}(\Gamma, x^{\vec{y}}) &= \texttt{Vars}(\Gamma) \cup \{ x \}\\
+      \texttt{Shared}(\Gamma, x^{\vec{y}}) &= \texttt{Shared}(\Gamma) \cup \{ \vec{y} \}\\
+      \texttt{Used}(\Gamma) &= \texttt{Vars}(\Gamma) \cup \texttt{Shared}(\Gamma)\\
+      (\Gamma, x^{\vec{y}})^{[a \mapsto \vec{b}]} &= \begin{cases}
+        x \notin \vec{y}\ \ \ \ (\Gamma^{[a \mapsto \vec{b}]}, x^{\vec{y}}:\tau)\\
+        x \in \vec{y}\ \ \ \  (\Gamma^{[a \mapsto \vec{b}]}, x^{(\vec{y}\backslash a)\cup\vec{b}}:\tau)
       \end{cases}\\
-      \Gamma^{[\bar{a} \mapsto \bar{b}]} &= (\dots((\Gamma^{[a_1 \mapsto \bar{b}]})^{[a_2 \mapsto \bar{b}]})^{\dots})^{[a_2 \mapsto \bar{b}]}
+      \Gamma^{[\vec{a} \mapsto \vec{b}]} &= (\dots((\Gamma^{[a_1 \mapsto \vec{b}]})^{[a_2 \mapsto \vec{b}]})^{\dots})^{[a_n \mapsto \vec{b}]}
     \end{flalign*}
   \end{framed}
   \caption{Auxilary Functions on Multisets}
@@ -204,12 +211,12 @@ If the type assignments have an exact overlapping of terms being used, it is sai
 \begin{figure}[h]
   \begin{framed}
     \begin{flalign*}
-      \Gamma \circledast \Gamma' &= \Gamma \sqcup \Gamma' => \text{if}\ \text{Vars}(\Gamma) \# \text{Used}(\Gamma')\ \text{and}\ \text{Vars}(\Gamma')\# \text{Used}(\Gamma) \\
-      \Gamma \varoplus \Gamma'   &= \Gamma \sqcup \Gamma' => \text{if}\ \text{Used}(\Gamma) \equiv \text{Used}(\Gamma')
+      \Gamma \circledast \Gamma' &= \Gamma \sqcup \Gamma' => \texttt{if}\ \texttt{Vars}(\Gamma) \# \texttt{Used}(\Gamma') \wedge \texttt{Vars}(\Gamma')\# \texttt{Used}(\Gamma) \\
+      \Gamma \varoplus \Gamma'   &= \Gamma \sqcup \Gamma' => \texttt{if}\ \texttt{Used}(\Gamma) = \texttt{Used}(\Gamma')
     \end{flalign*}
   \end{framed}
-  \caption{Context Operations}
-  \label{fig:context-operation}
+  \caption{Type Assignment Operations}
+  \label{fig:type-assignment-operations}
 \end{figure}
 
 
@@ -218,9 +225,9 @@ If the type assignments have an exact overlapping of terms being used, it is sai
     \begin{flalign*}
       \text{Term Variables}\ \ \  x, y, z  &\in \text{Var} \nonumber\\
       % \text{Patterns}\ \ \        p        &::= x \mid C \vec{x}\nonumber\\
-      \text{Expressions}\ \ \     M, N     &::= x \mid \lambda^{*}x. M \mid \lambda^{\alpha}x. M \mid M N\nonumber\\
-      &\mid \Case{M}{\{\texttt{inl}\ x \mapsto N ; \texttt{inr}\ y \mapsto N'\}}\mid \texttt{inl}\ x \mid \texttt{inr}\ y \nonumber\\
-      &\mid \Let{x}{M}{N} \mid \Pair{M,N} \mid \Pair{M;N}
+      \text{Expressions}\ \ \     M, N     &::= x \mid \lambda^{*}x. M \mid \lambda^{\alpha}x. M \mid M N \mid \Let{x}{M}{N}\nonumber
+      %&\mid \Case{M}{\{\texttt{inl}\ x \mapsto N ; \texttt{inr}\ y \mapsto N'\}}\mid \texttt{inl}\ x \mid \texttt{inr}\ y \nonumber\\
+     % &\mid  \mid \Pair{M,N} \mid \Pair{M;N}
     \end{flalign*}
   \end{framed}
   \caption{Language Syntax}
@@ -230,12 +237,12 @@ If the type assignments have an exact overlapping of terms being used, it is sai
 
 % Describe terms and patterns
 Our term language is similar to that of simply typed lambda calculus involving variables and application
-but we have 2 different kind of lambdas. The alpha lambda ($\lambda^{\alpha} x. M$) denotes sharing
-of the argument term with the expression $M$ and the separating lambda term ($\lambda^{*} x. M$) that implies
+but we have two types of lambda expressions, the alpha lambda ($\lambda^{\alpha}$) denotes sharing
+of the argument term with the expression $M$ and the separating lambda term ($\lambda^{*}$) that implies
 the argument term has a separating context with the expression $M$. We also have polymorphic $\texttt{let}$
-expressions to be able to define expressions with a limited scope. The type constructors \texttt{inl} and \texttt{inr} build
-a sum type while \texttt{case} expression match on the sum type to specify what should be done in for the two ways
-in which the sum type was created.
+expressions to be able to define expressions with a limited scope.  % The type constructors \texttt{inl} and \texttt{inr} build
+% a sum type while \texttt{case} expression match on the sum type to specify what should be done in for the two ways
+% in which the sum type was created.
 
 % The type constructors are added in order to allow programmers to define their own data types. They can be used to define sum and product types.
 % \texttt{case} expression can be used to pattern match on the expression to express it in terms

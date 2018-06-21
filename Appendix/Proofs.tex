@@ -1,0 +1,77 @@
+\chapter{Proofs}
+\begin{thm}[Soundness of $\vdashs$]\label{thm:soundness-syntax-directed}
+   If $P \mid \Gamma \vdashs M:\tau$ then $P \mid \Gamma \vdash M:\tau$
+\end{thm}
+\begin{proof}
+  Proof by structural induction on the derivation of $P \mid \Gamma \vdashs M:\tau$.
+  \begin{itemize}
+  \item[Case (VAR$^s$)]. We have a derivation of $P \mid x:\sigma \vdash x:\sigma$.
+  \item[Case (Let$^s$)]. We have a derivation of $P \mid x:\sigma \vdash x:\sigma$.
+  \item[Case ($\rightarrow$I$^s$)]. We have a derivation of $P \mid x:\sigma \vdash x:\sigma$.
+  \item[Case ($\sepimp$I$^s$)]. We have a derivation of $P \mid x:\sigma \vdash x:\sigma$.
+  \item[Case (App$^s$)]. We have a derivation of $P \mid x:\sigma \vdash x:\sigma$.
+  \end{itemize}
+\end{proof}
+
+\begin{thm}[Completeness of $\vdashs$]\label{thm:completeness-syntax-directed}
+  If $P \mid \Gamma \vdash M:\tau$ then
+  $\exists Q,\tau. Q \mid \Gamma \vdashs M:\tau$
+  and $(P \mid \sigma) \sqsubseteq \texttt{Gen}(\Gamma, Q => \tau)$
+\end{thm}
+\begin{proof}
+  \TODO{some induction here}.
+\end{proof}
+
+\begin{thm}[Soundness of $\mathcal{M}$.]
+   If $\mathcal{M}(S, X; \Gamma \vdash M : \tau) = P, S', \Sigma$ then $S' P | S' (\Gamma\mid_{\Sigma}) \vdash M : S' \tau$
+\end{thm}
+\begin{proof}
+  Proof by induction on structure of $M$
+  \begin{itemize}
+  \item Case 1. $x$
+  \item Case 2. $\lambda^{*} x. M$
+  \item Case 3. $\lambda ^{\alpha}x. M$
+  \item Case 4. $M\ N$
+  \item Case 5. $\texttt{let}\ x = M\ \texttt{in}\ N$
+  \end{itemize}
+\end{proof}
+
+\begin{thm}[Completeness of $\M$.]
+  If $S$ is a substitution ans X is a set of type variables such that
+  $P \mid S\Gamma \vdashs M: S\tau$, and $S|_X = id$ then $\M(id, X; \Gamma \vdash M:\tau) = Q, S', \Sigma$, such that
+  $P => S\tau \sqsubset \texttt{GenI}(S'\Gamma, S' Q => S' \tau)$
+\end{thm}
+\begin{proof}
+\TODO{some more induction here}
+\end{proof}
+
+\begin{thm}[Principal types.]
+  If $P_0 \mid  \Gamma \vdash M : \sigma_0$ and $P_1 \mid  \Gamma \vdash M : \sigma_1$ then there is some $\sigma$ such that
+  $\emptyset \mid \Gamma \vdash M : \sigma$ and $(P_0 | \sigma_0) \subseteq \sigma$, and $(P_1 | \sigma_1) \subseteq \sigma$.
+\end{thm}
+\begin{proof}
+\TODO{some more induction here. Makes use of theorems \ref{thm:soundness-syntax-directed} and \ref{thm:completeness-syntax-directed}}
+\end{proof}
+
+
+
+\TODO{
+  \begin{thm}[Progress.]
+    If $M:\tau$ then either  $M \leadsto M'$ or $M$ is a value.
+  \end{thm}
+\begin{proof}
+  we have to define $\beta \eta$ rules.
+\end{proof}
+
+\begin{thm}[Preservation.]
+  If $M:\tau$ and $M \leadsto M'$ then $M':\tau$
+\end{thm}
+\begin{proof}
+\end{proof}
+}
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../thesis-ku"
+%%% End:
