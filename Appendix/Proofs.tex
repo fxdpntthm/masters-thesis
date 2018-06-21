@@ -29,7 +29,10 @@
     and if it is true we apply [$\sepimp$E] to reuse derivations of $\ShFun{\phi}$ or $\SeFun{\phi}$ respectively to construct the derivation
     of $P \mid (\Gamma \varoplus \Gamma') \circledast \Delta \vdash M N:\tau$ or $P \mid (\Gamma \circledast \Gamma') \circledast \Delta \vdash M N:\tau$.
   \item{Case [Let$^s$].}
-    By induction hypothesis have a derivation of $P \mid \Gamma \sqcup x:\tau \circledast \Delta \vdash M:\tau$ and $\P \mid \Gamma' \circledast \Delta$
+    By induction hypothesis have a derivation of $P \mid \Gamma \circledast \Delta \vdash M: \tau$ and $P \mid \Gamma' \sqcup x:\tau \circledast \Delta \vdash N:\tau$
+    Applying [$\forall$I] and [$=>$I] on the first hypothesis we derive $\emptyset \mid \Gamma \circledast \Delta \vdash M: \sigma$. Now by applying
+    the [LET] rule and reusing $P \vdash \Delta\ \texttt{un}$ we construct the derivation of
+    $P \mid \Gamma \sqcup \Gamma' \circledast \Delta \vdash \Let{x}{M}{N}:\tau$.
   \end{itemize}
 \end{proof}
 

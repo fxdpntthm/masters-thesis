@@ -107,8 +107,8 @@ the ($\Delta$ \texttt{un}) predicate on the type that is dropped or duplicated.
     \begin{minipage}{1\textwidth}
       \begin{prooftree}
         \AxiomC{$P \mid \Gamma \vdash M : \sigma$}
-        \AxiomC{$P' \mid \Gamma_{x} \odot x: \sigma \vdash N: \tau$} \RightLabel{[LET]}
-        \BinaryInfC{$P \cup P' \mid \Gamma \vdash \Let{x}{M}{N}: \tau$}
+        \AxiomC{$P' \mid \Gamma'_{x} \sqcup x: \sigma \vdash N: \tau$} \RightLabel{[LET]}
+        \BinaryInfC{$P \cup P' \mid \Gamma \sqcup \Gamma' \vdash \Let{x}{M}{N}: \tau$}
       \end{prooftree}
     \end{minipage}
     \newline\newline\newline
