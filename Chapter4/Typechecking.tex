@@ -418,15 +418,17 @@ The type variables $u$ with a subscript denote fresh variables.
 
 We now formally define $\Psi$, the sharing information that is defined as a pair of variable and a collection of variables it is in sharing with.
 $\Psi(x)$ will denote all the variables that $x$ is in sharing with. We can think of $\Psi$ similar to $\Gamma$, but instead
-of returning the type of the variable it returns the sharing information. Domain of $\Psi$ defined as $\texttt{dom}(\Psi) = \{x \mid (x, \bar{y}) \in \Psi \}$
+of returning the type of the variable it returns the sharing information. Domain of $\Psi$ defined as
+$\texttt{dom}(\Psi) = \{x \mid (x, \bar{y}) \in \Psi \}$, where $\bar{y}$ is the collection of variables shared with x.
 Extending the sharing for a variable will be denoted by $\Psi(x) + y$, which would mean the variable $y$ is in sharing with $x$. Because the sharing
-operation is a reflexive, symmetric and transitive we observe certain properties given below.
-
+operation is a reflexive, symmetric and transitive we observe certain properties given below to be true.
 \begin{flalign*}
  &\forall_{x \in \texttt{dom}(\Psi)}\ x \in \Psi(x) \tag{reflexive}\\
  &\forall_{x,y \in \texttt{dom}(\Psi)}\ \text{if}\ y \in \Psi(x)\ \text{then}\ x \in \Psi(y) \tag{symmetric}\\
  &\forall_{x,y,z\in \texttt{dom}(\Psi)}\ \text{if}\ y \in \Psi(x) \wedge z \in \Psi(y)\ \text{then}\ z \in \Psi(x)\tag{transitive}
 \end{flalign*}
+Thus sharing relation defines an equivalence relation on $\texttt{dom}(\Psi)$.
+
 {\color{red} needs more formalization? state some
 properties. Similar to what we do while defining $\Gamma$}.
 
@@ -435,6 +437,11 @@ modified Robinson's \citeyearpar{robinson_machine-oriented_1965} unification alg
 It generates kind preserving substitutions to unify types. The algorithm fails, if no such substitution exists.
 We write $C \overset{S}{\sim}_{\kappa} C'$ for assertion that $S$ is the unifier
 of the constructor types $C$ and $C'$.{\color{red} Some more about robinsons algorithm here}.
+
+We define some auxilary functions in \cref{fig:aux-defs}. $\texttt{Weaken}(x, \sigma, \Sigma)$ adds the unrestricted
+predicate to the type $\sigma$ if it does not belong to $\Sigma$. $\texttt{Un}(\Gamma)$ adds an unrestricted
+predicate to all the types of the variables that are in the domain of $\Gamma$. $\mathcal{C}(\Psi, \Sigma)$ is the transitive
+closure of sharing relation for all the variables that are in sharing with all the variables in $\Sigma$
 
 % Explain each case of algorithm M here.
 % Var
@@ -589,7 +596,7 @@ by expanding the type assignment $\Gamma$ with the variable $x$ and type scheme 
     \end{minipage}
     \begin{minipage}{1\linewidth}
       \begin{flalign*}
-        \mathcal{C}(P, \Gamma, \Sigma)  = \texttt{Used}(\Gamma, \Sigma)
+        \mathcal{C}(\Psi, \Sigma)  = \bigcup_{x \in \texttt{dom}(\Sigma)} \Psi(x)
       \end{flalign*}
     \end{minipage}
   \end{framed}
