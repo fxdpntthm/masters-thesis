@@ -414,11 +414,21 @@ The complete algorithm is outlined in \cref{fig:algorithm-m}. The input to the a
 type has to be inferred, $\tau$ is the expected type of the term, $S$ is the current substition and the
 sharing information $\Psi$. The output includes the set of new predicates $P$ that are generated,
 the new set of substitutions $S'$, the used variables $\Sigma$, and the new sharing information $\Psi'$.
+The type variables $u$ with a subscript denote fresh variables.
 
-$\Psi$ is the sharing information that is defined as a pair of variable and a collection of variables it is in sharing with.
+We now formally define $\Psi$, the sharing information that is defined as a pair of variable and a collection of variables it is in sharing with.
 $\Psi(x)$ will denote all the variables that $x$ is in sharing with. We can think of $\Psi$ similar to $\Gamma$, but instead
-of returning the type of the variable it returns the sharing information. {\color{red} needs more formalization? state some
-properties. Similar to what we do while defining $\Gamma$}
+of returning the type of the variable it returns the sharing information. Domain of $\Psi$ defined as $\texttt{dom}(\Psi) = \{x \mid (x, \bar{y}) \in \Psi \}$
+Extending the sharing for a variable will be denoted by $\Psi(x) + y$, which would mean the variable $y$ is in sharing with $x$. Because the sharing
+operation is a reflexive, symmetric and transitive we observe certain properties given below.
+
+\begin{flalign*}
+ &\forall_{x \in \texttt{dom}(\Psi)}\ x \in \Psi(x) \tag{reflexive}\\
+ &\forall_{x,y \in \texttt{dom}(\Psi)}\ \text{if}\ y \in \Psi(x)\ \text{then}\ x \in \Psi(y) \tag{symmetric}\\
+ &\forall_{x,y,z\in \texttt{dom}(\Psi)}\ \text{if}\ y \in \Psi(x) \wedge z \in \Psi(y)\ \text{then}\ z \in \Psi(x)\tag{transitive}
+\end{flalign*}
+{\color{red} needs more formalization? state some
+properties. Similar to what we do while defining $\Gamma$}.
 
 The unification of types is pushed towards the leaves. $\mathcal{U}$ is a
 modified Robinson's \citeyearpar{robinson_machine-oriented_1965} unification algorithm.
@@ -428,7 +438,7 @@ of the constructor types $C$ and $C'$.{\color{red} Some more about robinsons alg
 
 % Explain each case of algorithm M here.
 % Var
-The first case discuss the variable case, where we are given the variable identifier and
+The first case describes the variable case, where we are given the variable identifier and
 the expected type. We try to unify the expected type $\tau$ with the derived type scheme
 $\nu$ from the type assignment $\Gamma$. The return values of the algorithm are
 a new set of predicates which are nothing but instantiated version of the predicates
@@ -494,28 +504,28 @@ by expanding the type assignment $\Gamma$ with the variable $x$ and type scheme 
     \begin{minipage}{1\linewidth}
       \begin{flalign*}
         \M(S, \Psi, \Gamma \vdash \lambda ^{\alpha} x. M : \tau) &= \{P \cup Q \}, S', \Sigma \backslash x, \Psi''  \\
-        \text{where}\ P; S'; \Sigma, \Psi' &= \M(\Unf(\tau, u_1 u_2 u_3) \circ S, \Psi, \Gamma, x:u_2 \vdash M: u_3) \\
+        \text{where}\ P; S'; \Sigma; \Psi' &= \M(\Unf(\tau, u_1 u_2 u_3) \circ S, \Psi, \Gamma, x:u_2 \vdash M: u_3) \\
         Q &= \{\ShFun{u_1}\} \cup \text{Leq}(u_1, \Gamma|_{\Sigma}) \cup \text{Weaken}(x, u_2, \Sigma)\\
-        \Psi'' &= \forall_{y \in \Psi'}. x\ \text{shares}\ y.
+        \Psi'' &= \{\forall_{y \in \texttt{dom}(\Psi')}. \Psi'(y) + x\} \cup \{x \mapsto \{ x \}\}
       \end{flalign*}
     \end{minipage}
 
     % \*x. M: t
     \begin{minipage}{1\linewidth}
       \begin{flalign*}
-        \M(S, \Psi, \Gamma \vdash \lambda ^{*} x. M : \tau) &= \{ P \cup Q \}, S', \Sigma \backslash x, \Psi  \\
-        \text{where}\ P; S'; \Sigma &= \M(\Unf(\tau, u_1 u_2 u_3) \circ S, X; \Gamma, x:u_2 \vdash M: u_3) \\
-        Q &= \{\SeFun{u_1}\} \cup \text{Leq}(u_1, \Gamma\mid_{\Sigma}) \cup \text{Weaken}(x, u_2, \Sigma)
+        \M(S, \Psi, \Gamma \vdash \lambda ^{*} x. M : \tau) &= \{ P \cup Q \}, S', \Sigma \backslash x, \Psi''\\
+        \text{where}\ P; S'; \Sigma; \Psi' &= \M(\Unf(\tau, u_1 u_2 u_3) \circ S, X; \Gamma, x:u_2 \vdash M: u_3) \\
+        Q &= \{\SeFun{u_1}\} \cup \text{Leq}(u_1, \Gamma\mid_{\Sigma}) \cup \text{Weaken}(x, u_2, \Sigma)\\
+        \Psi'' &= \Psi' \cup \{x \mapsto \{ x \}\}
       \end{flalign*}
     \end{minipage}
-
 
     % M N: t
     \begin{minipage}{1\linewidth}
       \begin{flalign*}
         \M(S, \Psi, \Gamma \vdash M N : \tau) &= \{ P \cup P' \cup Q \}, R', \Sigma \cup \Sigma', \Psi'' \\
-        \text{where}\ P, R, \Sigma, \Psi' &= \M(S, \Psi, \Gamma \vdash M:  u_1 u_2 \tau) \\
-        P', R', \Sigma', \Psi'' &= \M(S R, \Psi'; S \Gamma \vdash N: u_2)\\
+        \text{where}\ P; R; \Sigma; \Psi' &= \M(S, \Psi, \Gamma \vdash M:  u_1 u_2 \tau) \\
+        P'; R'; \Sigma'; \Psi'' &= \M(S R, \Psi', S \Gamma \vdash N: u_2)\\
         \text{if}\ \mathcal{C}(\Gamma, \Psi'', \Sigma) &= \mathcal{C}(\Gamma, \Psi'', \Sigma')\\
         \text{then}\ Q &= \{\ShFun{u_1}\} \\
         \text{else}\ \text{if}\ &(\Sigma \# \mathcal{C}(R\Gamma, \Psi'', \Sigma')\ \text{and}\ \Sigma' \# \mathcal{C}(R\Gamma, \Psi'', \Sigma))\\
@@ -528,9 +538,9 @@ by expanding the type assignment $\Gamma$ with the variable $x$ and type scheme 
     \begin{minipage}{1\linewidth}
       \begin{flalign*}
         \M(S, \Psi, \Gamma \vdash \Let{x}{M}{N} : \tau) &= (P \cup Q), R', \Sigma \cup \{\Sigma' \backslash x \}, \Psi'' \\
-        \text{where}\ P, R, \Sigma, \Psi' &= \M(S, \Psi, \Gamma \vdash M:u_1)  \\
+        \text{where}\ P; R; \Sigma; \Psi' &= \M(S, \Psi, \Gamma \vdash M:u_1)  \\
         \sigma &= \text{GenI}(R\Gamma; R(P => u_1)) \\
-        P', R', \Sigma', \Psi'' &= \M(R, \Psi', \Gamma, x:\sigma \vdash N : \tau) \\
+        P'; R'; \Sigma'; \Psi'' &= \M(R, \Psi', \Gamma, x:\sigma \vdash N : \tau) \\
         Q &= \text{Un}(\Gamma|_{\Sigma \cap \Sigma'}) \cup \text{Weaken}(x, \sigma, \Sigma')
       \end{flalign*}
     \end{minipage}
@@ -548,6 +558,8 @@ by expanding the type assignment $\Gamma$ with the variable $x$ and type scheme 
   \end{framed}
   \caption{Type Inference Algorithm $\mathcal{M}$}
   \label{fig:algorithm-m}
+
+
 \end{figure}
 \begin{figure}[h]
   \begin{framed}
@@ -642,7 +654,6 @@ by expanding the type assignment $\Gamma$ with the variable $x$ and type scheme 
 % % that they are sharing.
 
 \section{Implementing Algorithm $\M$}
-
 The typing environment in standard Milner-Damas algorithm
 is a pair of identifier and its type.
 We need to modify the typing environment so that it describes sharing.
