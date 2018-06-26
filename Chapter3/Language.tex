@@ -1,5 +1,5 @@
 \chapter{Core Language Syntax and Types}
-In the following chapter we give the formal description of the language syntax and types. We explain what
+In this chapter we give the formal description of the language syntax and types. We explain what
 it means for a judgement to exist as binary trees and then how we approximate the tree judgement
 to a multiset inorder to simplify our type assignment algorithm.
 
@@ -20,17 +20,31 @@ to a multiset inorder to simplify our type assignment algorithm.
   \label{fig:qub-types}
 \end{figure}
 % Describe types
-The type language consists of type variables and two kinds of binary type constructors the
-sharing arrow ($\rightarrow$) and the separating arrow ($\sepimp$). The sharing arrow
+The type language consists of type variables and four binary type constructors the
+sharing arrow ($\rightarrow$) and the separating arrow ($\sepimp$) and unrestricted
+version of both the arrows. The sharing arrow
 would mean that the function shares resources with its argument and the separating
 arrow would mean that the function does not share resources with its arguments.
-We would write both the arrows in an infix notation. The kind system is simple where we use
-$\star$ to denote all the types. We use $\tau$, $v$ and $\phi$ to denote types of any kind.
-We exclude additive and multiplicative product types and sum types in our core language. The
-definitions of all the four type constructors is described in \cref{sec:pairs} and \cref{sec:sums}.
+We would write both the arrows in an infix notation.
+% Describe Kinds
+The kind system is simple where we use $\star$ to denote all the types.
+We use $\tau$, $v$ and $\phi$ to denote types of any kind.
+We exclude additive and multiplicative product types and sum type in our core language as we can
+encode them in our core language. Extentions to \qub{} with sum types and product types is
+described in \cref{chp:datatypes}.
 The system is powerful enough to let programmers define their own {\color{red} types using the type constructors.}
-% We support user defined data types following
-% Jones' [\cite{jones_system_1993}] by adding kind support to our language.
+$\sepimp$ and $\rightarrow$ type constructors have a kind $\star \rightarrow \star \rightarrow \star$.
+The kind of type constructor is computed using the following rule:
+\begin{framed}
+  \begin{prooftree}
+    \AxiomC{$T :: \kappa' \rightarrow \kappa$}
+    \AxiomC{$T' :: \kappa'$}
+    \BinaryInfC{$T T' :: \kappa$}
+  \end{prooftree}
+\end{framed}
+The language of type constructors is a system of combinators without reduction rules.
+This treatement of type constructors is similar to Jones' \citeyearpar{jones_system_1993}. Inference
+mechanism for the kind of type constructors discussed in \cref{sec:kind-system}.
 
 % Describe Predicates
 The predicate system enhances the expressibility of the type system. Following the same route taken
@@ -43,6 +57,7 @@ i.e. \texttt{SeFun} or \texttt{ShFun}, we write them as $\overset{!}{\sepimp}$ a
 This can be considered as an improving substitution following Jones notion of improvement of qualified types \citep{jones_simplifying_1995}.
 We also define an ordering on types by using the predicate $\geq$. The predicate $\tau \geq \tau'$ holds if the type $\tau'$
 is less restricting than $\tau$. The predicate entailment relations $P => Q$ are given in \cref{fig:entailment-rules}.
+
 % \TODO{Explain what does it mean for a type to be less that other type}
 \begin{figure}[h]
   \begin{framed}

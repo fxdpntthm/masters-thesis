@@ -256,22 +256,22 @@ The rules given in \cref{fig:bi-base-typing-rules}
 are convenience rules for base cases that compute predicate constraints for types within a context.
 The $P \mid \cdot \geq \cdot$ lifts $\geq$ predicate into the typing environment.
 
-
-\section{Kind Inference}
+\section{Kind System}\label{sec:kind-system}
+\TODO{Type constructors, Class of type constructors, Unification of types and Type constructors?}
 Our system supports introduction of new types via type constructors. We include a
 richer kind system for this purpose. A modified version of Robinson's algorithm \citeyearpar{robinson_machine-oriented_1965}
 is used in order to deduce the most general unifier for type constructors. Our treatment to type unification
 is similar to Jones' \citeyearpar{jones_system_1993}.
-Formally, we define $S$ to be the {\it most general unifier} for type constructors $T$ and $T'$ if:
+Formally we define $S$ to be the {\it most general unifier} for type constructors $T$ and $T'$ if:
 \begin{enumerate}
-  \item $S$ is a unifier for $C$ and $C'$.
-  \item For every unifier $S'$ of $C$ and $C'$ we can write $S'$ in a form of
-    $R S$ where $R$ is a kind preserving substitution.
+  \item $S$ is a unifier for $T$ and $T'$.
+  \item For every unifier $S'$ of $T$ and $T'$ we can write $T'$ in a form of
+    $R S$ where $R$ some kind preserving substitution.
 \end{enumerate}
-We write $C \overset{S}{\sim}_{\kappa} C'$ for assertion that $S$ is the unifier
-of the constructor types $C, C' \in C^{\kappa}$. The rules in \cref{fig:unify-types}
+We write $T \overset{S}{\sim}_{\kappa} T'$ for assertion that $S$ is the unifier
+of the constructor types $T, T' \in T^{\kappa}$. The rules in \cref{fig:unify-types}
 describe the unification algorithm for type constructors. [Var] and [Var'] contain
-and additional constraint of the type variable $t$ to not be free in the type constructor's $C$
+and additional constraint of the type variable $t$ to not be free in the type constructor's $T$
 type variables to ensure the unification does not lead to infinite types.
 
 \begin{figure}[h]
@@ -311,7 +311,7 @@ type variables to ensure the unification does not lead to infinite types.
 \end{figure}
 
 \section{Syntax Directed Typing rules}\label{sec:syntax-typing-rules}
-The type system explained in the previous section are not syntax directed and will not be fit
+The type system explained in the \cref{sec:type-system} are not syntax directed and will not be fit
 to develop a type inference algorithm as the typing rules and syntactic forms should have one-to-one
 correspondence. In this section we will define syntax directed typing rules
 that will simplify our type inference system shown in \cref{fig:syntax-typing-rules}

@@ -21,7 +21,7 @@ and a type language specified by
   \end{flalign*}
 \end{framed}
 where $t$ is a type variable, $\iota$ are primitive types in the language, $\rightarrow$
-is a type constructor and $\sigma$ is a typing scheme.
+is a type constructor for functions and $\sigma$ is a typing scheme.
 
 Robinson's \citeyearpar{robinson_machine-oriented_1965} unification algorithm plays a key role
 in ensuring that types are well formed. Its purely syntactic approach in creating
@@ -91,7 +91,8 @@ type abstraction and application [$\forall$I] and [$\forall$ E] i.e. parametric 
 By Curry-Howard correspondence the HM type system correspondes to the implication fragment of intuionistic propositional logic
 the rules of which are given in \cref{fig:intuitionistic-logic} in Gentzen style natural deduction
 where $\Gamma$, $\Phi$ and $\Psi$ are propositions. The [Ax] rule corresponds to [ID] rule while [$\rightarrow$I] and [$\rightarrow$E] correspond
-to each other.
+to [$\rightarrow$I] and [$\rightarrow$E] respectively.
+
 \begin{figure}[h]\centering
   \begin{framed}
     % ID
