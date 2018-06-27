@@ -27,9 +27,12 @@
 \usepackage{cmll}
 \usepackage{amsthm}
 \usepackage{pdflscape}
-\usepackage{tikz-qtree}
 \usepackage{stmaryrd}
 \usepackage{xspace}
+
+\usepackage{tikz}
+\usepackage{tikz-qtree}
+%\usetikzlibrary{arrows.meta}
 
 \renewcommand\qedsymbol{$\blacksquare$}
 
@@ -47,7 +50,7 @@
  pdfauthor={Apoorv Ingle},
  pdfsubject={A Thesis},
  urlcolor={blue},citecolor={blue},allcolors={blue}}
-\usepackage{cleveref}
+\usepackage[capitalise]{cleveref}
 \crefformat{section}{\S#2#1#3} % see manual of cleveref, section 8.2.1
 \crefformat{subsection}{\S#2#1#3}
 \crefformat{subsubsection}{\S#2#1#3}
@@ -61,7 +64,7 @@
 %% Because html converters don't know tabularnewline
 \providecommand{\tabularnewline}{\\}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
-\newcommand{\BI}{\textbf{\em BI}}
+\newcommand{\BI}{\textbf{\em BI}\xspace}
 \newcommand\sepimp{\mathrel{-\mkern-6mu*}}
 
 \newcommand{\M}{\mathcal{M}}
@@ -72,13 +75,10 @@
 \newcommand{\Un}[1]{\texttt{Un}\ #1}
 \newcommand{\Let}[3]{\texttt{let}\ #1 = #2\ \texttt{in}\ #3}
 \newcommand{\Case}[2]{\texttt{case}\ #1\ \texttt{of}\ #2}
-\newcommand{\CaseSh}[2]{\texttt{case}_{sh}\ #1\ \texttt{of}\ #2}
-\newcommand{\CaseSe}[2]{\texttt{case}_{se}\ #1\ \texttt{of}\ #2}
 \newcommand{\Pair}[1]{\langle #1 \rangle}
 \newcommand{\TODO}[1]{{\begin{framed}{\color{red} #1}\end{framed}}}
 \newcommand{\HaskellF}[1]{\mintinline{haskell}{#1}}
 \newcommand{\qub}{QuB\xspace}
-
 
 \newcommand{\vdashs}{\vdash^s}
 % used to align decimals in tables according to APA style
@@ -201,7 +201,8 @@
 
 \end{romanpages}
 
-\include{Chapter1/Introduction}       % description of algorithm M linear logic, BI, qualified types
+\include{Chapter1/Introduction}       % Extended abstract
+\include{Chapter1/BackgroundWork}     % description of algorithm M linear logic, BI, qualified types
 \include{Chapter2/Examples}           % file handles and exceptions
 \include{Chapter3/Language}           % Core language syntax and Types, contexts and related definitions
 \include{Chapter4/Typechecking}       % typing rules, syntax directed typing rules and Algorithm M

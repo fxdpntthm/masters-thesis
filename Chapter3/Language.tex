@@ -7,12 +7,12 @@ to a multiset inorder to simplify our type assignment algorithm.
   \begin{framed}
     \begin{flalign*}
       \text{Type Variables}\ \ \      t, u, v         &\in \text{Type Variables}  \nonumber\\
-      \text{Kinds}\ \ \               \kappa          &::= \star \mid \kappa \rightarrow \kappa \nonumber\\
-      \text{Type constructors}\ \ \   T^{\kappa}       &::= \mathcal{T}^{\kappa}\ \text{where}
-                                                      \{\overset{!}{\sepimp}, \sepimp, \xrightarrow{!}, \rightarrow \} \subseteq \mathcal{T}^{* \rightarrow * \rightarrow *}\nonumber\\
-      \text{Types}\ \ \               \tau^{\kappa}    &::= t \mid T^{\kappa} \mid \tau^{\kappa' \rightarrow \kappa} \tau^{\kappa'}\nonumber\\
+      % \text{Kinds}\ \ \               \kappa          &::= \star \mid \kappa \rightarrow \kappa \nonumber\\
+      % \text{Type constructors}\ \ \   T^{\kappa}       &::= \mathcal{T}^{\kappa}\ \text{where}
+      %                                                 \{\overset{!}{\sepimp}, \sepimp, \xrightarrow{!}, \rightarrow \} \subseteq \mathcal{T}^{* \rightarrow * \rightarrow *}\nonumber\\
+      \text{Types}\ \ \               \tau            &::= t \mid \tau \rightarrow \tau\ \text{where}\ \{\overset{!}{\sepimp}, \sepimp, \xrightarrow{!}, \rightarrow \} \subseteq \rightarrow \nonumber\\
       \text{Predicates}\ \ \          \pi             &::= \texttt{Un}\ \tau \mid \texttt{SeFun}\ \tau \mid \texttt{ShFun}\ \tau \mid \tau \geq \tau' \nonumber\\
-      \text{Qualified Types}\ \ \     \rho            &::= \tau^{*} \mid \pi => \rho \nonumber\\
+      \text{Qualified Types}\ \ \     \rho            &::= \tau \mid \pi => \rho \nonumber\\
       \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma \nonumber
     \end{flalign*}
   \end{framed}
@@ -27,25 +27,24 @@ would mean that the function shares resources with its argument and the separati
 arrow would mean that the function does not share resources with its arguments.
 We would write both the arrows in an infix notation.
 % Describe Kinds
-The kind system is simple where we use $\star$ to denote all the types.
-We use $\tau$, $v$ and $\phi$ to denote types of any kind.
-We exclude additive and multiplicative product types and sum type in our core language as we can
-encode them in our core language. Extentions to \qub{} with sum types and product types is
-described in \cref{chp:datatypes}.
-The system is powerful enough to let programmers define their own {\color{red} types using the type constructors.}
-$\sepimp$ and $\rightarrow$ type constructors have a kind $\star \rightarrow \star \rightarrow \star$.
-The kind of type constructor is computed using the following rule:
-\begin{framed}
-  \begin{prooftree}
-    \AxiomC{$T :: \kappa' \rightarrow \kappa$}
-    \AxiomC{$T' :: \kappa'$}
-    \BinaryInfC{$T T' :: \kappa$}
-  \end{prooftree}
-\end{framed}
-The language of type constructors is a system of combinators without reduction rules.
-This treatement of type constructors is similar to Jones' \citeyearpar{jones_system_1993}. Inference
-mechanism for the kind of type constructors discussed in \cref{sec:kind-system}.
-
+% The kind system is simple where we use $\star$ to denote all the types.
+% We use $\tau$, $v$ and $\phi$ to denote types of any kind.
+% We exclude additive and multiplicative product types and sum type in our core language as we can
+% encode them in our core language. Extentions to \qub{} with sum types and product types is
+% described in \cref{chp:datatypes}.
+% The system is powerful enough to let programmers define their own {\color{red} types using the type constructors.}
+% $\sepimp$ and $\rightarrow$ type constructors have a kind $\star \rightarrow \star \rightarrow \star$.
+% The kind of type constructor is computed using the following rule:
+% \begin{framed}
+%   \begin{prooftree}
+%     \AxiomC{$T :: \kappa' \rightarrow \kappa$}
+%     \AxiomC{$T' :: \kappa'$}
+%     \BinaryInfC{$T T' :: \kappa$}
+%   \end{prooftree}
+% \end{framed}
+% The language of type constructors is a system of combinators without reduction rules.
+% This treatement of type constructors is similar to Jones' \citeyearpar{jones_system_1993}. Inference
+% mechanism for the kind of type constructors discussed in \cref{sec:kind-system}.
 % Describe Predicates
 The predicate system enhances the expressibility of the type system. Following the same route taken
 by Quill \citep{morris_best_2016} we use the predicate \texttt{Un} $\tau$ to denote
@@ -58,7 +57,9 @@ This can be considered as an improving substitution following Jones notion of im
 We also define an ordering on types by using the predicate $\geq$. The predicate $\tau \geq \tau'$ holds if the type $\tau'$
 is less restricting than $\tau$. The predicate entailment relations $P => Q$ are given in \cref{fig:entailment-rules}.
 
-% \TODO{Explain what does it mean for a type to be less that other type}
+The current system does not have any kind system. They can be added into the system as a language extension
+to be able to define type constructors which is described in \cref{chp:datatypes}.
+
 \begin{figure}[h]
   \begin{framed}
     \begin{minipage}{0.20\linewidth}
@@ -141,18 +142,8 @@ is less restricting than $\tau$. The predicate entailment relations $P => Q$ are
 \end{figure}
 
 
-\begin{figure}[h]
-  \begin{framed}
-    \begin{flalign*}
-      \text{Environments}\ \ \      \Gamma,\Delta     &::= \epsilon \mid x^{\bar{y}}:\sigma \mid \Gamma \varoplus \Delta \mid \Gamma \circledast \Delta \nonumber\\
-      \text{Multienvironment}\ \ \ \mathcal{H}     &::= \epsilon \mid \mathcal{H};\Gamma \mid \mathcal{H}, \Gamma \mid \square \nonumber
-  \end{flalign*}
-\end{framed}
-  \caption{Typing Context}
-  \label{fig:typing-context}
-\end{figure}
-\TODO{Need some more reading/writing about multienvironment}
-% Describe Typing judgments
+% \TODO{Need some more reading/writing about multienvironment}
+% Describe Type assignments
 In normal type systems, the contexts are represented as sets or lists. In \BI\ they are represented as binary trees.
 The leaf nodes contain the pair of term and its associated type. Internal nodes of the context tree are
 connectives which can either be a semicolon ($;$) or a comma ($,$).
@@ -189,22 +180,52 @@ then $\Gamma \equiv \Delta,\Delta'$ and $\Gamma(\Delta)$.
 \label{fig:bunches-bi}
 \end{figure}
 
-We try to emulate the behaviour of bunches using multisets and denote multiset union using $\Gamma \sqcup \Gamma'$.
-The type assignment will be a collection of variables with an added annotation of sharing. If a resource $x$ is in
-sharing with one or many resources $\bar{y}$ we would represent it as $x^{\bar{y}}:\tau$.
-Further $\Gamma, x^{\bar{y}}:\tau$ would mean $\Gamma \sqcup \{x^{\bar{y}}:\tau\}$. We define a few auxilary functions on the
-type assigments. \texttt{Vars}($\Gamma$) is the set of all the term variables in $\Gamma$. \texttt{Shared}($\Gamma$) computes
-the set of all the term variables that are in sharing with each other. \texttt{Used}($\Gamma$) computes the
-union of all the term variables in the type assignment and the term variables shared by each of those.
-We define two partial operators on type assigments as shown in \cref{fig:type-assignment-operations}.
-The mapping function ($\Gamma^{[\vec{a} \mapsto \vec{b}]}$) extends the sharing relation between the terms. One can imagine the operation forming a graph, where
-node represents a term, and an undirected edge represents sharing.
-Two type assigments are said to be in disjoint union ($\circledast$) if either of the type assignments used terms are not in common
-with other type assignment's shared term. If the type assignments have an exact overlapping of terms being used,
-it is said to be in a sharing union ($\varoplus$). The ($\#$) in ($\circledast$) represents disjoint check and we use
-the standard notion of set equality for checking sharing union. {\color{red} TODO: The sharing relation is a symmetric, reflexive and transitive operation.
-  Thus we can partition the terms into disjoint union sets. Should we define it more fomally. Something like the separating function
-of \cite{atkey_lambda_sep_2004}}
+In our system we try to generalize the tree approach into a graph where each node represents the variables or resources
+and the edges between the nodes represent sharing between the variables. The example in \cref{fig:bunches-bi} can
+be represented as what we would call as a sharing graph shown in \cref{fig:sharing-graph}.
+
+\begin{figure}[h]
+  \begin{framed}\centering
+    \begin{tikzpicture}
+        \node[shape=circle,draw=black] (A) at (0,0) {a:A};
+        \node[shape=circle,draw=black] (B) at (0,3) {b:B};
+        \node[shape=circle,draw=black] (C) at (1.5,1.5) {c:C};
+
+        \path [-] (A) edge node {} (B);
+    \end{tikzpicture}
+  \end{framed}
+  \caption{Sharing Graph}
+\label{fig:sharing-graph}
+\end{figure}
+
+We formally define $\Psi$ to be a sharing relation between variables to the collection of variables it is in sharing with.
+The relation $\Psi(x, \{y_1, y_2, y_3\})$ holds if $x$ shares with $\{y_1, y_2, y_3\}$
+Domain of $\Psi$ will be defined as $\texttt{dom}(\Psi) = \{x \mid (x, \bar{y}) \in \Psi \}$, where $\bar{y}$
+is the collection of variables shared with $x$. One can think of $\Psi$ similar to $\Gamma$, but instead of the type of
+the variable it contains the sharing information. Extending the sharing for a variable will be denoted by $\Psi(x) + y$,
+which would mean the variable $y$ is in sharing with $x$. We axiomatize the sharing operation to be reflexive,
+symmetric and non-transitive. So to say:
+\begin{flalign*}
+ &\forall_{x \in \texttt{dom}(\Psi)}\ x \in \Psi(x) \tag{reflexive}\\
+ &\forall_{x,y \in \texttt{dom}(\Psi)}\ \text{if}\ y \in \Psi(x)\ \text{then}\ x \in \Psi(y) \tag{symmetric}\\
+\end{flalign*}
+
+Using the sharing graph as type assignment would make the type inferencing considerably complex.
+We simplify the sharing graph into a collection of 3 tuple containg the
+variable identifier, its type and a collection of variables it shares with. For example,
+if a resource $x$ has type $\tau$ and it shares with variables $\{y_1, y_2, y_3\}$ we would represent it as $x^{\{y_1, y_2, y_3\}}:\tau$
+or just $x^{\bar{y}}:\tau$ for short. We would write $\Gamma, x^{\bar{y}}:\tau$ to mean $\Gamma \sqcup \{x^{\bar{y}}:\tau\}$.
+
+\begin{figure}[h]
+  \begin{framed}
+    \begin{flalign*}
+      \text{Environments}\ \ \      \Gamma,\Delta     &::= \epsilon \mid x^{\bar{y}}:\sigma \mid \Gamma \varoplus \Delta \mid \Gamma \circledast \Delta
+  \end{flalign*}
+\end{framed}
+  \caption{Typing Context}
+  \label{fig:typing-context}
+\end{figure}
+
 
 \begin{figure}[h]
   \begin{framed}
@@ -220,13 +241,28 @@ of \cite{atkey_lambda_sep_2004}}
       \Gamma^{[\vec{a} \mapsto \vec{b}]} &= (\dots((\Gamma^{[a_1 \mapsto \vec{b}]})^{[a_2 \mapsto \vec{b}]})^{\dots})^{[a_n \mapsto \vec{b}]}
     \end{flalign*}
   \end{framed}
-  \caption{Auxilary Functions on Multisets}
+  \caption{Auxilary Functions on Type Assigments}
   \label{fig:multiset-aux-function}
 \end{figure}
+
+We define a few auxilary functions on the
+type assigments. \texttt{Vars}($\Gamma$) is the set of all the term variables in $\Gamma$. \texttt{Shared}($\Gamma$) computes
+the set of all the term variables that are in sharing with each other. \texttt{Used}($\Gamma$) computes the
+union of all the term variables in the type assignment and the term variables shared by each of those.
+We define two partial operators on type assigments as shown in \cref{fig:type-assignment-operations}.
+The mapping function ($\Gamma^{[\vec{a} \mapsto \vec{b}]}$) extends the sharing relation between the terms. In the sharing graph perspective
+it would mean adding edges between the nodes. Two type assigments are said to be in disjoint union ($\circledast$)
+if either of the type assignments used terms are not in common
+with other type assignment's shared term. If the type assignments have an exact overlapping of terms being used,
+it is said to be in a sharing union ($\varoplus$). The ($\#$) in ($\circledast$) represents disjoint check and we use
+the standard notion of set equality for checking sharing union.
+
+
 \begin{figure}[h]
   \begin{framed}
     \begin{flalign*}
-      \Gamma \circledast \Gamma' &= \Gamma \sqcup \Gamma' => \texttt{if}\ \texttt{Vars}(\Gamma) \# \texttt{Used}(\Gamma') \wedge \texttt{Vars}(\Gamma')\# \texttt{Used}(\Gamma) \\
+      \Gamma \circledast \Gamma' &= \Gamma \sqcup \Gamma' =>
+           \texttt{if}\ \texttt{Vars}(\Gamma) \# \texttt{Used}(\Gamma') \wedge \texttt{Vars}(\Gamma')\# \texttt{Used}(\Gamma) \\
       \Gamma \varoplus \Gamma'   &= \Gamma \sqcup \Gamma' => \texttt{if}\ \texttt{Used}(\Gamma) = \texttt{Used}(\Gamma')
     \end{flalign*}
   \end{framed}

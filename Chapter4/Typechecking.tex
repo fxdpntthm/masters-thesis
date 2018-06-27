@@ -1,5 +1,5 @@
 \chapter{Type System and Type Inference}
-In the following chapter we go over the type system using the notion of types and terms defined in previous
+We now describe the type system using the notion of types and terms defined in previous
 chapter. We describe type system based on the logic of \BI\ in \cref{sec:type-system}. We then describe a
 syntax directed type system in \cref{sec:syntax-typing-rules} and give a modified algorithm $\M$ in \cref{sec:algorithm-m}.
 First we give some conventions and notations that will be used throughout the sections that follow.
@@ -33,7 +33,7 @@ when the predicates in $P$ are satisfied and the free type variables in $M$ are 
 % Structural Rules
 % Connective Rules
 % forall, => Qualified type rules
-We split our type system into multiple parts for legibility. The first part includes structural rules
+We split our type system into two parts. The first part includes structural rules
 shown in \cref{fig:structural-rules} and the second part includes connectives with
 introduction and elimination rules shown in \cref{fig:typing-rules}.
 
@@ -257,7 +257,7 @@ are convenience rules for base cases that compute predicate constraints for type
 The $P \mid \cdot \geq \cdot$ lifts $\geq$ predicate into the typing environment.
 
 \section{Kind System}\label{sec:kind-system}
-\TODO{Type constructors, Class of type constructors, Unification of types and Type constructors?}
+{\color{red}Type constructors, Class of type constructors, Unification of types and Type constructors?}
 Our system supports introduction of new types via type constructors. We include a
 richer kind system for this purpose. A modified version of Robinson's algorithm \citeyearpar{robinson_machine-oriented_1965}
 is used in order to deduce the most general unifier for type constructors. Our treatment to type unification
@@ -457,7 +457,7 @@ typing judgement as the original system. \TODO{What is the reason? How does this
 
 \section{Type Inference and Algorithm $\M$}\label{sec:algorithm-m}
 We now describe the type inference algorithm based on the previously defined syntax directed
-type system. We use a variation of algorithm $\M$ [\cite{lee_proofs_1998}] for type inference.
+type system. We use a variation of algorithm $\M$ \citep{lee_proofs_1998} for type inference.
 We address three independent concerns in the type inference algorithm.
 The first being treatment of polymorphism to be same as Hindley-Milner style. The second, we introduce
 \texttt{Un} predicates for types that are unrestricted. We track this with the help of carrying a
@@ -469,76 +469,68 @@ sharing information $\Psi$. The output includes the set of new predicates $P$ th
 the new set of substitutions $S'$, the used variables $\Sigma$, and the new sharing information $\Psi'$.
 The type variables $u$ with a subscript denote fresh variables.
 
-We now formally define $\Psi$, the sharing information that is defined as a pair of variable and a collection of variables it is in sharing with.
-$\Psi(x)$ will denote all the variables that $x$ is in sharing with.  Domain of $\Psi$ defined as
-$\texttt{dom}(\Psi) = \{x \mid (x, \bar{y}) \in \Psi \}$, where $\bar{y}$ is the collection of variables shared with x.
-One can think of $\Psi$ similar to $\Gamma$, but instead
-of the type of the variable it contains the sharing information.
-Extending the sharing for a variable will be denoted by $\Psi(x) + y$, which would mean the variable $y$ is in sharing with $x$. Because the sharing
-operation is a reflexive, symmetric and transitive we observe certain properties given below to be true.
-\begin{flalign*}
- &\forall_{x \in \texttt{dom}(\Psi)}\ x \in \Psi(x) \tag{reflexive}\\
- &\forall_{x,y \in \texttt{dom}(\Psi)}\ \text{if}\ y \in \Psi(x)\ \text{then}\ x \in \Psi(y) \tag{symmetric}\\
- &\forall_{x,y,z\in \texttt{dom}(\Psi)}\ \text{if}\ y \in \Psi(x) \wedge z \in \Psi(y)\ \text{then}\ z \in \Psi(x)\tag{transitive}
-\end{flalign*}
-Thus sharing relation defines an equivalence relation on $\texttt{dom}(\Psi)$.
-
-{\color{red} needs more formalization? state some
-properties. Similar to what we do while defining $\Gamma$}.
-
 We define some auxilary functions in \cref{fig:aux-defs} to lift predicates into the type system.
+$Leq(\phi, \Gamma)$
 $\texttt{Weaken}(x, \sigma, \Sigma)$ adds the unrestricted predicate to the type $\sigma$
 if it does not belong to $\Sigma$. $\texttt{Un}(\Gamma)$ adds an unrestricted
-predicate to all the types of the variables that are in the domain of $\Gamma$. $\mathcal{C}(\Psi, \Sigma)$ is the transitive
-closure of sharing relation for all the variables that are in sharing with all the variables in $\Sigma$.
+predicate to all the types of the variables that are in the domain of $\Gamma$.
+$\texttt{GenI}(\Gamma, P => \tau)$ generalizes the qualified type to a type scheme.
+% $\texttt{Vars}(\Gamma)$ is nothing but all the variables in the type assignement $\Gamma$,
+% $\texttt{Shared}(\Gamma, \Psi)$ computes the sharing of the variables in $\Gamma$ using the sharing
+% information stored in $\Psi$ and 
+$\mathcal{C}(\Gamma, \Psi, \Sigma)$ computes the sharing information
+restricted to the variables given in $\Sigma$.
+
+\begin{figure}[h]
+  \begin{framed}
+    \begin{minipage}{0.5\linewidth}
+      \begin{flalign*}
+        Leq(\phi, \Gamma)  = \bigcup_{(x:\sigma) \in \Gamma} \{P \mid P \vdash \phi \leq \tau \}
+      \end{flalign*}
+    \end{minipage}
+    \begin{minipage}{0.5\linewidth}
+      \begin{flalign*}
+        \texttt{Un}(\Gamma)  = \bigcup_{(y:\sigma) \in \Gamma}\{P \mid P \vdash \sigma\ \texttt{un} \}
+      \end{flalign*}
+    \end{minipage}
+    \newline\newline
+    \begin{minipage}{0.5\linewidth}
+      \begin{flalign*}
+        \texttt{Weaken}(x, \sigma, \Sigma)  = \begin{cases}
+          P\ \ \ \ &\text{if}\ x \notin \Sigma, P \vdash \sigma\ \texttt{un}\\
+          \emptyset\ \ \ &otherwise
+        \end{cases}
+      \end{flalign*}
+    \end{minipage}
+    \begin{minipage}{0.5\linewidth}
+      \begin{flalign*}
+        \texttt{GenI}(\Gamma, P &=> \tau)  = \forall (ftv(S P, \tau)).S P => \tau \nonumber\\
+        \text{where}\ &S\ \text{improves}\ \texttt{ftv}(P) \backslash \texttt{ftv}(\Gamma, \tau)\ \text{in}\ P
+      \end{flalign*}
+    \end{minipage}
+    % \newline\newline
+    % \begin{minipage}{0.5\linewidth}
+    %   \begin{flalign*}
+    %     \texttt{Vars}(\Gamma)  = \texttt{dom}(\Gamma)
+    %   \end{flalign*}
+    % \end{minipage}
+    % \begin{minipage}{0.5\linewidth}
+    %   \begin{flalign*}
+    %     \texttt{Shared}(\Gamma, \Psi)  = \bigcup_{x \in \texttt{dom}(\Gamma)} \Psi(x)
+    %   \end{flalign*}
+    % \end{minipage}
+    \newline\newline
+    \begin{minipage}{1\linewidth}
+      \begin{flalign*}
+        \mathcal{C}(\Gamma, \Psi, \Sigma)  = \bigcup_{x \in \texttt{dom}(\Gamma)\ \text{and}\ x \in \Sigma} \Psi(x)
+      \end{flalign*}
+    \end{minipage}
+  \end{framed}
+  \caption{Auxiliary Functions}
+  \label{fig:aux-defs}
+\end{figure}
 
 % Explain each case of algorithm M here.
-% Var
-The first case describes the variable case, where we are given the variable identifier and
-the expected type. We try to unify the expected type $\tau$ with the derived type scheme
-$\nu$ from the type assignment $\Gamma$. The return values of the algorithm are
-a new set of predicates which are nothing but instantiated version of the predicates
-obtained from the typing scheme, the variable $x$ being used and the new
-substitution which is combination of the unification algorithms output and the original
-substitution. There is no change in the sharing information and $\Psi$ is returned as is.
-
-% \&y
-In next case of sharing function introduction rule $\lambda^{\alpha}x.M$, as per the [$\rightarrow$I] rules, the entitites returned
-are union of four predicate categories. The first is assigning a the predicate of the function to be
-a sharing function $\ShFun{u_1}$, where $u_1$ is a new type variable for the type of function argument $x$.
-The second assigning the function to be less restricting than the other variables in the typing assignment $\Gamma$.
-The third, assigning an unrestricted predicate to the binding variable $x$ if it has not been used
-anywhere in the lambda body $M$, which is done by the $\texttt{Weaken}$ function and the fourth
-being the predicates generated by recursively type checking the body of the lambda expression $M$.
-We create sharing links for $x$ with all the variables within the typing context $\Gamma$ in updated
-$\Psi''$.
-% \*x
-The case of separating function $\lambda^{*}x. M$ is very similar to the previous case of $\lambda^{\alpha}x. M$ except
-the that there is no sharing information to be updated as the argument to the function is
-separate from its body and the function predicate assigned is $\SeFun{u_1}$ to denote this very
-separating relation instead of $\ShFun u_1$
-
-% App
-In the application case the algorithm typechecks the subexpressions $M$ as a function type having
-an input of the type of $N$. The additional check done here is to identify whether $M$ has a sharing
-application or a separating application. If all the variables used in $M$ are also used in $N$ then
-it is a sharing application i.e. $M$ is assigned a sharing function predicate $\ShFun{}$
-else if the used variables in $M$ are disjoint to the variables that
-are shared by $N$ or if the variables shared by variables in $M$ are disjoint to the variables
-that are used in $N$, $M$ is assigned the predicate type $\SeFun{}$. Incase of a separating function
-application, the variables that are used in both are marked as unrestricted. This is captured by
-$\texttt{Un}(\Gamma|_{\Sigma \cap \Sigma'})$. $\Gamma|_{\Sigma}$ means the typing assignment $\Gamma$
-restricted to the variables in $\Sigma$.
-% Let
-In the polymorphic \texttt{let} case we first check for the type of the expression $M$ and
-ensure that the variable binding $x$ is not usd in it to avoid recursive definition which would
-lead to infinite types. We then generalize the type to $\sigma$ and then check the type of expression $N$
-by expanding the type assignment $\Gamma$ with the variable $x$ and type scheme $\sigma$.
-
-% \begin{framed}\centering
-%   $\tau \sim \tau' => \exists S. S \tau = \tau'$
-% \end{framed}
-
 \begin{figure}[h]
   \begin{framed}
     \begin{minipage}[ht]{1\linewidth}
@@ -562,7 +554,7 @@ by expanding the type assignment $\Gamma$ with the variable $x$ and type scheme 
         \M(S, \Psi, \Gamma \vdash \lambda ^{\alpha} x. M : \tau) &= \{P \cup Q \}, S', \Sigma \backslash x, \Psi''  \\
         \text{where}\ P; S'; \Sigma; \Psi' &= \M(\Unf(\tau, u_1 u_2 u_3) \circ S, \Psi, \Gamma, x:u_2 \vdash M: u_3) \\
         Q &= \{\ShFun{u_1}\} \cup \text{Leq}(u_1, \Gamma|_{\Sigma}) \cup \text{Weaken}(x, u_2, \Sigma)\\
-        \Psi'' &= \{\forall_{y \in \texttt{dom}(\Psi')}. \Psi'(y) + x\} \cup \{x \mapsto \{ x \}\}
+        \Psi'' &= \{\forall_{y \in \texttt{dom}(\Psi')}. \Psi'(y) + x\} \cup \{(x, \{ x \})\}
       \end{flalign*}
     \end{minipage}
 
@@ -572,7 +564,7 @@ by expanding the type assignment $\Gamma$ with the variable $x$ and type scheme 
         \M(S, \Psi, \Gamma \vdash \lambda ^{*} x. M : \tau) &= \{ P \cup Q \}, S', \Sigma \backslash x, \Psi''\\
         \text{where}\ P; S'; \Sigma; \Psi' &= \M(\Unf(\tau, u_1 u_2 u_3) \circ S, X; \Gamma, x:u_2 \vdash M: u_3) \\
         Q &= \{\SeFun{u_1}\} \cup \text{Leq}(u_1, \Gamma\mid_{\Sigma}) \cup \text{Weaken}(x, u_2, \Sigma)\\
-        \Psi'' &= \Psi' \cup \{x \mapsto \{ x \}\}
+        \Psi'' &= \Psi' \cup \{(x, \{ x \})\}
       \end{flalign*}
     \end{minipage}
 
@@ -614,117 +606,66 @@ by expanding the type assignment $\Gamma$ with the variable $x$ and type scheme 
   \end{framed}
   \caption{Type Inference Algorithm $\mathcal{M}$}
   \label{fig:algorithm-m}
-
-
-\end{figure}
-\begin{figure}[h]
-  \begin{framed}
-    \begin{minipage}{0.5\linewidth}
-      \begin{flalign*}
-        Leq(\phi, \Gamma)  = \bigcup_{(x:\tau) \in \Gamma} \{P \mid P \vdash \phi \leq \tau \}
-      \end{flalign*}
-    \end{minipage}
-    \begin{minipage}{0.5\linewidth}
-      \begin{flalign*}
-        \texttt{Un}(\Gamma)  = \bigcup\{P \mid (y:\sigma) \in \Gamma, P \vdash \sigma\ \texttt{un} \}
-      \end{flalign*}
-    \end{minipage}
-    \begin{minipage}{0.5\linewidth}
-      \begin{flalign*}
-        \texttt{Weaken}(x, \sigma, \Sigma)  = \begin{cases}
-          P\ \ \ \ &\text{if}\ x \notin \Sigma, P \vdash \sigma\ \texttt{un}\\
-          \emptyset\ \ \ &otherwise
-        \end{cases}
-      \end{flalign*}
-    \end{minipage}
-    \begin{minipage}{0.5\linewidth}
-      \begin{flalign*}
-        \texttt{GenI}(\Gamma, P &=> \tau)  = \forall (ftv(S P, \tau)).S P => \tau \nonumber\\
-        \text{where}\ &S\ \text{improves}\ \texttt{ftv}(P) \backslash \texttt{ftv}(\Gamma, \tau)\ \text{in}\ P
-      \end{flalign*}
-    \end{minipage}
-    \begin{minipage}{1\linewidth}
-      \begin{flalign*}
-        \mathcal{C}(\Psi, \Sigma)  = \bigcup_{x \in \texttt{dom}(\Sigma)} \Psi(x)
-      \end{flalign*}
-    \end{minipage}
-  \end{framed}
-  \caption{Auxiliary definitions}
-  \label{fig:aux-defs}
 \end{figure}
 
-% \begin{figure}[h]
-%   \begin{framed}
-%     \begin{minipage}{1\linewidth}
-%       \begin{flalign*}
-%         \M(S, X;\Gamma \vdash C\ x) &= (P_M \cup \{P_i\}), Q, \Sigma_M \cup \{\Sigma_i\} \nonumber\\
-%         \text{where}\ C &= \forall \vec{t_1}. (\forall \vec{t_2}. \exists \vec{t_3}. Q => v') \sepimp v \nonumber\\
-%         P_M, R_M, \Sigma_M &= \M(S, X;\Gamma \vdash M:u_1 \oplus u_2 \oplus \cdots \oplus u_n) \nonumber \\
-%         P_1, R_1, \Sigma_1 &= \M(R_M, X;\Gamma \vdash p_1:u_1 \vdash N_1: v) \nonumber \\
-%         P_i, R_i, \Sigma_i &= \M(R_{i-1}, X;\Gamma \vdash p_i:u_i \vdash N_i: v) \nonumber \\
-%         \Sigma' &= \bigcup_{i,j \leq n} (\Sigma_i \cap \Sigma_{j}) \nonumber\\
-%         Q &= \text{Un}(\Gamma|_{\Sigma'}) \cup \{\text{Weaken}(p_i, u_i, \Sigma_i)\}
-%       \end{flalign*}
-%     \end{minipage}
-%   \end{framed}
-%   \caption{Type Inference Algorithm $\mathcal{M}$ (continued)}
-%   \label{fig:algorithm-m-cont}
-% \end{figure}
+% Var
+The first case in algorithm $\M$ in \cref{fig:algorithm-m} describes the variable case, where we are given the variable identifier and
+the expected type. We try to unify the expected type $\tau$ with the derived type scheme
+$\nu$ from the type assignment $\Gamma$. The return values of the algorithm are
+a new set of predicates which are nothing but instantiated version of the predicates
+obtained from the typing scheme, the variable $x$ being used and the new
+substitution which is combination of the unification algorithms output and the original
+substitution. There is no change in the sharing information and $\Psi$ is returned as is.
 
-% Here is how the naive recursive algorithm works
+% \&y
+In next case of sharing function introduction rule $\lambda^{\alpha}x.M$, as per the [$\rightarrow$I] rules, the entitites returned
+are union of four predicate categories. The first is assigning a the predicate of the function to be
+a sharing function $\ShFun{u_1}$, where $u_1$ is a new type variable for the type of function argument $x$.
+The second assigning the function to be less restricting than the other variables in the typing assignment $\Gamma$.
+The third, assigning an unrestricted predicate to the binding variable $x$ if it has not been used
+anywhere in the lambda body $M$, which is done by the $\texttt{Weaken}$ function and the fourth
+being the predicates generated by recursively type checking the body of the lambda expression $M$.
+We create sharing links for $x$ with all the variables within the typing context $\Gamma$ in updated
+$\Psi''$.
+% \*x
+The case of separating function $\lambda^{*}x. M$ is very similar to the previous case of $\lambda^{\alpha}x. M$ except
+the that there is no sharing information to be updated as the argument to the function is
+separate from its body and the function predicate assigned is $\SeFun{u_1}$ to denote this very
+separating relation instead of $\ShFun u_1$
 
-% For Lambda
-% \begin{enumerate}
-% \item Get the bound variable
-% \item Assign a new type for bound variable
-% \item assign a new type variable for the body
-% \item Evaluate type of the body and assign it to the body type variable
-% \item return the type as (type of var) -> (type of body)
-% \end{enumerate}
+% App
+In the application case the algorithm typechecks the subexpressions $M$ as a function type having
+an input of the type of $N$. The additional check done here is to identify whether $M$ has a sharing
+application or a separating application. If all the variables used in $M$ are also used in $N$ then
+it is a sharing application i.e. $M$ is assigned a sharing function predicate $\ShFun{}$
+else if the used variables in $M$ are disjoint to the variables that
+are shared by $N$ or if the variables shared by variables in $M$ are disjoint to the variables
+that are used in $N$, $M$ is assigned the predicate type $\SeFun{}$. Incase of a separating function
+application, the variables that are used in both are marked as unrestricted. This is captured by
+$\texttt{Un}(\Gamma|_{\Sigma \cap \Sigma'})$. $\Gamma|_{\Sigma}$ means the typing assignment $\Gamma$
+restricted to the variables in $\Sigma$.
+% Let
+In the polymorphic \texttt{let} case we first check for the type of the expression $M$ and
+ensure that the variable binding $x$ is not usd in it to avoid recursive definition which would
+lead to infinite types. We then generalize the type to $\sigma$ and then check the type of expression $N$
+by expanding the type assignment $\Gamma$ with the variable $x$ and type scheme $\sigma$.
 
-% Body can be made up of another lambda. In this case the same 5 steps will be triggered
-% or it is an application of 2 or more variables
-% In case of application 2 new type variable:
-% \begin{enumerate}
-% \item introduce type variables for left expression and right expression
-%   left expression a type $A \rightarrow B$ right expression gets the type $A$
-% \item recursively type check both of them
-% \item return the type of the complete application as $B$ if the type checking in previous step is successfully
-% \end{enumerate}
-
-
-% In \qub{} there are 2 kinds of lambdas:
-% \begin{enumerate}
-% \item Sharing Lambda $\lambda^{\alpha}$
-% \item Separating Lambda $\lambda^{*}$
-% \end{enumerate}
-% This helps us specify if the 2 variables are separated or have sharing
-% of resources between them.
-% The church encoding of a sharing pair will be represented as\\
-% $shPair = \lambda^{*} x \rightarrow \lambda^{\alpha} y \rightarrow \lambda^{*} sh \rightarrow sh\ x\ y$\\
-% This means that x and y may share resources
-% A separating pair is represented as\\
-% $sePair = \lambda^{*} x \rightarrow \lambda^{*}y \rightarrow \lambda^{*}se \rightarrow se\ x\ y$\\
-% This means that x and y do not share resources.
-% % By default we may assume that resources are always separating unless explicitly specified
-% % that they are sharing.
-
-\section{Implementing Algorithm $\M$}
-The typing environment in standard Milner-Damas algorithm
-is a pair of identifier and its type.
-We need to modify the typing environment so that it describes sharing.
-% There can be many different ways of doing it.
-In the current implementation we have
-extended the typing environment to hold 2 more entities along with the
-type of the identifier, a list of list of identifiers --- that describes the sharing of variables,
-a scope tag---that identifies if the variable is global in the complete module or local to the definition.
-Global variables can be used anywhere in the file or other code file if it is imported
-All function names will be defaulted to global scope.
-Local variables can be used only after they have been bound in the typing environment.
-The new typing environment can be realized as:
-\begin{minted}{haskell}
-  type Env = Map Id (Type, [[Id]], Scope)
-\end{minted}
+% \section{Implementing Algorithm $\M$}
+% The typing environment in standard Milner-Damas algorithm
+% is a pair of identifier and its type.
+% We need to modify the typing environment so that it describes sharing.
+% % There can be many different ways of doing it.
+% In the current implementation we have
+% extended the typing environment to hold 2 more entities along with the
+% type of the identifier, a list of identifiers --- that describes the sharing of variables and
+% a scope tag---that identifies if the variable is global in the complete module or local to the definition.
+% Global variables can be used anywhere in the file or other code file if it is imported
+% All function names will be defaulted to global scope.
+% Local variables can be used only after they have been bound in the typing environment.
+% The new typing environment can be realized as:
+% \begin{minted}{haskell}
+%   type Env = Map Id (TypeScheme, [Id], Scope)
+% \end{minted}
 
 % % how is the list of list of ids help in identifying sharing
 
@@ -735,54 +676,6 @@ The new typing environment can be realized as:
 % % The used field in the type-checker state
 
 % \section{Modification to Typechecking Algorithm}
-
-% To incorporate the sharing, we have to modify the typechecking algorithm.
-% The main reason to do that is to avoid adding $Un$ predicates to
-% shared variables that are not used. Take an example of $fst$ function
-% that returns the first argument of a shared pair
-% \begin{verbatim}
-% fst = \x -> \&y -> x
-% \end{verbatim}
-% In this case y should not be assigned an $Un$ predicate because
-% it is shared with x and x is indeed used.
-
-% The type checking algorithm has to be tweaked so that we keep track
-% of what all variables are shared and which ones are separate.
-
-% When we encounter an Alpha Lambda
-% \begin{enumerate}
-% \item Get the bound variable
-% \item Assign a new type for bound variable
-% \item Assign a new type variable for the body
-% \item add the variable in a sharing context
-% \item Evaluate type of the body and assign it to the body type variable
-% \item return the type as (type of var) -> (type of body)
-% \end{enumerate}
-
-
-% % The main problem is that we do not know when a sharing variable should be kept in scope
-% % or removed. In some cases we may need to keep it around for introducing the (>:=) predicates
-% % Some cases are 2 types:
-% % 1) The variable is used
-% % 2) The variable is not used
-
-% The type checking calls occur from left to right recursively.
-% While going down the recursion we keep on adding variables to the environment
-% We stop recursing at application. where we compute whether we have complete sharing to assign ShFun or SeFun.
-
-% While folding out of of the recursion we do 2 things:
-% 1) keep track of the used variables (including implicitly used variables due to sharing)
-% 2) generate new goals
-% a) depending on whether the the introduced variable was used
-% or its sharing member was used. Assign Un predicates and weaken if it is not used at all
-% b) introduce lesser-restricted predicates
-% 3) Generate other new assumptions
-
-% We cannot determine when to get rid of the complete bunch.
-% \begin{verbatim}
-% \z -> \*x -> \&y -> y
-% \end{verbatim}
-% hence, when we are folding out of the final recursive but 1 call ie. for Lambda bound variable x
 
 % \section{Sharing}
 % What do we exactly mean by sharing?

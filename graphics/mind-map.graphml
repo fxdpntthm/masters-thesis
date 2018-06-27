@@ -199,8 +199,8 @@ Typing rules<y:LabelModel>
       <data key="d5"/>
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="30.0" width="101.0" x="-62.5" y="83.0"/>
-          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:Geometry height="30.0" width="101.0" x="850.0" y="305.0"/>
+          <y:Fill color="#FF0000" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="36.419921875" x="32.2900390625" y="5.93359375">Kinds<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
@@ -308,8 +308,8 @@ Typing rules<y:LabelModel>
       <data key="d5"/>
       <data key="d6">
         <y:ShapeNode>
-          <y:Geometry height="30.0" width="172.0" x="814.5" y="365.0"/>
-          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:Geometry height="30.0" width="172.0" x="850.0" y="365.0"/>
+          <y:Fill color="#FF0000" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="139.26953125" x="16.365234375" y="5.93359375">User Defined datatypes<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
@@ -418,7 +418,7 @@ Correspondence<y:LabelModel>
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="43.75" width="286.0" x="-73.5" y="244.0"/>
-          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:Fill color="#FF0000" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="46.3984375" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="120.244140625" x="82.8779296875" y="-1.32421875">Typing Context 
 (Trees, Multisets, 
@@ -554,7 +554,7 @@ Typing Assignment)<y:LabelModel>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e11" source="n1" target="n10">
+    <edge id="e11" source="n0" target="n13">
       <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
@@ -565,7 +565,7 @@ Typing Assignment)<y:LabelModel>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e12" source="n0" target="n13">
+    <edge id="e12" source="n13" target="n14">
       <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
@@ -576,7 +576,7 @@ Typing Assignment)<y:LabelModel>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e13" source="n13" target="n14">
+    <edge id="e13" source="n13" target="n15">
       <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
@@ -587,7 +587,7 @@ Typing Assignment)<y:LabelModel>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e14" source="n13" target="n15">
+    <edge id="e14" source="n17" target="n18">
       <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
@@ -598,7 +598,7 @@ Typing Assignment)<y:LabelModel>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e15" source="n13" target="n16">
+    <edge id="e15" source="n17" target="n19">
       <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
@@ -609,7 +609,7 @@ Typing Assignment)<y:LabelModel>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e16" source="n17" target="n18">
+    <edge id="e16" source="n17" target="n20">
       <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
@@ -620,7 +620,7 @@ Typing Assignment)<y:LabelModel>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e17" source="n17" target="n19">
+    <edge id="e17" source="n0" target="n17">
       <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
@@ -631,7 +631,7 @@ Typing Assignment)<y:LabelModel>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e18" source="n17" target="n20">
+    <edge id="e18" source="n17" target="n21">
       <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
@@ -642,7 +642,7 @@ Typing Assignment)<y:LabelModel>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e19" source="n0" target="n17">
+    <edge id="e19" source="n1" target="n22">
       <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
@@ -653,7 +653,7 @@ Typing Assignment)<y:LabelModel>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e20" source="n17" target="n21">
+    <edge id="e20" source="n13" target="n10">
       <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>
@@ -664,7 +664,7 @@ Typing Assignment)<y:LabelModel>
         </y:PolyLineEdge>
       </data>
     </edge>
-    <edge id="e21" source="n1" target="n22">
+    <edge id="e21" source="n10" target="n16">
       <data key="d9"/>
       <data key="d10">
         <y:PolyLineEdge>

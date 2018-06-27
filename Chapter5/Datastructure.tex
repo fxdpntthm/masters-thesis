@@ -1,6 +1,6 @@
-\chapter{Datatypes with resources}\label{chp:datatypes}
+\chapter{\qub{} Datatypes}\label{chp:datatypes}
 
-We now see that we have two kinds of pairs. A sharing pair (\texttt{Pair$_{sh}$}) and a separating pair (\texttt{Pair$_{sep}$}) depending on
+Having two arrows indroduces two types of pairs. A sharing pair (\texttt{Pair$_{sh}$}) and a separating pair (\texttt{Pair$_{sep}$}) depending on
 which arrow we use. The church encoding of both the pairs and their respective types are given in \ref{fig:bi-pairs-typing}.
 Derivation proofs of both the pairs are given in \cref{sec:pairs}.
 \begin{figure}
@@ -16,12 +16,11 @@ Derivation proofs of both the pairs are given in \cref{sec:pairs}.
   \caption{Typing for Pairs in \textbf{\em BI}}
   \label{fig:bi-pairs-typing}
 \end{figure}
-We can now introduce 2 new type constructors in our type language $\otimes$ and $\with$
+
+We can now introduce 2 types in our type language $\otimes$ and $\with$
 which represent separating pair and sharing pair respectively as shown in \cref{fig:pair-typing-rules}.
-Simlar to products we have two flavors of sum types. multiplicative sum type ($\oplus$) when both the
-types are separate and additive sum type ($\parr$) when both the types have sharing resources. Their
-typing rules are shown in \cref{fig:bi-sum-types}. Proof derivation and definitions for
-both the sum types are given in \cref{sec:sums}.
+We also have a sum type whose rules are shown in \cref{fig:bi-sum-types}.
+Proof derivation and definitions for sum type is given in \cref{sec:sums}.
 
 \begin{figure}[h]
   \begin{framed}
@@ -72,38 +71,18 @@ both the sum types are given in \cref{sec:sums}.
 
 \begin{figure}[h]
 \begin{framed}
-\begin{minipage}[h]{0.5\linewidth}
-  \begin{prooftree}
-    \AxiomC{$\emptyset \mid \texttt{inl}_{sh}: \tau \sepimp \tau \parr \tau' \vdash x : \tau$}\RightLabel{[$\parr$I$_1$]}
-    \UnaryInfC{$\emptyset \mid I \vdash \texttt{inl}_{sh}\ x: \tau \parr \tau'$}
-  \end{prooftree}
-\end{minipage}
-\begin{minipage}[h]{0.5\linewidth}
-  \begin{prooftree}
-    \AxiomC{$\emptyset \mid \texttt{inr}_{sh}: \tau' \sepimp \tau \parr \tau' \vdash y : \tau'$}\RightLabel{[$\parr$I$_2$]}
-    \UnaryInfC{$\emptyset \mid I \vdash \texttt{inr}_{sh}\ y: \tau \parr \tau'$}
-  \end{prooftree}
-\end{minipage}
-\begin{minipage}[h]{1.0\linewidth}
-  \begin{prooftree}
-    \AxiomC{$\emptyset \mid \Gamma \vdash M : \tau \parr \tau'$}\RightLabel{[$\parr$E]}
-    \AxiomC{$\emptyset \mid \Gamma \varoplus x:\tau \vdash N_1 : \nu$}
-    \AxiomC{$\emptyset \mid \Gamma \varoplus y:\tau' \vdash N_2 : \nu$}
-    \TrinaryInfC{$\emptyset \mid \Gamma \vdash \CaseSh{M}{\{ \texttt{inl}_{sh}\ x \mapsto N_1; \texttt{inr}_{sh}\ y \mapsto N_2\}}:\nu$}
-  \end{prooftree}
-\end{minipage}
 % sum type I_l
 \begin{minipage}{0.5\textwidth}
   \begin{prooftree}
     \AxiomC{$P \mid \Gamma \vdash M: \tau$}
-    \UnaryInfC{$P \mid \Delta \vdash \texttt{inl}_{se}\ M: \tau \oplus \tau'$}
+    \UnaryInfC{$P \mid \Delta \vdash \texttt{inl}\ M: \tau \oplus \tau'$}
   \end{prooftree}
 \end{minipage}
 % sum type I_r
 \begin{minipage}{0.5\textwidth}
   \begin{prooftree}
     \AxiomC{$P \mid \Gamma \vdash M: \tau_2$}
-    \UnaryInfC{$P \mid \Delta \vdash \texttt{inr}_{se}\ M: \tau \oplus \tau'$}
+    \UnaryInfC{$P \mid \Delta \vdash \texttt{inr}\ M: \tau \oplus \tau'$}
   \end{prooftree}
 \end{minipage}
 % sum type E
@@ -112,11 +91,11 @@ both the sum types are given in \cref{sec:sums}.
     \AxiomC{$P \mid \Gamma \vdash M: \tau \oplus \tau'$}
     \AxiomC{$P \mid \Gamma \circledast x:\tau \vdash N :\nu$}
     \AxiomC{$P \mid \Gamma \circledast y:\tau' \vdash N':\nu$}\RightLabel{[$\oplus$E]}
-    \TrinaryInfC{$P \mid \Gamma \vdash \CaseSe{M}{\{\texttt{inl}_{se}\ x \mapsto N; \texttt{inr}_{se}\ y \mapsto N'\}} : v $}
+    \TrinaryInfC{$P \mid \Gamma \vdash \Case{M}{\{\texttt{inl}\ x \mapsto N; \texttt{inr}\ y \mapsto N'\}} : v $}
   \end{prooftree}
 \end{minipage}
 \end{framed}
-\caption{Derivable Typing Rules for Sum Types}
+\caption{Derivable Typing Rules for Sum Type}
 \label{fig:bi-sum-types}
 \end{figure}
 

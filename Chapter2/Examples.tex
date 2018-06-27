@@ -1,18 +1,18 @@
 \chapter{Programming in \qub{}}
-In the following chapter we illustrate using different examples to show how \qub{} is different
-from other functional languages and how a powerful type system backed by logic of Bunched Implications
-would be useful in keeping track of resources. The examples show how a resource can be tracked at compile
-time and resource leaks can be avoided.
+In this chapter, we illustrate using examples how \qub{} is different
+from other functional languages and how a powerful type system based on logic of \BI
+would be used to track resources. The examples show how the resources use
+can be tracked at compile time and resource leaks can be avoided.
 
 \section{File Handles}\label{sec:file-handle-example}
-In an imperative language file handles are treated as normal variables
-and it is the programmers responsiblity to check that that files are not closed twice
-or there are no files that remain open when the program exits. This seemingly non-trivial
-responsibility becomes tedious and erroneous as soon as there are multiple conditionals in the programming
-logic, and as programs get larger in size. Modern functional languages such as Haskell treat file handles as
-a special datatype and make them an instance of Monad. Consider the functions for file handling
-as shown in \cref{fig:file-handling-function}. The type system however is not powerful enough
-to detect whether a file handle is closed twice or is not closed at all. A simple program in Hasell that opens a file and reads
+In modern languages file handles are treated as normal variables
+and it is the programmer's responsiblity to check that that files are not closed twice
+and that there are no files that remain open when the program exits. This seemingly trivial
+responsibility becomes tedious and error prone as soon as the programming logic gets complex.
+Modern functional languages such as Haskell enforces the file input/output to be wrapped in a IO Monad.
+This is more declarative than imperative languages, but the type system is not powerful enough
+to detect whether a file handle is closed twice or is not closed at all.
+Consider the functions for file handling as shown in \cref{fig:file-handling-function}. A simple program in Hasell that opens a file and reads
 a line from it and then closes the file handle is shown in \cref{fig:file-read-close}.
 
 \begin{figure}[h]
@@ -20,7 +20,7 @@ a line from it and then closes the file handle is shown in \cref{fig:file-read-c
     \begin{minted}{haskell}
 openFile :: FilePath -*> IO FileHandle
 closeFile :: FileHandle -*> IO ()
-readFile :: FileHandle -*> IO (String, FileHandle)
+readLine :: FileHandle -*> IO (String, FileHandle)
 writeFile :: String -*> FileHandle -> IO ((), FileHandle)
     \end{minted}
   \end{framed}
@@ -33,7 +33,7 @@ writeFile :: String -*> FileHandle -> IO ((), FileHandle)
     \begin{minted}{haskell}
 do f  <- openFile "sample.txt"
    (s, f)  <- readLine f
-   () <- close f
+   () <- closeFile f
     \end{minted}
   \end{framed}
   \caption{Reading from a file in Haskell}
@@ -50,8 +50,8 @@ Haskell's type system would happily accept this program but it might generate a 
     \begin{minted}{haskell}
 do f  <- openFile "sample.txt"
    (s, f)  <- readLine f
-   () <- close f
-   () <- close f
+   () <- closeFile f
+   () <- closeFile f
     \end{minted}
   \end{framed}
   \caption{Reading from a file and closing it twice}
@@ -85,8 +85,8 @@ and the desugared version of \cref{fig:file-read-noclose} would look like \cref{
   \begin{framed}
     \begin{minted}[escapeinside=||,mathescape=true]{haskell}
 (>>=|$_1$|) (openFile "sample.txt") (\f ->
-            (>>=|$_2$|) (readLine f) (\ (s, f) ->
-                        (>>=|$_3$|) (close f) (\_ -> close f)))
+            (>>=|$_2$|) (readFile f) (\ (s, f) ->
+                        (>>=|$_3$|) (close f) (\_ -> closeFile f)))
     \end{minted}
   \end{framed}
   \caption{Reading from a file in Haskell and closing twice}
@@ -97,7 +97,7 @@ and the desugared version of \cref{fig:file-read-noclose} would look like \cref{
   \begin{framed}
 \begin{minted}{haskell}
 (>>=) (openFile "sample.txt" ReadMode) (\ f ->
-       >>= (readLine f) (\ (s, f) -> return s)
+       >>= (closeFile f) (\ (s, f) -> return s)
 \end{minted}
   \end{framed}
   \caption{Reading from a file in Haskell and not closing it}
