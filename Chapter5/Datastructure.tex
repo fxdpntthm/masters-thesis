@@ -1,6 +1,63 @@
-\chapter{\qub{} Datatypes}\label{chp:datatypes}
+\chapter{\qub{} Extention and Datatypes}\label{chp:datatypes}
+
+In this chapter we discuss how \qub{} can be extended to have a kind system which makes
+the type language powerful enough to accept user defined datatypes\cref{sec:kind-system}. We also discuss
+how we can encode sums in \cref{sec:sums} and multiplicative and additive products in \cref{sec:products}.
+
 
 \section{Kind System}\label{sec:kind-system}
+In the original system, there is no concept of type constructors, it would be tedious to add in
+new types into the system as we would have to introduce new syntax and associated typing rules for
+each of the new syntax. The kind system alleviates this tedious process by adding in the language
+of type constructors. This idea was introduced by Barendregt \citeyearpar{barendregt_1991} and
+is desribed in detail by Jones \citeyearpar{jones_system_1993}. We will follow Jones' approach
+to add the language of type constructors and kinds in our system.
+
+The modified type system is shown in \cref{fig:qub-kind-extension}. all types have kind $\star$ and the
+kind of the type constructors depends on its arity. $\sepimp$, $\overset{!}{\sepimp}$, $\rightarrow$ and $\overset{!}{\rightarrow}$
+are now treated as type constructors with an arity of two and would have a kind $\star \rightarrow \star \rightarrow \star$ while
+Int, Float will have a kind $\star$. The language of type constructors is extendible
+by using a specialized syntax on surface level. In Haskell, this is done by using \mintinline{Haskell}{class} keywork.
+and then declaring datatypes as instances of the defined class.
+
+\begin{figure}[h]
+  \begin{framed}
+    \begin{flalign*}
+      \text{Type Variables}\ \ \      t, u, v         &\in \text{Type Variables}  \\
+      \text{Kinds}\ \ \               \kappa          &::= \kappa \mid \kappa' \rightarrow \kappa\\
+      \text{Types}\ \ \               \tau^{\kappa}    &::= t \mid T^{\kappa} \mid \tau^{\kappa' \rightarrow \kappa}\tau^{\kappa'}\\
+      \text{Type Constructors}\ \ \   T^{\kappa}       &\in \mathcal{T}^{\kappa}\ 
+                         \text{where}\ \{\overset{!}{\sepimp}, \sepimp, \xrightarrow{!}, \rightarrow \} \subseteq \mathcal{T}^{\star \rightarrow \star \rightarrow \star}\\
+      \text{Predicates}\ \ \          \pi             &::= \texttt{Un}\ \tau \mid \texttt{SeFun}\ \tau \mid \texttt{ShFun}\ \tau \mid \tau \geq \tau' \\
+      \text{Qualified Types}\ \ \     \rho            &::= \tau \mid \pi => \rho \\
+      \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma
+    \end{flalign*}
+  \end{framed}
+  \caption{Types \qub{}}
+  \label{fig:qub-kind-extension}
+\end{figure}
+
+The kind system changes the treatement to the type inference algorithm in some detail.
+All types and type constructors have to be annotated with their kind. The language
+of constructors is a system of combinators without reduction rules. The type constructor
+application rule that computes kinds is given in \cref{fig:constructor-application} where
+$T$ is of kind $\kappa' \rightarrow \kappa$ and $T'$ is of kind $\kappa'$. The application
+of both the constructors would result in a kind $\kappa$.
+
+\begin{figure}
+  \begin{framed}
+    \begin{prooftree}
+      \AxiomC{$T :: \kappa' \rightarrow \kappa$}
+      \AxiomC{$T' :: \kappa'$}
+      \BinaryInfC{$T T' :: \kappa$}
+    \end{prooftree}
+  \end{framed}
+  \caption{Constructor Application Rule}
+  \label{fig:constructor-application}
+\end{figure}
+
+
+
 {\color{red}Type constructors, Class of type constructors, Unification of types and Type constructors?}
 Our system supports introduction of new types via type constructors. We include a
 richer kind system for this purpose. A modified version of Robinson's algorithm \citeyearpar{robinson_machine-oriented_1965}

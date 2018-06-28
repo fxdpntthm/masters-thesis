@@ -1,16 +1,13 @@
 \chapter{Type System and Type Inference}
-We now describe the type system using the notion of types and terms defined in previous
-chapter. We describe type system based on the logic of \BI\ in \cref{sec:type-system}. We then describe a
+We describe the type system in this chapter with the types and terms defined in previous
+chapter. We first describe \qub{}'s type system in \cref{sec:type-system}. We then describe a
 syntax directed type system in \cref{sec:syntax-typing-rules} and give a modified algorithm $\M$ in \cref{sec:algorithm-m}.
 First we give some conventions and notations that will be used throughout the sections that follow.
 
 \section{Conventions and Notations}
 Vector $\vec{t}$ is a shorthand for a finite set of variables $\{t_1, t_2, \dots, t_n\}$ and $\forall \vec{t}. Q => \tau$
 abbreviates $\forall t_1 \dots \forall t_n. P_1 => \dots => P_m => \tau$.
-% The typing context $\mathcal{H}$ is a finite multiset of pairs of terms and types such that if two term variables occur
-% more than once, all of them must have same type. i.e. if $(x:\sigma) \in \mathcal{H}$ and $x:\sigma' \in \mathcal{H}$ then $\sigma \approx \sigma'$.
-% The equality ($\approx$) on typing schemes is up-to renaming of bound variables.
-$\Gamma$ denotes the collection of three-tuple containg the variable, its type and its sharing information.
+$\Gamma$ denotes the type assignment which is a collection of three-tuple containg the variable, its type and its sharing information.
 $\Gamma_{x}$ denotes the type assignment excluding the type variable $x$.
 We write $\sigma = \Gamma(x)$ for the type scheme assigned to the term x in $\Gamma$.
 \texttt{dom}($\Gamma$) is the set of identifiers in the type assignment i.e.
@@ -95,13 +92,13 @@ introduction and elimination rules shown in \cref{fig:typing-rules}.
 
 The tautology rule ([ID]) is a simple type assignment lookup for checking the type of the term.
 The exchange rule ([EXCH]) justifies the fact that the order in which the type assignments are witnessed
-in the multiset is insignificant and we can commute the individual term typing schemes within the multiset context
+in the type assignment is insignificant and we can commute the individual term typing schemes
 with no effect to the typing derivations. The weakening and contraction rules are made explicit in contrast to standard
 Hindley-Milner type system. The contraction sharing rule [CTR-SH] and weakening sharing rule [WKN-SH]
-says that we can duplicate or drop certain pairs of type assignments as per our convenience as we know they are in sharing with other
+convey that we can duplicate or drop certain pairs of type assignments as per our convenience as we know they are in sharing with other
 terms that remain in the context. The contraction separation rule [CTR-UN] and weakening separation rule [WKN-SH] can be
-applied to terms only if we can prove that they are of unrestricted type which is captured by introducing
-the ($\Delta$ \texttt{un}) predicate on the type that is dropped or duplicated.
+applied to terms only if we can prove that they are of unrestricted type which is captured by the ($\Delta$ \texttt{un}) antecedent predicate
+on the type that is dropped or duplicated.
 
 % Connective rules
   \begin{figure}[h]
@@ -197,10 +194,32 @@ would be substituted in the type scheme would not interfere with the sharing and
 of resources of the fully concretized type. The $\lambda$ abstractions $\lambda^{*} x. M$ and $\lambda^{\alpha}.M$
 have a function type $\ShFun{\phi}$ or $\SeFun{\phi}$ only if it is more restricting that its environment.
 This is specified in the judgments $\cdot \geq \cdot$. To avoid name shadowing, we would assume that
-the binders introduce fresh names. % The reason to use multisets can now be understood
-% as the elimination rule ([$\rightarrow$E]) can be expressed by simply duplicating the typing
-% judgments that are in sharing after we split the type assignment into two parts,
-% for typing each sub expression individually.{\color{red} I am not sure about this/can be better articulated}.
+the binders introduce fresh names. In case of a $\lambda^{\alpha}$, the binder variable is added to the sharing information of all
+terms present in the type assignment and in case of $\lambda^{*}$ the binder variable is skipped from
+adding it to the sharing information to imply separation of resources. For example,
+consider the term $\lambda^{*}c. \lambda^{*} x. \lambda^{\alpha}y. c x$. The sharing graph and type assignment is shown in
+\cref{fig:example-sharing-graph}.
+
+\begin{figure}[h]
+  \begin{framed}\centering
+    \begin{minipage}{0.3\linewidth}
+    \begin{tikzpicture}
+      \node[shape=circle,draw=black] (A) at (0,0) {x};
+      \node[shape=circle,draw=black] (B) at (0,3) {y};
+      \node[shape=circle,draw=black] (C) at (1.5,1.5) {c};
+
+      \path [-] (A) edge node {} (B);
+      \path [-] (C) edge node {} (B);
+    \end{tikzpicture}
+  \end{minipage}
+  \begin{minipage}{0.4\linewidth}
+    $\Gamma = \{ c^{y}:\tau \sepimp \upsilon, x^{y}:\tau, y^{\{c,x\}}:\tau' \}$
+  \end{minipage}
+  \end{framed}
+  \caption{Sharing graph and typing context for $\lambda^{*}c. \lambda^{*} x. \lambda^{\alpha}y. c x$}
+  \label{fig:example-sharing-graph}
+\end{figure}
+
 \begin{figure}[h]
   \begin{framed}
   \begin{minipage}{0.5\linewidth}
@@ -262,7 +281,7 @@ The $P \mid \cdot \geq \cdot$ lifts $\geq$ predicate into the typing environment
 
 \section{Syntax Directed Typing rules}\label{sec:syntax-typing-rules}
 The type system explained in the \cref{sec:type-system} are not syntax directed and will not be fit
-to develop a type inference algorithm as the typing rules and syntactic forms should have one-to-one
+to develop a type inference algorithm. the typing rules and syntactic forms should have one-to-one
 correspondence. In this section we will define syntax directed typing rules
 that will simplify our type inference system shown in \cref{fig:syntax-typing-rules}
 
@@ -294,12 +313,11 @@ syntax direct typing rules as follows:
 Similar to Quill typing system \citep{morris_best_2016} elimination of polymorphism [$\forall$E] and qualified
 types[$=>$E] is always done in the [Var$^s$], introduction of polymorphism [$\forall$I] and qualified types[$=>$I] is
 done at let bindings [Let$^s$]. This collapses the rules [$\forall$E], [$=>$E] and [ID] in one rule [VAR$^s$] where
-we use instantiation, and [$\forall$I], [$=>$I] and [Let] in one rule [Let$^s$] where we use generalization.
+we use instantiation of type variables, and [$\forall$I], [$=>$I] and [Let] in one rule [Let$^s$] where we use generalization of type variables.
 [$\sepimp$I$^s$] is used in occurence of $\lambda^{*}$, and [$\rightarrow$I$^s$] is used in occurence of $\lambda^{\alpha}$.
 We would add the introduced abstraction variable, $x$, into the sharing context in case of [$\rightarrow$I$^s$].
 % The type variable $t$ in both [$\sepimp$I$^s$] and [$\rightarrow$I$^s$] are new.
-We collapse the application rules
-[$\sepimp$E] and [$\rightarrow$E] into one rule [App$^s$] where we check for sharing of the used variables in both
+We collapse the application rules [$\sepimp$E] and [$\rightarrow$E] into one rule [App$^s$] where we check for sharing of the used variables in both
 the expressions and then assign a predicate of $\texttt{ShFun}$ or $\texttt{SeFun}$ depending on whether the variables
 are shared or not. The \texttt{un} predicates are added to the types of the terms that are not used directly in the expression
 or which are not in sharing with the terms used.
@@ -355,47 +373,22 @@ or which are not in sharing with the terms used.
         \UnaryInfC{$P \mid \Gamma \sqcup \Gamma' \circledast \Delta \vdashs M N: \tau$}
       \end{prooftree}
     \end{minipage}
-    % sum types
-    % \begin{minipage}{0.5\textwidth}
-    %   \begin{prooftree}
-    %     \AxiomC{$P \mid  \Gamma \vdashs M: \tau$}\RightLabel{[$\oplus_l$I$^s$]}
-    %     \UnaryInfC{$P \mid \Gamma \vdashs \texttt{inl}\ M: \tau \oplus \tau' $}
-    %   \end{prooftree}
-    % \end{minipage}
-    % \begin{minipage}{0.5\textwidth}
-    %   \begin{prooftree}
-    %     \AxiomC{$P \mid  \Gamma \vdashs M: \tau'$}\RightLabel{[$\oplus_r$I$^s$]}
-    %     \UnaryInfC{$P \mid \Gamma \vdashs \texttt{inr}\ M: \tau \oplus \tau' $}
-    %   \end{prooftree}
-    % \end{minipage}
-    % \begin{minipage}{1.0\textwidth}
-    %   \begin{prooftree}
-    %     \AxiomC{$P \vdash  \Delta\ \texttt{un}\ \ \ \ \ 
-    %       P \mid  \Gamma \circledast \Delta \vdashs M: \tau \oplus \tau'$}\noLine
-    %     \UnaryInfC{$P \mid  \Gamma'_x \circledast \Delta,x:\tau \vdashs N: v\ \ \ \ \
-    %       P \mid  \Gamma'_y \circledast \Delta, y:\tau' \vdashs N': v$}\RightLabel{[$\oplus$E$^s$]}
-    %     \UnaryInfC{$P \mid (\Gamma \sqcup \Gamma') \circledast \Delta \vdashs \Case{M}{\{\texttt{inl}\ x \mapsto N; \texttt{inr}\ y \mapsto N'\}}:v$}
-    %   \end{prooftree}
-    % \end{minipage}
-    % \begin{minipage}{1\linewidth}
-    %   \TODO{get rid of the red symbols}
-    % \end{minipage}
     \end{framed}
   \caption{Syntax Directed Typing Rules}
   \label{fig:syntax-typing-rules}
 \end{figure}
 
 The [Let$^s$] rule defines an expression within another expression locally i.e. x would
-not be in scope other than its use in $N$. We divide the typing context into multiple parts.
+not be in scope other than its use in $N$. We partition the typing context into multiple parts.
 $\Gamma$ contains the variables that exists exclusively in $M$ and $\Gamma'$ which
-are exclusively in $N$. $\Gamma''$ is common to both $M$ and $N$ while $\Delta$ is not used in both the expressions.
+are exclusively in $N$. $\Gamma''$ is common to both $M$ and $N$ while $\Delta$ is not used in either expressions $M$ or $N$.
 Thus $\Gamma$ and $\Gamma'$ will be completely separate from each other while $\Gamma''$ would be in sharing with both $\Gamma$ and $\Gamma'$.
 $\Delta$ would have to be unrestricted as it is not being used either in $M$ or in $N$. The sharing of $x$ with $\Gamma$ would depend on
 whether $\Gamma$ and $\Gamma'$ are completely disjoint or empty. For the application rule [App$^s$] the type assignment $\Gamma$ would contain
 variables for $M$ and $\Gamma'$ for $N$. If they are completely separate, it would be a separating function application and $M$ would be
 assigned a type $\tau' \sepimp \tau$ else, they would have to be completely sharing and M would be assigned a type $\tau' \rightarrow \tau$.
-{\color{red} The conditions outlined do not clearly look as if they are syntax directed and in the cases where the type checker cannot directly infer if the
-resources used are separate or shared, the user would be expected to provide it using type annotations.}%  {\color{red} meh.}.
+The conditions outlined for [App$^s$] do not clearly look as if they are syntax directed and in the cases where the type checker cannot directly infer if the
+resources used are separate or shared, the user would be expected to provide it using type annotations.%  {\color{red} meh.}.
 
 \begin{theorem}[Soundness of $\vdash^s$]
   If $P \mid \Gamma \vdash^s M:\tau$ then $P \mid \Gamma \vdash M : \tau$
@@ -423,9 +416,9 @@ the new set of substitutions $S'$, the used variables $\Sigma$, and the new shar
 The type variables $u$ with a subscript denote fresh variables.
 
 We define some auxilary functions in \cref{fig:aux-defs} to lift predicates into the type system.
-$Leq(\phi, \Gamma)$
+$Leq(\phi, \Gamma)$ adds the predicate $\phi \geq \sigma$ for all $\sigma$ that are in $\Gamma$.
 $\texttt{Weaken}(x, \sigma, \Sigma)$ adds the unrestricted predicate to the type $\sigma$
-if it does not belong to $\Sigma$. $\texttt{Un}(\Gamma)$ adds an unrestricted
+if $x$ does not belong to $\Sigma$. $\texttt{Un}(\Gamma)$ adds an unrestricted
 predicate to all the types of the variables that are in the domain of $\Gamma$.
 $\texttt{GenI}(\Gamma, P => \tau)$ generalizes the qualified type to a type scheme.
 $\mathcal{C}(\Gamma, \Psi, \Sigma)$ computes the sharing information
@@ -435,7 +428,7 @@ restricted to the variables given in $\Sigma$.
   \begin{framed}
     \begin{minipage}{0.5\linewidth}
       \begin{flalign*}
-        Leq(\phi, \Gamma)  = \bigcup_{(x:\sigma) \in \Gamma} \{P \mid P \vdash \phi \leq \tau \}
+        Leq(\phi, \Gamma)  = \bigcup_{(x:\sigma) \in \Gamma} \{P \mid P \vdash \sigma \geq \phi \}
       \end{flalign*}
     \end{minipage}
     \begin{minipage}{0.5\linewidth}
@@ -570,7 +563,7 @@ else if the used variables in $M$ are disjoint to the variables that
 are shared by $N$ or if the variables shared by variables in $M$ are disjoint to the variables
 that are used in $N$, $M$ is assigned the predicate type $\SeFun{}$. Incase of a separating function
 application, the variables that are used in both are marked as unrestricted. This is captured by
-$\texttt{Un}(\Gamma|_{\Sigma \cap \Sigma'})$. $\Gamma|_{\Sigma}$ means the typing assignment $\Gamma$
+$\texttt{Un}(\Gamma|_{\Sigma \cap \Sigma'})$ where $\Gamma|_{\Sigma}$ means the typing assignment $\Gamma$
 restricted to the variables in $\Sigma$.
 % Let
 In the polymorphic \texttt{let} case we first check for the type of the expression $M$ and

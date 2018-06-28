@@ -24,25 +24,7 @@ version of both the arrows. The sharing arrow
 would mean that the function shares resources with its argument and the separating
 arrow would mean that the function does not share resources with its arguments.
 We would write both the arrows in an infix notation.
-% Describe Kinds
-% The kind system is simple where we use $\star$ to denote all the types.
-% We use $\tau$, $v$ and $\phi$ to denote types of any kind.
-% We exclude additive and multiplicative product types and sum type in our core language as we can
-% encode them in our core language. Extentions to \qub{} with sum types and product types is
-% described in \cref{chp:datatypes}.
-% The system is powerful enough to let programmers define their own {\color{red} types using the type constructors.}
-% $\sepimp$ and $\rightarrow$ type constructors have a kind $\star \rightarrow \star \rightarrow \star$.
-% The kind of type constructor is computed using the following rule:
-% \begin{framed}
-%   \begin{prooftree}
-%     \AxiomC{$T :: \kappa' \rightarrow \kappa$}
-%     \AxiomC{$T' :: \kappa'$}
-%     \BinaryInfC{$T T' :: \kappa$}
-%   \end{prooftree}
-% \end{framed}
-% The language of type constructors is a system of combinators without reduction rules.
-% This treatement of type constructors is similar to Jones' \citeyearpar{jones_system_1993}. Inference
-% mechanism for the kind of type constructors discussed in \cref{sec:kind-system}.
+
 % Describe Predicates
 The predicate system enhances the expressibility of the type system. Following the same route taken
 by Quill \citep{morris_best_2016} we use the predicate \texttt{Un} $\tau$ to denote
@@ -208,6 +190,7 @@ symmetric and non-transitive. So to say:
  &\forall_{x \in \texttt{dom}(\Psi)}\ x \in \Psi(x) \tag{reflexive}\\
  &\forall_{x,y \in \texttt{dom}(\Psi)}\ \text{if}\ y \in \Psi(x)\ \text{then}\ x \in \Psi(y) \tag{symmetric}
 \end{flalign*}
+
 Using the sharing graph as type assignment would make the type inferencing considerably complex.
 We simplify the sharing graph by flattening it into a collection of 3 tuple containg the
 variable identifier, its type and a collection of variables it shares with. This would For example,
