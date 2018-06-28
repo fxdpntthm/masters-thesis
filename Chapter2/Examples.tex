@@ -5,7 +5,7 @@ would be used to track resources. The examples show how the resources use
 can be tracked at compile time and resource leaks can be avoided.
 
 \section{File Handles}\label{sec:file-handle-example}
-In modern languages file handles are treated as normal variables
+In modern languages file are treated as normal variables
 and it is the programmer's responsiblity to check that that files are not closed twice
 and that there are no files that remain open when the program exits. This seemingly trivial
 responsibility becomes tedious and error prone as soon as the programming logic gets complex.
@@ -14,6 +14,9 @@ This is more declarative than imperative languages, but the type system is not p
 to detect whether a file handle is closed twice or is not closed at all.
 Consider the functions for file handling as shown in \cref{fig:file-handling-function}. A simple program in Hasell that opens a file and reads
 a line from it and then closes the file handle is shown in \cref{fig:file-read-close}.
+We write \mintinline{haskell}{-*>} in haskell syntax to mean $\sepimp$ or the function argument is separate from
+the function and \mintinline{haskell}{-&>} to mean $\rightarrow$ or that the function arugment is in sharing
+with the function.
 
 \begin{figure}[h]
   \begin{framed}
@@ -40,7 +43,8 @@ do f  <- openFile "sample.txt"
   \label{fig:file-read-close}
 \end{figure}
 
-Consider an incorrect version of the above program where the file handle is closed twice after reading a line from it \cref{fig:file-read-close-2times}.
+Consider an incorrect version of the program in \cref{fig:file-read-close}
+where the file handle is closed twice after reading a line from it \cref{fig:file-read-close-2times}.
 It may not be a problem in a single threaded environment, but in a multithreaded environment
 the second close may accidently close the file handle that may have been reused in the background by another thread.
 When another thread tries to write on this closed file handle, it would throw an exception.
@@ -56,6 +60,30 @@ do f  <- openFile "sample.txt"
   \end{framed}
   \caption{Reading from a file and closing it twice}
   \label{fig:file-read-close-2times}
+\end{figure}
+
+Apple's goto fail bug that appeared in iOS 7.0 and caused a security vulnerability in 2012 is a similar example of closing the file twice.
+The code snippet that caused the SSL/TLS handshake to be completely skipped looked like in \cref{fig:goto-fail}.
+The cases in which the condition is false, the second \mintinline{C}{goto fail;} on line 6 would force the protocol to skip the
+steps to be taken after the if-block. This made the system vulnerable to a man-in-middle attack.
+\begin{figure}[h]
+  \begin{framed}
+\begin{minted}[linenos]{C}
+...
+if ((err = SSLHashSHA1.update(&hashCtx, &serverRandom)) != 0)
+    goto fail;
+if ((err = SSLHashSHA1.update(&hashCtx, &signedParams)) != 0)
+    goto fail;
+    goto fail;
+if ((err = SSLHashSHA1.final(&hashCtx, &hashOut)) != 0)
+    goto fail;
+
+err = sslRawVerify(...);
+...
+\end{minted}
+  \end{framed}
+  \caption{Goto Fail bug}
+  \label{fig:goto-fail}
 \end{figure}
 
 Another example of incorrect way of using file handle is by not closing the file handle after using it shown in \cref{fig:file-read-noclose}.
@@ -142,13 +170,14 @@ The bind operations will have the signatures as shown in \cref{fig:bind-signatur
 \label{fig:bind-signatures}
 \end{figure}
 
-The type of the third bind would be computed as \\
-\mintinline{haskell}{IO () -*> (() -!*> IO ()) -&> IO ()} which would be a type error
-as the bind operation should have a type signature of
+The third bind would be typed as\\
+\mintinline{haskell}{IO () -*> (() -!*> IO ()) -&> IO ()} as both the arguments share the file variable \texttt{f}
+which would be a type error
+as the bind operation should have a type signature of\\
 \mintinline{haskell}{IO () -*> (() -!*> IO ()) -*> IO ()}. The types here would not match.
 The types do match up for the correct implementation of the file read and close shown in \cref{fig:file-read-close}.
-The first bind \mintinline{haskell}{(>>=) (openFile "sample.txt" ReadMode) (\ f -> ...)} has a type signature of
-\mintinline{haskell}{IO FileHandle -*> (FileHandle -!*> IO ()) -*> IO ()} and the second bind
+The first bind \mintinline{haskell}{(>>=) (openFile "sample.txt" ReadMode) (\ f -> ...)} has a type signature of\\
+\mintinline{haskell}{IO FileHandle -*> (FileHandle -!*> IO ()) -*> IO ()}\\ and the second bind
 \mintinline{haskell}{(>>=) (readLine f) (\ (s, f) -> close f)} has a type signature of\\
 \mintinline{haskell}{IO (String, FileHandle) -*> (FileHandle -!*> IO ()) -*> IO ()}
 

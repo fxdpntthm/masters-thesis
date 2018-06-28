@@ -7,16 +7,18 @@ First we give some conventions and notations that will be used throughout the se
 \section{Conventions and Notations}
 Vector $\vec{t}$ is a shorthand for a finite set of variables $\{t_1, t_2, \dots, t_n\}$ and $\forall \vec{t}. Q => \tau$
 abbreviates $\forall t_1 \dots \forall t_n. P_1 => \dots => P_m => \tau$.
-The typing context $\mathcal{H}$ is a finite multiset of pairs of terms and types such that if two term variables occur
-more than once, all of them must have same type. i.e. if $(x:\sigma) \in \mathcal{H}$ and $x:\sigma' \in \mathcal{H}$ then $\sigma \approx \sigma'$.
-The equality ($\approx$) on typing schemes is up-to renaming of bound variables.
+% The typing context $\mathcal{H}$ is a finite multiset of pairs of terms and types such that if two term variables occur
+% more than once, all of them must have same type. i.e. if $(x:\sigma) \in \mathcal{H}$ and $x:\sigma' \in \mathcal{H}$ then $\sigma \approx \sigma'$.
+% The equality ($\approx$) on typing schemes is up-to renaming of bound variables.
+$\Gamma$ denotes the collection of three-tuple containg the variable, its type and its sharing information.
 $\Gamma_{x}$ denotes the type assignment excluding the type variable $x$.
 We write $\sigma = \Gamma(x)$ for the type scheme assigned to the term x in $\Gamma$.
 \texttt{dom}($\Gamma$) is the set of identifiers in the type assignment i.e.
 \texttt{dom}($\Gamma$) = $\{ x \mid (x:\sigma) \in \Gamma\}$.
-$\Gamma \odot \Delta$ would mean that the contexts can either
+$\Gamma \sqcup \Delta$ would mean that the contexts can either
 be sharing union ($\Gamma \varoplus \Delta$) or separating union ($\Gamma \circledast \Delta$).
 Similar to Jones' \citeyearpar{jones_theory_1994} qualified types and type schemes are overloaded Hindley-Milner calculi.
+
 \begin{defn}[Free Type Variables]
   $\texttt{fvs}(\tau)$ is the set of free type variables in the type $\tau$\\
   $\texttt{fvs}(\sigma)$ is the set of free type variables in a typing scheme $\sigma = \forall \vec{t} Q. => \tau$.\\
@@ -24,6 +26,7 @@ Similar to Jones' \citeyearpar{jones_theory_1994} qualified types and type schem
   $\texttt{fvs}(\Gamma)$ is the set of free type variables in the type assignment $\Gamma$.\\
   $\texttt{fvs}(\Gamma) = \bigcup_{x \in \texttt{dom}(\Gamma)} \{ \texttt{fvs}(\Gamma(x)) \}$
 \end{defn}
+
 \begin{defn}[Typing Judgment]
 The expression $P \mid \Gamma \vdash M : \sigma$ denotes the assertion that the term $M$ has a typing scheme $\sigma$
 when the predicates in $P$ are satisfied and the free type variables in $M$ are specified in type assignment $\Gamma$.
@@ -50,8 +53,8 @@ introduction and elimination rules shown in \cref{fig:typing-rules}.
     % EXCH
     \begin{minipage}{.5\textwidth}
       \begin{prooftree}
-        \AxiomC{$\Gamma \odot \Delta \vdash M : \sigma$} \RightLabel{[EXCH]}
-        \UnaryInfC{$P \mid \Delta \odot \Gamma \vdash M : \sigma $}
+        \AxiomC{$\Gamma \sqcup \Delta \vdash M : \sigma$} \RightLabel{[EXCH]}
+        \UnaryInfC{$P \mid \Delta \sqcup \Gamma \vdash M : \sigma $}
       \end{prooftree}
     \end{minipage}
         % CTR UN
@@ -194,10 +197,10 @@ would be substituted in the type scheme would not interfere with the sharing and
 of resources of the fully concretized type. The $\lambda$ abstractions $\lambda^{*} x. M$ and $\lambda^{\alpha}.M$
 have a function type $\ShFun{\phi}$ or $\SeFun{\phi}$ only if it is more restricting that its environment.
 This is specified in the judgments $\cdot \geq \cdot$. To avoid name shadowing, we would assume that
-the binders introduce fresh names. The reason to use multisets can now be understood
-as the elimination rule ([$\rightarrow$E]) can be expressed by simply duplicating the typing
-judgments that are in sharing after we split the type assignment into two parts,
-for typing each sub expression individually.{\color{red} I am not sure about this/can be better articulated}.
+the binders introduce fresh names. % The reason to use multisets can now be understood
+% as the elimination rule ([$\rightarrow$E]) can be expressed by simply duplicating the typing
+% judgments that are in sharing after we split the type assignment into two parts,
+% for typing each sub expression individually.{\color{red} I am not sure about this/can be better articulated}.
 \begin{figure}[h]
   \begin{framed}
   \begin{minipage}{0.5\linewidth}
@@ -256,59 +259,6 @@ The rules given in \cref{fig:bi-base-typing-rules}
 are convenience rules for base cases that compute predicate constraints for types within a context.
 The $P \mid \cdot \geq \cdot$ lifts $\geq$ predicate into the typing environment.
 
-\section{Kind System}\label{sec:kind-system}
-{\color{red}Type constructors, Class of type constructors, Unification of types and Type constructors?}
-Our system supports introduction of new types via type constructors. We include a
-richer kind system for this purpose. A modified version of Robinson's algorithm \citeyearpar{robinson_machine-oriented_1965}
-is used in order to deduce the most general unifier for type constructors. Our treatment to type unification
-is similar to Jones' \citeyearpar{jones_system_1993}.
-Formally we define $S$ to be the {\it most general unifier} for type constructors $T$ and $T'$ if:
-\begin{enumerate}
-  \item $S$ is a unifier for $T$ and $T'$.
-  \item For every unifier $S'$ of $T$ and $T'$ we can write $T'$ in a form of
-    $R S$ where $R$ some kind preserving substitution.
-\end{enumerate}
-We write $T \overset{S}{\sim}_{\kappa} T'$ for assertion that $S$ is the unifier
-of the constructor types $T, T' \in T^{\kappa}$. The rules in \cref{fig:unify-types}
-describe the unification algorithm for type constructors. [Var] and [Var'] contain
-and additional constraint of the type variable $t$ to not be free in the type constructor's $T$
-type variables to ensure the unification does not lead to infinite types.
-
-\begin{figure}[h]
-  \begin{framed}
-    \begin{minipage}[l]{0.5\linewidth}
-      \begin{flalign*}
-        t \overset{id}{\sim}_{\kappa} t \tag{[ID-Var]}
-      \end{flalign*}
-    \end{minipage}
-    \begin{minipage}[r]{0.5\linewidth}
-      \begin{flalign*}
-        \tau \overset{id}{\sim}_{\kappa} \tau \tag{[ID-Const]}
-      \end{flalign*}
-    \end{minipage}
-
-    \begin{minipage}[l]{0.5\linewidth}
-      \begin{flalign*}
-        t \overset{[C/t]}{\sim}_{\kappa} C, t \notin \texttt{fvs}(C) \tag{[Var]}
-      \end{flalign*}
-    \end{minipage}
-    \begin{minipage}[r]{0.5\linewidth}
-      \begin{flalign*}
-        C \overset{[C/t]}{\sim}_{\kappa} t, t \notin \texttt{fvs}(C) \tag{[Var']}
-      \end{flalign*}
-    \end{minipage}
-
-    \begin{minipage}[c]{1.0\linewidth}
-      \begin{prooftree}
-        \AxiomC{$C \overset{S}{\sim}_{\kappa'\rightarrow \kappa} D$}
-        \AxiomC{$S C' \overset{S'}{\sim}_{\kappa'} S D'$}\RightLabel{[Apply]}
-        \BinaryInfC{$CC' \overset{SS'}{\sim}_{\kappa} DD'$}
-      \end{prooftree}
-    \end{minipage}
-  \end{framed}
-  \caption{Kind Preserving Unification of Type Constructors}
-  \label{fig:unify-types}
-\end{figure}
 
 \section{Syntax Directed Typing rules}\label{sec:syntax-typing-rules}
 The type system explained in the \cref{sec:type-system} are not syntax directed and will not be fit
@@ -333,21 +283,22 @@ syntax direct typing rules as follows:
   A qualified type scheme is a pair of type scheme with a set of predicates written as $(P \mid \sigma)$,
   where $\sigma = \forall \vec{t}. Q => \tau$.
 \end{defn}
-\begin{defn}[Qualified Type Scheme Instantiation]
-  For two qualified type schemes $(P \mid \sigma)$ where $\sigma = \forall \vec{t}. Q => \tau$ and
-  $(P' \mid \sigma')$ where $\sigma' = \forall \vec{t'}. Q' => \tau'$ we say $(P' \mid \sigma')$ is an
-  instance of $(P \mid \sigma)$ iff there exists $\vec{v}$ such that $\tau' = [\vec{v}/ \vec{t}]\tau$ and
-  $P',Q' => P, [\vec{v}/ \vec{t}]Q$. We write it as $(P' \mid \sigma') \sqsubseteq (P \mid \sigma)$. A type scheme
-  $\sigma$ is an abbreviation of $(\emptyset \mid \sigma)$.
-\end{defn}
+% \begin{defn}[Qualified Type Scheme Instantiation]
+%   For two qualified type schemes $(P \mid \sigma)$ where $\sigma = \forall \vec{t}. Q => \tau$ and
+%   $(P' \mid \sigma')$ where $\sigma' = \forall \vec{t'}. Q' => \tau'$ we say $(P' \mid \sigma')$ is an
+%   instance of $(P \mid \sigma)$ iff there exists $\vec{v}$ such that $\tau' = [\vec{v}/ \vec{t}]\tau$ and
+%   $P',Q' => P, [\vec{v}/ \vec{t}]Q$. We write it as $(P' \mid \sigma') \sqsubseteq (P \mid \sigma)$. A type scheme
+%   $\sigma$ is an abbreviation of $(\emptyset \mid \sigma)$.
+% \end{defn}
 
 Similar to Quill typing system \citep{morris_best_2016} elimination of polymorphism [$\forall$E] and qualified
 types[$=>$E] is always done in the [Var$^s$], introduction of polymorphism [$\forall$I] and qualified types[$=>$I] is
 done at let bindings [Let$^s$]. This collapses the rules [$\forall$E], [$=>$E] and [ID] in one rule [VAR$^s$] where
 we use instantiation, and [$\forall$I], [$=>$I] and [Let] in one rule [Let$^s$] where we use generalization.
 [$\sepimp$I$^s$] is used in occurence of $\lambda^{*}$, and [$\rightarrow$I$^s$] is used in occurence of $\lambda^{\alpha}$.
-We would add the introduced abstraction variable into the sharing context in case of [$\rightarrow$I$^s$].
-The type variable $\tau$ in both [$\sepimp$I$^s$] and [$\rightarrow$I$^s$] are new. We collapse the application rules
+We would add the introduced abstraction variable, $x$, into the sharing context in case of [$\rightarrow$I$^s$].
+% The type variable $t$ in both [$\sepimp$I$^s$] and [$\rightarrow$I$^s$] are new.
+We collapse the application rules
 [$\sepimp$E] and [$\rightarrow$E] into one rule [App$^s$] where we check for sharing of the used variables in both
 the expressions and then assign a predicate of $\texttt{ShFun}$ or $\texttt{SeFun}$ depending on whether the variables
 are shared or not. The \texttt{un} predicates are added to the types of the terms that are not used directly in the expression
@@ -435,7 +386,7 @@ or which are not in sharing with the terms used.
 \end{figure}
 
 The [Let$^s$] rule defines an expression within another expression locally i.e. x would
-not be in scope other than using it in $N$. We divide the typing context into multiple parts.
+not be in scope other than its use in $N$. We divide the typing context into multiple parts.
 $\Gamma$ contains the variables that exists exclusively in $M$ and $\Gamma'$ which
 are exclusively in $N$. $\Gamma''$ is common to both $M$ and $N$ while $\Delta$ is not used in both the expressions.
 Thus $\Gamma$ and $\Gamma'$ will be completely separate from each other while $\Gamma''$ would be in sharing with both $\Gamma$ and $\Gamma'$.
@@ -443,8 +394,8 @@ $\Delta$ would have to be unrestricted as it is not being used either in $M$ or 
 whether $\Gamma$ and $\Gamma'$ are completely disjoint or empty. For the application rule [App$^s$] the type assignment $\Gamma$ would contain
 variables for $M$ and $\Gamma'$ for $N$. If they are completely separate, it would be a separating function application and $M$ would be
 assigned a type $\tau' \sepimp \tau$ else, they would have to be completely sharing and M would be assigned a type $\tau' \rightarrow \tau$.
-The conditions do not clearly look as if they are syntax directed and in the cases where the type checker cannot directly infer if the
-resources used are separate or shared, the user would be expected to provide it using type annotations  {\color{red} meh.}.
+{\color{red} The conditions outlined do not clearly look as if they are syntax directed and in the cases where the type checker cannot directly infer if the
+resources used are separate or shared, the user would be expected to provide it using type annotations.}%  {\color{red} meh.}.
 
 \begin{theorem}[Soundness of $\vdash^s$]
   If $P \mid \Gamma \vdash^s M:\tau$ then $P \mid \Gamma \vdash M : \tau$
@@ -453,7 +404,9 @@ The soundness property captures the essence that derivations in the syntax direc
 The proof is by induction on derivation of $P \mid \Gamma \vdash^s M:\tau$ and is detailed in \cref{prf:soundness-syntax-directed}.
 
 The syntax directed typing system is however not complete i.e. the syntax directed typing may not be able to derive the same
-typing judgement as the original system. \TODO{What is the reason? How does this relate to future work? needs elaboration}
+typing judgement as the original system.
+
+\TODO{What is the reason? How does this relate to future work? needs elaboration}
 
 \section{Type Inference and Algorithm $\M$}\label{sec:algorithm-m}
 We now describe the type inference algorithm based on the previously defined syntax directed
@@ -475,9 +428,6 @@ $\texttt{Weaken}(x, \sigma, \Sigma)$ adds the unrestricted predicate to the type
 if it does not belong to $\Sigma$. $\texttt{Un}(\Gamma)$ adds an unrestricted
 predicate to all the types of the variables that are in the domain of $\Gamma$.
 $\texttt{GenI}(\Gamma, P => \tau)$ generalizes the qualified type to a type scheme.
-% $\texttt{Vars}(\Gamma)$ is nothing but all the variables in the type assignement $\Gamma$,
-% $\texttt{Shared}(\Gamma, \Psi)$ computes the sharing of the variables in $\Gamma$ using the sharing
-% information stored in $\Psi$ and 
 $\mathcal{C}(\Gamma, \Psi, \Sigma)$ computes the sharing information
 restricted to the variables given in $\Sigma$.
 
@@ -508,17 +458,6 @@ restricted to the variables given in $\Sigma$.
         \text{where}\ &S\ \text{improves}\ \texttt{ftv}(P) \backslash \texttt{ftv}(\Gamma, \tau)\ \text{in}\ P
       \end{flalign*}
     \end{minipage}
-    % \newline\newline
-    % \begin{minipage}{0.5\linewidth}
-    %   \begin{flalign*}
-    %     \texttt{Vars}(\Gamma)  = \texttt{dom}(\Gamma)
-    %   \end{flalign*}
-    % \end{minipage}
-    % \begin{minipage}{0.5\linewidth}
-    %   \begin{flalign*}
-    %     \texttt{Shared}(\Gamma, \Psi)  = \bigcup_{x \in \texttt{dom}(\Gamma)} \Psi(x)
-    %   \end{flalign*}
-    % \end{minipage}
     \newline\newline
     \begin{minipage}{1\linewidth}
       \begin{flalign*}
@@ -592,17 +531,6 @@ restricted to the variables given in $\Sigma$.
         Q &= \text{Un}(\Gamma|_{\Sigma \cap \Sigma'}) \cup \text{Weaken}(x, \sigma, \Sigma')
       \end{flalign*}
     \end{minipage}
-
-    % \begin{minipage}{1\linewidth}
-    %   \begin{flalign*}
-    %     \M(S, X;\Gamma \vdash \Case{M}{\{p_i \mapsto N_i\}_i}) &= (P_M \cup \{P_i\}), Q, \Sigma_M \cup \{\Sigma_i\} \nonumber\\
-    %     \text{where}\ P_M, R_M, \Sigma_M &= \M(S, X;\Gamma \vdash M:u_1 \oplus u_2 \oplus \cdots \oplus u_n) \nonumber \\
-    %     P_1, R_1, \Sigma_1 &= \M(R_M, X;\Gamma \vdash p_1:u_1 \vdash N_1: v) \nonumber \\
-    %     P_i, R_i, \Sigma_i &= \M(R_{i-1}, X;\Gamma \vdash p_i:u_i \vdash N_i: v) \nonumber \\
-    %     \Sigma' &= \bigcup_{i,j \leq n} (\Sigma_i \cap \Sigma_{j}) \nonumber\\
-    %     Q &= \text{Un}(\Gamma|_{\Sigma'}) \cup \{\text{Weaken}(p_i, u_i, \Sigma_i)\}
-    %   \end{flalign*}
-    % \end{minipage}
   \end{framed}
   \caption{Type Inference Algorithm $\mathcal{M}$}
   \label{fig:algorithm-m}

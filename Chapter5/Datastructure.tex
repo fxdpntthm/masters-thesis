@@ -1,5 +1,59 @@
 \chapter{\qub{} Datatypes}\label{chp:datatypes}
 
+\section{Kind System}\label{sec:kind-system}
+{\color{red}Type constructors, Class of type constructors, Unification of types and Type constructors?}
+Our system supports introduction of new types via type constructors. We include a
+richer kind system for this purpose. A modified version of Robinson's algorithm \citeyearpar{robinson_machine-oriented_1965}
+is used in order to deduce the most general unifier for type constructors. Our treatment to type unification
+is similar to Jones' \citeyearpar{jones_system_1993}.
+Formally we define $S$ to be the {\it most general unifier} for type constructors $T$ and $T'$ if:
+\begin{enumerate}
+  \item $S$ is a unifier for $T$ and $T'$.
+  \item For every unifier $S'$ of $T$ and $T'$ we can write $T'$ in a form of
+    $R S$ where $R$ some kind preserving substitution.
+\end{enumerate}
+We write $T \overset{S}{\sim}_{\kappa} T'$ for assertion that $S$ is the unifier
+of the constructor types $T, T' \in T^{\kappa}$. The rules in \cref{fig:unify-types}
+describe the unification algorithm for type constructors. [Var] and [Var'] contain
+and additional constraint of the type variable $t$ to not be free in the type constructor's $T$
+type variables to ensure the unification does not lead to infinite types.
+
+\begin{figure}[h]
+  \begin{framed}
+    \begin{minipage}[l]{0.5\linewidth}
+      \begin{flalign*}
+        t \overset{id}{\sim}_{\kappa} t \tag{[ID-Var]}
+      \end{flalign*}
+    \end{minipage}
+    \begin{minipage}[r]{0.5\linewidth}
+      \begin{flalign*}
+        \tau \overset{id}{\sim}_{\kappa} \tau \tag{[ID-Const]}
+      \end{flalign*}
+    \end{minipage}
+
+    \begin{minipage}[l]{0.5\linewidth}
+      \begin{flalign*}
+        t \overset{[C/t]}{\sim}_{\kappa} C, t \notin \texttt{fvs}(C) \tag{[Var]}
+      \end{flalign*}
+    \end{minipage}
+    \begin{minipage}[r]{0.5\linewidth}
+      \begin{flalign*}
+        C \overset{[C/t]}{\sim}_{\kappa} t, t \notin \texttt{fvs}(C) \tag{[Var']}
+      \end{flalign*}
+    \end{minipage}
+
+    \begin{minipage}[c]{1.0\linewidth}
+      \begin{prooftree}
+        \AxiomC{$C \overset{S}{\sim}_{\kappa'\rightarrow \kappa} D$}
+        \AxiomC{$S C' \overset{S'}{\sim}_{\kappa'} S D'$}\RightLabel{[Apply]}
+        \BinaryInfC{$CC' \overset{SS'}{\sim}_{\kappa} DD'$}
+      \end{prooftree}
+    \end{minipage}
+  \end{framed}
+  \caption{Kind Preserving Unification of Type Constructors}
+  \label{fig:unify-types}
+\end{figure}
+
 Having two arrows indroduces two types of pairs. A sharing pair (\texttt{Pair$_{sh}$}) and a separating pair (\texttt{Pair$_{sep}$}) depending on
 which arrow we use. The church encoding of both the pairs and their respective types are given in \ref{fig:bi-pairs-typing}.
 Derivation proofs of both the pairs are given in \cref{sec:pairs}.

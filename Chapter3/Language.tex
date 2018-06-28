@@ -1,19 +1,17 @@
 \chapter{Core Language Syntax and Types}
 In this chapter we give the formal description of the language syntax and types. We explain what
-it means for a judgement to exist as binary trees and then how we approximate the tree judgement
-to a multiset inorder to simplify our type assignment algorithm.
+it means for a type assignment to exist as binary trees. We then show how we generalize the tree
+into a sharing graph and represent it as a collection of three tuple sets inorder to simplify our type inference algorithm.
 
 \begin{figure}[h]
   \begin{framed}
     \begin{flalign*}
-      \text{Type Variables}\ \ \      t, u, v         &\in \text{Type Variables}  \nonumber\\
-      % \text{Kinds}\ \ \               \kappa          &::= \star \mid \kappa \rightarrow \kappa \nonumber\\
-      % \text{Type constructors}\ \ \   T^{\kappa}       &::= \mathcal{T}^{\kappa}\ \text{where}
-      %                                                 \{\overset{!}{\sepimp}, \sepimp, \xrightarrow{!}, \rightarrow \} \subseteq \mathcal{T}^{* \rightarrow * \rightarrow *}\nonumber\\
-      \text{Types}\ \ \               \tau            &::= t \mid \tau \rightarrow \tau\ \text{where}\ \{\overset{!}{\sepimp}, \sepimp, \xrightarrow{!}, \rightarrow \} \subseteq \rightarrow \nonumber\\
-      \text{Predicates}\ \ \          \pi             &::= \texttt{Un}\ \tau \mid \texttt{SeFun}\ \tau \mid \texttt{ShFun}\ \tau \mid \tau \geq \tau' \nonumber\\
-      \text{Qualified Types}\ \ \     \rho            &::= \tau \mid \pi => \rho \nonumber\\
-      \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma \nonumber
+      \text{Type Variables}\ \ \      t, u, v         &\in \text{Type Variables}  \\
+      \text{Types}\ \ \               \tau            &::= t \mid \tau \rightarrow \tau\
+                                \text{where}\ \{\overset{!}{\sepimp}, \sepimp, \xrightarrow{!}, \rightarrow \} \subseteq \rightarrow \\
+      \text{Predicates}\ \ \          \pi             &::= \texttt{Un}\ \tau \mid \texttt{SeFun}\ \tau \mid \texttt{ShFun}\ \tau \mid \tau \geq \tau' \\
+      \text{Qualified Types}\ \ \     \rho            &::= \tau \mid \pi => \rho \\
+      \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma 
     \end{flalign*}
   \end{framed}
   \caption{Types \qub{}}
@@ -53,12 +51,13 @@ argument types and \texttt{SeFun} $\tau$ to describe that $\tau$ is
 does not share any resources from its argument types. The function types can also be of the unrestricted type.
 Thus if a type $\tau$ is unrestricted i.e. it qualifies with predicate \texttt{Un} and it is also one of the function types
 i.e. \texttt{SeFun} or \texttt{ShFun}, we write them as $\overset{!}{\sepimp}$ and $\xrightarrow{!}$ respectively.
-This can be considered as an improving substitution following Jones notion of improvement of qualified types \citep{jones_simplifying_1995}.
+% This can be considered as an improving substitution following Jones notion of improvement of qualified types \citep{jones_simplifying_1995}.
 We also define an ordering on types by using the predicate $\geq$. The predicate $\tau \geq \tau'$ holds if the type $\tau'$
-is less restricting than $\tau$. The predicate entailment relations $P => Q$ are given in \cref{fig:entailment-rules}.
+is less restricting than $\tau$ or to say $\tau$ has admits more structural rules than $\tau'$ as previously explained in \cref{sec:quill}.
+The predicate entailment relations $P => Q$ are given in \cref{fig:entailment-rules}.
 
-The current system does not have any kind system. They can be added into the system as a language extension
-to be able to define type constructors which is described in \cref{chp:datatypes}.
+To keep the current system we have not included a kind system. Kinds can be added into the system as a language extension
+to be able to define type constructors. We would describe this in detail in \cref{chp:datatypes}.
 
 \begin{figure}[h]
   \begin{framed}
@@ -77,13 +76,13 @@ to be able to define type constructors which is described in \cref{chp:datatypes
     \begin{minipage}{0.20\linewidth}
       \begin{prooftree}
         \AxiomC{}
-        \UnaryInfC{$P => \Un{(\tau \sepimp \tau')}$}
+        \UnaryInfC{$P => \Un{(\tau \overset{!}{\sepimp} \tau')}$}
       \end{prooftree}
     \end{minipage}
     \begin{minipage}{0.20\linewidth}
       \begin{prooftree}
         \AxiomC{}
-        \UnaryInfC{$P => \Un{(\tau \rightarrow \tau')}$}
+        \UnaryInfC{$P => \Un{(\tau \overset{!}{\sepimp} \tau')}$}
       \end{prooftree}
     \end{minipage}
     \begin{minipage}{0.20\linewidth}
@@ -207,12 +206,11 @@ which would mean the variable $y$ is in sharing with $x$. We axiomatize the shar
 symmetric and non-transitive. So to say:
 \begin{flalign*}
  &\forall_{x \in \texttt{dom}(\Psi)}\ x \in \Psi(x) \tag{reflexive}\\
- &\forall_{x,y \in \texttt{dom}(\Psi)}\ \text{if}\ y \in \Psi(x)\ \text{then}\ x \in \Psi(y) \tag{symmetric}\\
+ &\forall_{x,y \in \texttt{dom}(\Psi)}\ \text{if}\ y \in \Psi(x)\ \text{then}\ x \in \Psi(y) \tag{symmetric}
 \end{flalign*}
-
 Using the sharing graph as type assignment would make the type inferencing considerably complex.
-We simplify the sharing graph into a collection of 3 tuple containg the
-variable identifier, its type and a collection of variables it shares with. For example,
+We simplify the sharing graph by flattening it into a collection of 3 tuple containg the
+variable identifier, its type and a collection of variables it shares with. This would For example,
 if a resource $x$ has type $\tau$ and it shares with variables $\{y_1, y_2, y_3\}$ we would represent it as $x^{\{y_1, y_2, y_3\}}:\tau$
 or just $x^{\bar{y}}:\tau$ for short. We would write $\Gamma, x^{\bar{y}}:\tau$ to mean $\Gamma \sqcup \{x^{\bar{y}}:\tau\}$.
 
@@ -225,7 +223,6 @@ or just $x^{\bar{y}}:\tau$ for short. We would write $\Gamma, x^{\bar{y}}:\tau$ 
   \caption{Typing Context}
   \label{fig:typing-context}
 \end{figure}
-
 
 \begin{figure}[h]
   \begin{framed}
@@ -256,7 +253,6 @@ if either of the type assignments used terms are not in common
 with other type assignment's shared term. If the type assignments have an exact overlapping of terms being used,
 it is said to be in a sharing union ($\varoplus$). The ($\#$) in ($\circledast$) represents disjoint check and we use
 the standard notion of set equality for checking sharing union.
-
 
 \begin{figure}[h]
   \begin{framed}

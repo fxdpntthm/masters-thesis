@@ -36,17 +36,8 @@
   \end{itemize}
 \end{proof}
 
-\begin{theorem}[Completeness of $\vdashs$]\label{thm:completeness-syntax-directed}
-  If $P \mid \Gamma \vdash M:\tau$ then
-  $\exists ! Q,\tau. Q \mid \Gamma \vdashs M:\tau$
-  and $(P \mid \sigma) \sqsubseteq \texttt{Gen}(\Gamma, Q => \tau)$
-\end{theorem}
-\begin{proof}
-  \TODO{some induction here}.
-\end{proof}
-
 \begin{theorem}[Soundness of $\mathcal{M}$.]
-   If $\mathcal{M}(S, X; \Gamma \vdash M : \tau) = P, S', \Sigma$ then $S' P | S' (\Gamma\mid_{\Sigma}) \vdash M : S' \tau$
+   If $\mathcal{M}(S, \Psi, \Gamma \vdash M : \tau) = P, S', \Sigma, \Psi'$ then $S' P \mid S' (\Gamma) \vdashs M : S' \tau$
 \end{theorem}
 \begin{proof}
   Proof by induction on structure of $M$
@@ -58,6 +49,30 @@
   \item Case 5. $\texttt{let}\ x = M\ \texttt{in}\ N$
   \end{itemize}
 \end{proof}
+
+
+\begin{theorem}[Completeness of $\vdashs$]\label{thm:completeness-syntax-directed}
+  If $P \mid \Gamma \vdash M:\tau$ then
+  $\exists ! Q,\tau. Q \mid \Gamma \vdashs M:\tau$
+  and $(P \mid \sigma) \sqsubseteq \texttt{Gen}(\Gamma, Q => \tau)$
+\end{theorem}
+\begin{proof}
+  \TODO{some induction here}.
+\end{proof}
+
+% \begin{theorem}[Soundness of $\mathcal{M}$.]
+%    If $\mathcal{M}(S, X; \Gamma \vdash M : \tau) = P, S', \Sigma$ then $S' P | S' (\Gamma\mid_{\Sigma}) \vdash M : S' \tau$
+% \end{theorem}
+% \begin{proof}
+%   Proof by induction on structure of $M$
+%   \begin{itemize}
+%   \item Case 1. $x$
+%   \item Case 2. $\lambda^{*} x. M$
+%   \item Case 3. $\lambda ^{\alpha}x. M$
+%   \item Case 4. $M\ N$
+%   \item Case 5. $\texttt{let}\ x = M\ \texttt{in}\ N$
+%   \end{itemize}
+% \end{proof}
 
 \begin{theorem}[Completeness of $\M$.]
   If $S$ is a substitution ans X is a set of type variables such that
@@ -76,10 +91,8 @@
 \TODO{some more induction here. Makes use of theorems \ref{thm:soundness-syntax-directed} and \ref{thm:completeness-syntax-directed}}
 \end{proof}
 
-
-
-\TODO{
-  \begin{theorem}[Progress.]
+\begin{framed}
+{\color{red}  \begin{theorem}[Progress.]
     If $M:\tau$ then either  $M \leadsto M'$ or $M$ is a value.
   \end{theorem}
 \begin{proof}
@@ -92,6 +105,7 @@
 \begin{proof}
 \end{proof}
 }
+\end{framed}
 
 
 %%% Local Variables:
