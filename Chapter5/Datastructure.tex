@@ -2,7 +2,7 @@
 
 In this chapter we discuss how \qub{} can be extended to have a kind system which makes
 the type language powerful enough to accept user defined datatypes\cref{sec:kind-system}. We also discuss
-how we can encode sums in \cref{sec:sums} and multiplicative and additive products in \cref{sec:products}.
+how we can encode sums and multiplicative and additive products in \cref{sec:pairs-types}.
 
 
 \section{Kind System}\label{sec:kind-system}
@@ -11,21 +11,17 @@ new types into the system as we would have to introduce new syntax and associate
 each of the new syntax. The kind system alleviates this tedious process by adding in the language
 of type constructors. This idea was introduced by Barendregt \citeyearpar{barendregt_1991} and
 is desribed in detail by Jones \citeyearpar{jones_system_1993}. We will follow Jones' approach
-to add the language of type constructors and kinds in our system.
-
-The modified type system is shown in \cref{fig:qub-kind-extension}. all types have kind $\star$ and the
-kind of the type constructors depends on its arity. $\sepimp$, $\overset{!}{\sepimp}$, $\rightarrow$ and $\overset{!}{\rightarrow}$
-are now treated as type constructors with an arity of two and would have a kind $\star \rightarrow \star \rightarrow \star$ while
-Int, Float will have a kind $\star$. The language of type constructors is extendible
+to add the language of type constructors and kinds in our system. The modified type system is shown in \cref{fig:qub-kind-extension}. All types have kind $\star$ and the
+kind of the type constructors depends on its arity. The language of type constructors is extendible
 by using a specialized syntax on surface level. In Haskell, this is done by using \mintinline{Haskell}{class} keywork.
 and then declaring datatypes as instances of the defined class.
 
 \begin{figure}[h]
   \begin{framed}
     \begin{flalign*}
-      \text{Type Variables}\ \ \      t, u, v         &\in \text{Type Variables}  \\
+      \text{Type Variables}\ \ t, u, \upsilon         &\in \text{Type Variables}  \\
       \text{Kinds}\ \ \               \kappa          &::= \kappa \mid \kappa' \rightarrow \kappa\\
-      \text{Types}\ \ \               \tau^{\kappa}    &::= t \mid T^{\kappa} \mid \tau^{\kappa' \rightarrow \kappa}\tau^{\kappa'}\\
+      \text{Types}\ \ \             \tau^{\kappa}      &::= t^\kappa \mid T^{\kappa} \mid \tau^{\kappa' \rightarrow \kappa}\tau^{\kappa'}\\
       \text{Type Constructors}\ \ \   T^{\kappa}       &\in \mathcal{T}^{\kappa}\ 
                          \text{where}\ \{\overset{!}{\sepimp}, \sepimp, \xrightarrow{!}, \rightarrow \} \subseteq \mathcal{T}^{\star \rightarrow \star \rightarrow \star}\\
       \text{Predicates}\ \ \          \pi             &::= \texttt{Un}\ \tau \mid \texttt{SeFun}\ \tau \mid \texttt{ShFun}\ \tau \mid \tau \geq \tau' \\
@@ -37,32 +33,30 @@ and then declaring datatypes as instances of the defined class.
   \label{fig:qub-kind-extension}
 \end{figure}
 
-The kind system changes the treatement to the type inference algorithm in some detail.
-All types and type constructors have to be annotated with their kind. The language
-of constructors is a system of combinators without reduction rules. The type constructor
-application rule that computes kinds is given in \cref{fig:constructor-application} where
-$T$ is of kind $\kappa' \rightarrow \kappa$ and $T'$ is of kind $\kappa'$. The application
-of both the constructors would result in a kind $\kappa$.
+Addition of a kind system changes the treatement to the type inference algorithm in some detail.
+All types and type constructors have to be annotated with their kind. $T^\kappa$ denotes type constructors
+and $\tau^{\kappa' \rightarrow \kappa}\tau^{\kappa'}$ denotes application of types.
+The type constructor application rule that computes kinds is given in \cref{fig:constructor-application} where
+$\tau$ is of kind $\kappa' \rightarrow \kappa$ and $\tau'$ is of kind $\kappa'$. The application
+of both the constructors would result in a kind $\kappa$. 
+$\sepimp$, $\overset{!}{\sepimp}$, $\rightarrow$ and $\overset{!}{\rightarrow}$
+are now treated as type constructors with an arity of two and would have a kind $\star \rightarrow \star \rightarrow \star$ while
+type like Int and Float will have a kind $\star$.
 
 \begin{figure}
   \begin{framed}
     \begin{prooftree}
-      \AxiomC{$T :: \kappa' \rightarrow \kappa$}
-      \AxiomC{$T' :: \kappa'$}
-      \BinaryInfC{$T T' :: \kappa$}
+      \AxiomC{$\tau :: \kappa' \rightarrow \kappa$}
+      \AxiomC{$\tau' :: \kappa'$}
+      \BinaryInfC{$\tau \tau' :: \kappa$}
     \end{prooftree}
   \end{framed}
   \caption{Constructor Application Rule}
   \label{fig:constructor-application}
 \end{figure}
 
-
-
-{\color{red}Type constructors, Class of type constructors, Unification of types and Type constructors?}
-Our system supports introduction of new types via type constructors. We include a
-richer kind system for this purpose. A modified version of Robinson's algorithm \citeyearpar{robinson_machine-oriented_1965}
-is used in order to deduce the most general unifier for type constructors. Our treatment to type unification
-is similar to Jones' \citeyearpar{jones_system_1993}.
+The unification of types is now done via a modified version of Robinson's algorithm \citeyearpar{robinson_machine-oriented_1965}
+is used in order to deduce the most general unifier for type constructors.
 Formally we define $S$ to be the {\it most general unifier} for type constructors $T$ and $T'$ if:
 \begin{enumerate}
   \item $S$ is a unifier for $T$ and $T'$.
@@ -71,45 +65,60 @@ Formally we define $S$ to be the {\it most general unifier} for type constructor
 \end{enumerate}
 We write $T \overset{S}{\sim}_{\kappa} T'$ for assertion that $S$ is the unifier
 of the constructor types $T, T' \in T^{\kappa}$. The rules in \cref{fig:unify-types}
-describe the unification algorithm for type constructors. [Var] and [Var'] contain
+describe the unification algorithm for type constructors. [KVar] and [KVar'] contain
 and additional constraint of the type variable $t$ to not be free in the type constructor's $T$
-type variables to ensure the unification does not lead to infinite types.
+type variables to ensure the unification does not lead to infinite types. The [KApply] rule
+states that type constructors of the form $T T'$ can be unified with $H H'$ only if $T$ and $H$
+can be unified which asserts that they have to have the same kind $\kappa' \rightarrow \kappa$.
 
 \begin{figure}[h]
   \begin{framed}
     \begin{minipage}[l]{0.5\linewidth}
       \begin{flalign*}
-        t \overset{id}{\sim}_{\kappa} t \tag{[ID-Var]}
+        t \overset{id}{\sim}_{\kappa} t \tag{[ID-KVar]}
       \end{flalign*}
     \end{minipage}
     \begin{minipage}[r]{0.5\linewidth}
       \begin{flalign*}
-        \tau \overset{id}{\sim}_{\kappa} \tau \tag{[ID-Const]}
+        T \overset{id}{\sim}_{\kappa} T \tag{[ID-KConst]}
       \end{flalign*}
     \end{minipage}
 
     \begin{minipage}[l]{0.5\linewidth}
       \begin{flalign*}
-        t \overset{[C/t]}{\sim}_{\kappa} C, t \notin \texttt{fvs}(C) \tag{[Var]}
+        t \overset{[C/t]}{\sim}_{\kappa} T, t \notin \texttt{fvs}(T) \tag{[KVar]}
       \end{flalign*}
     \end{minipage}
     \begin{minipage}[r]{0.5\linewidth}
       \begin{flalign*}
-        C \overset{[C/t]}{\sim}_{\kappa} t, t \notin \texttt{fvs}(C) \tag{[Var']}
+        T \overset{[C/t]}{\sim}_{\kappa} t, t \notin \texttt{fvs}(T) \tag{[KVar']}
       \end{flalign*}
     \end{minipage}
 
     \begin{minipage}[c]{1.0\linewidth}
       \begin{prooftree}
-        \AxiomC{$C \overset{S}{\sim}_{\kappa'\rightarrow \kappa} D$}
-        \AxiomC{$S C' \overset{S'}{\sim}_{\kappa'} S D'$}\RightLabel{[Apply]}
-        \BinaryInfC{$CC' \overset{SS'}{\sim}_{\kappa} DD'$}
+        \AxiomC{$T \overset{S}{\sim}_{\kappa'\rightarrow \kappa} T'$}
+        \AxiomC{$S H \overset{S'}{\sim}_{\kappa'} S H'$}\RightLabel{([KApply])}
+        \BinaryInfC{$T T' \overset{SS'}{\sim}_{\kappa} H H'$}
       \end{prooftree}
     \end{minipage}
   \end{framed}
   \caption{Kind Preserving Unification of Type Constructors}
   \label{fig:unify-types}
 \end{figure}
+
+\TODO{add more details of how this helps and proofs remain the same}
+
+\section{Pairs and Sums in  \qub{}}\label{sec:pairs-types}
+In this section we illustrate how the extented \qub{} can be used to introduce new types.
+We introduce multiplicative pairs in \cref{subsec:mul-pairs} and additive pairs in \cref{subsec:mul-pairs}.
+We then introduce the syntax and types for sum types in \cref{subsec:sums} and verify that they indeed work as expected.
+
+\subsection{Multiplicative Pairs}\label{subsec:mul-pairs}
+
+\subsection{Additive Pairs}\label{subsec:add-pairs}
+
+\subsection{Sums Pairs}\label{subsec:sums}
 
 Having two arrows indroduces two types of pairs. A sharing pair (\texttt{Pair$_{sh}$}) and a separating pair (\texttt{Pair$_{sep}$}) depending on
 which arrow we use. The church encoding of both the pairs and their respective types are given in \ref{fig:bi-pairs-typing}.
