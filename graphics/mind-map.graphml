@@ -418,7 +418,7 @@ Correspondence<y:LabelModel>
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="43.75" width="286.0" x="-73.5" y="244.0"/>
-          <y:Fill color="#FF0000" transparent="false"/>
+          <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="32.265625" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="195.4609375" x="45.26953125" y="5.7421875">Type assignment: 
 Trees, Graphs and Flattened lists<y:LabelModel>
@@ -455,7 +455,7 @@ Trees, Graphs and Flattened lists<y:LabelModel>
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="30.0" width="128.0" x="40.31250000000017" y="64.84375"/>
-          <y:Fill color="#FF0000" transparent="false"/>
+          <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" raised="false" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="18.1328125" horizontalTextPosition="center" iconTextGap="4" modelName="custom" textColor="#000000" verticalTextPosition="bottom" visible="true" width="42.396484375" x="42.8017578125" y="5.93359375">t &gt;= t'<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>

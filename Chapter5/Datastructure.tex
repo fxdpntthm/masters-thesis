@@ -23,13 +23,13 @@ and then declaring datatypes as instances of the defined class.
       \text{Kinds}\ \ \               \kappa          &::= \kappa \mid \kappa' \rightarrow \kappa\\
       \text{Types}\ \ \             \tau^{\kappa}      &::= t^\kappa \mid T^{\kappa} \mid \tau^{\kappa' \rightarrow \kappa}\tau^{\kappa'}\\
       \text{Type Constructors}\ \ \   T^{\kappa}       &\in \mathcal{T}^{\kappa}\ 
-                         \text{where}\ \{\overset{!}{\sepimp}, \sepimp, \xrightarrow{!}, \rightarrow \} \subseteq \mathcal{T}^{\star \rightarrow \star \rightarrow \star}\\
+                         \text{where}\ \{\otimes, \with, \oplus, \overset{!}{\sepimp}, \sepimp, \xrightarrow{!}, \rightarrow \} \subseteq \mathcal{T}^{\star \rightarrow \star \rightarrow \star}\\
       \text{Predicates}\ \ \          \pi             &::= \texttt{Un}\ \tau \mid \texttt{SeFun}\ \tau \mid \texttt{ShFun}\ \tau \mid \tau \geq \tau' \\
       \text{Qualified Types}\ \ \     \rho            &::= \tau \mid \pi => \rho \\
       \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma
     \end{flalign*}
   \end{framed}
-  \caption{Types \qub{}}
+  \caption{Extended \qub{} Types and Kinds}
   \label{fig:qub-kind-extension}
 \end{figure}
 
@@ -38,7 +38,7 @@ All types and type constructors have to be annotated with their kind. $T^\kappa$
 and $\tau^{\kappa' \rightarrow \kappa}\tau^{\kappa'}$ denotes application of types.
 The type constructor application rule that computes kinds is given in \cref{fig:constructor-application} where
 $\tau$ is of kind $\kappa' \rightarrow \kappa$ and $\tau'$ is of kind $\kappa'$. The application
-of both the constructors would result in a kind $\kappa$. 
+of both the constructors would result in a kind $\kappa$.
 $\sepimp$, $\overset{!}{\sepimp}$, $\rightarrow$ and $\overset{!}{\rightarrow}$
 are now treated as type constructors with an arity of two and would have a kind $\star \rightarrow \star \rightarrow \star$ while
 type like Int and Float will have a kind $\star$.
@@ -83,7 +83,6 @@ can be unified which asserts that they have to have the same kind $\kappa' \righ
         T \overset{id}{\sim}_{\kappa} T \tag{[ID-KConst]}
       \end{flalign*}
     \end{minipage}
-
     \begin{minipage}[l]{0.5\linewidth}
       \begin{flalign*}
         t \overset{[C/t]}{\sim}_{\kappa} T, t \notin \texttt{fvs}(T) \tag{[KVar]}
@@ -94,7 +93,6 @@ can be unified which asserts that they have to have the same kind $\kappa' \righ
         T \overset{[C/t]}{\sim}_{\kappa} t, t \notin \texttt{fvs}(T) \tag{[KVar']}
       \end{flalign*}
     \end{minipage}
-
     \begin{minipage}[c]{1.0\linewidth}
       \begin{prooftree}
         \AxiomC{$T \overset{S}{\sim}_{\kappa'\rightarrow \kappa} T'$}
@@ -107,40 +105,162 @@ can be unified which asserts that they have to have the same kind $\kappa' \righ
   \label{fig:unify-types}
 \end{figure}
 
+
+\begin{figure}[h]
+  \begin{framed}
+    \begin{flalign*}
+      \text{Term Variables}\ \ \  x, y, z  &\in \text{Var}\\
+      \text{Expressions}\ \ \     M, N     &::= x \mid \lambda^{*}x. M \mid \lambda^{\alpha}x. M \mid M N \mid \Let{x}{M}{N}\\
+      &\mid \Pair{M,N} \mid \Let{\Pair{x,y}}{M}{N} \mid \Pair{M;N} \mid \texttt{fst}(M) \mid \texttt{snd}(M)\\
+      &\mid \Case{M}{\{\texttt{inl}\ x \mapsto N ; \texttt{inr}\ y \mapsto N'\}}\mid \texttt{inl}\ x \mid \texttt{inr}\ y\\
+    \end{flalign*}
+  \end{framed}
+  \caption{Extended \qub{} Language Syntax}
+  \label{fig:ext-qub-terms}
+\end{figure}
+
 \TODO{add more details of how this helps and proofs remain the same}
 
 \section{Pairs and Sums in  \qub{}}\label{sec:pairs-types}
-In this section we illustrate how the extented \qub{} can be used to introduce new types.
-We introduce multiplicative pairs in \cref{subsec:mul-pairs} and additive pairs in \cref{subsec:mul-pairs}.
-We then introduce the syntax and types for sum types in \cref{subsec:sums} and verify that they indeed work as expected.
+Introduction of two kinds of arrows in our type system leads to different flavors of pairs. This distinction cannot be made
+in intuitionistic logic as the structural rules allow re-use of propositions. But due to restrictions in weakening and
+contraction we obtain two kinds of pairs, additive and multiplicative. In this section we illustrate how the
+extented \qub{} can be used to introduce new types. We introduce syntax and type constructors for multiplicative pairs in \cref{subsec:mul-pairs}
+and the same for additive pairs in \cref{subsec:mul-pairs}. We then introduce the
+syntax and type constructors for sum types in \cref{subsec:sums} and verify that they indeed work as expected.
 
-\subsection{Multiplicative Pairs}\label{subsec:mul-pairs}
+\subsection{Multiplicative Pair Type}\label{subsec:mul-pairs}
+Lambda encoding of muliplicative pairs is given in \cref{fig:mul-pair}. The typing rules
+are given in \cref{fig:mul-pair-rules}. The significance of a multiplicative pair can be thought of as
+having separate resouce entities together in the program environment context and they would have to be
+explicitly disposed off. Failure to do so, would raise a type error regarding either of the resources
+not being unrestricted. This is different from an additive pair where we can easily use projection functions
+\texttt{fst} or \texttt{snd} to retrieve one of the components from the pair and convinently forget about the other.
 
-\subsection{Additive Pairs}\label{subsec:add-pairs}
+\begin{figure}[h]
+  \begin{framed}
+    \begin{flalign*}
+      \otimes &\in \mathcal{T}^{\star \rightarrow \star \rightarrow \star}\\
+      \otimes &= \tau \sepimp \tau' \sepimp (\tau \sepimp \tau' \sepimp \upsilon) \sepimp \upsilon\\
+      (,) &= \lambda^{*} x. \lambda^{*} y. \lambda^{*} f. f x y
+    \end{flalign*}
+  \end{framed}
+\caption{Multiplicative Pair}
+\label{fig:mul-pair}
+\end{figure}
+\begin{figure}[h]
+  \begin{framed}
+    \begin{minipage}{1\linewidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma  \vdash M : \tau$}
+        \AxiomC{$P \mid \Delta \vdash N: \tau'$} \RightLabel{$[\otimes I]$}
+        \BinaryInfC{$P \mid \Gamma \circledast \Delta \vdash \Pair{M,N}: \tau \otimes \tau'$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{1\linewidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma \vdash M: \tau \otimes \tau'$}
+        \AxiomC{$P \mid \{ x^{\{\vec{z} \mid \vec{z} \subseteq \texttt{Vars}(\Gamma')\}}:\tau \} \circledast
+          \{ y^{\{\bar{z'} \mid \bar{z'} \subseteq \texttt{Vars}(\Gamma')\}} : \tau'\} \sqcup \Gamma'_{x,y}$}\RightLabel{$[\otimes E]$}
+        \BinaryInfC{$P \mid \Gamma \sqcup \Gamma' \vdash (\Let{\Pair{x, y}}{M}{N}): \upsilon$}
+      \end{prooftree}
+    \end{minipage}
+  \end{framed}
+  \caption{Derivable Typing Rules for Multiplicative Pair}
+  \label{fig:mul-pair-rules}
+\end{figure}
 
-\subsection{Sums Pairs}\label{subsec:sums}
 
-Having two arrows indroduces two types of pairs. A sharing pair (\texttt{Pair$_{sh}$}) and a separating pair (\texttt{Pair$_{sep}$}) depending on
-which arrow we use. The church encoding of both the pairs and their respective types are given in \ref{fig:bi-pairs-typing}.
-Derivation proofs of both the pairs are given in \cref{sec:pairs}.
-\begin{figure}
+
+\subsection{Additive Pair Type}\label{subsec:add-pairs}
+
+\begin{figure}[h]
   \centering
   \begin{framed}
     \begin{flalign*}
-      \text{Pair}_{sh} &: \tau \sepimp \tau' \rightarrow (\tau \sepimp \tau' \rightarrow \nu) \rightarrow \nu\\
-      \text{Pair}_{sh} &= \lambda^{*} x. \lambda^{\alpha} by. \lambda^{\alpha} f. f x y\\
-      \text{Pair}_{sep} &: \tau \sepimp \tau' \sepimp (\tau \sepimp \tau' \sepimp \nu) \sepimp \nu\\
-      \text{Pair}_{sep} &= \lambda^{*} x. \lambda^{*} y. \lambda^{*} f. f x y
+      \with &\in \mathcal{T}^{\star \rightarrow \rightarrow \star}\\
+      \with &= \tau \sepimp \tau' \rightarrow (\tau \sepimp \tau' \rightarrow \nu) \rightarrow \nu\\
+      (;) &= \lambda^{*} x. \lambda^{\alpha} by. \lambda^{\alpha} f. f x y
     \end{flalign*}
   \end{framed}
-  \caption{Typing for Pairs in \textbf{\em BI}}
-  \label{fig:bi-pairs-typing}
+  \caption{Additive Pair}
+  \label{fig:add-pair}
+\end{figure}
+\begin{figure}[h]
+  \begin{framed}
+    \begin{minipage}{1\linewidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma  \vdash M : \tau$}
+        \AxiomC{$P \mid \Delta \vdash N: \tau'$} \RightLabel{$[\with I]$}
+        \BinaryInfC{$P \mid \Gamma \varoplus \Delta \vdash \Pair{M;N}: \tau \with \tau'$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{.5\linewidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma \vdash M: \tau \with \tau'$} \RightLabel{$[\with E_1]$}
+        \UnaryInfC{$P \mid \Gamma \vdash \texttt{fst}\ M: \tau$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{.5\linewidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma \vdash M: \tau \with \tau'$} \RightLabel{$[\with E_2]$}
+        \UnaryInfC{$P \mid \Gamma \vdash \texttt{snd}\ M: \tau'$}
+      \end{prooftree}
+    \end{minipage}
+  \end{framed}
+  \caption{Derivable Typing Rules for Additive Pair}
+  \label{fig:add-pair-rules}
 \end{figure}
 
-We can now introduce 2 types in our type language $\otimes$ and $\with$
-which represent separating pair and sharing pair respectively as shown in \cref{fig:pair-typing-rules}.
-We also have a sum type whose rules are shown in \cref{fig:bi-sum-types}.
-Proof derivation and definitions for sum type is given in \cref{sec:sums}.
+
+\subsection{Sum Type}\label{subsec:sums}
+
+
+\section{Generic Type constructors}\label{sec:type-constructors}
+We add two new typing rules for handling generic datatypes using type constructors.
+We only consider a specific case of type constructors where all the type variables
+involved are either all shared or all separate and give an insight of how this
+can be generalized to have a mix of sharing and separation between the type parameters
+for a type constructor.
+
+
+It gets tricky with the surface syntax.
+
+
+\TODO{How do we write about type constructors?}
+\begin{figure}[h]
+  % sharing constructor
+  \begin{framed}
+\begin{minipage}{1\textwidth}
+  \begin{prooftree}
+    \AxiomC{$P \mid \Gamma \vdash C: \tau_1 \sepimp \tau_2 \rightarrow \tau_3 \rightarrow \dots \rightarrow \tau_n \rightarrow T$}
+    \AxiomC{$\Delta \equiv H(x_1 : \tau_1 ; x_2 : \tau_2 ; \ldots ; x_n:\tau_n)$}\RightLabel{$[\text{C-sh}]$}
+    \BinaryInfC{$P \mid \Gamma; \Delta \vdash C \vec{x} : T $}
+  \end{prooftree}
+\end{minipage}
+% Separating constructor
+\begin{minipage}{1\textwidth}
+  \begin{prooftree}
+    \AxiomC{$P \mid \Gamma \vdash C: \tau_1 \sepimp \tau_2 \sepimp \tau_3 \sepimp \dots \sepimp \tau_n \sepimp T$}
+    \AxiomC{$\Delta \equiv H(x_1: \tau_1, x_2:\tau_2, \dots ,x_n:\tau_n)$}\RightLabel{$[\text{C-se}]$}
+    \BinaryInfC{$P \mid \Gamma, \Delta \vdash C \vec{x} : T $}
+  \end{prooftree}
+\end{minipage}
+\end{framed}
+  \caption{User Defined Datatypes}
+  \label{fig:ud-datatypes}
+\end{figure}
+
+
+% Having two arrows indroduces two types of pairs. A sharing pair (\texttt{Pair$_{sh}$}) and a separating pair (\texttt{Pair$_{sep}$}) depending on
+% which arrow we use. The church encoding of both the pairs and their respective types are given in \ref{fig:bi-pairs-typing}.
+% Derivation proofs of both the pairs are given in \cref{sec:pairs}.
+
+
+% We can now introduce 2 types in our type language $\otimes$ and $\with$
+% which represent separating pair and sharing pair respectively as shown in \cref{fig:pair-typing-rules}.
+% We also have a sum type whose rules are shown in \cref{fig:bi-sum-types}.
+% Proof derivation and definitions for sum type is given in \cref{sec:sums}.
 
 \begin{figure}[h]
   \begin{framed}
@@ -149,39 +269,6 @@ Proof derivation and definitions for sum type is given in \cref{sec:sums}.
         \AxiomC{$P \mid \Gamma  \vdash M : \tau$}
         \AxiomC{$P \mid \Delta \vdash N: \tau'$} \RightLabel{$[\with I]$}
         \BinaryInfC{$P \mid \Gamma \oplus \Delta \vdash \Pair{M;N} : \tau \with \tau'$}
-      \end{prooftree}
-    \end{minipage}
-    \begin{minipage}{.5\linewidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash M: \tau \with \tau'$} \RightLabel{$[\with E_1]$}
-        \UnaryInfC{$P \mid \Gamma \vdash \texttt{fst}_{sh}\ M: \tau$}
-      \end{prooftree}
-    \end{minipage}
-    \begin{minipage}{.5\linewidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash M: \tau \with \tau'$} \RightLabel{$[\with E_2]$}
-        \UnaryInfC{$P \mid \Gamma \vdash \texttt{snd}_{sh}\ M: \tau'$}
-      \end{prooftree}
-    \end{minipage}
-    \begin{minipage}{1\linewidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma  \vdash M : \tau$}
-        \AxiomC{$P \mid \Delta \vdash N: \tau'$} \RightLabel{$[\otimes I]$}
-        \BinaryInfC{$P \mid \Gamma \circledast \Delta \vdash \Pair{M,N}: \tau \otimes \tau'$}
-      \end{prooftree}
-    \end{minipage}
-    \begin{minipage}{.5\linewidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash M: \tau \otimes \tau'$} \RightLabel{$[\otimes E_1]$}
-        \AxiomC{$P => \texttt{Un}\ \tau'$}
-        \BinaryInfC{$P \mid \Gamma \vdash \texttt{fst}_{sep}\ M: \tau$}
-      \end{prooftree}
-    \end{minipage}
-    \begin{minipage}{.5\linewidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash M: \tau \otimes \tau'$} \RightLabel{$[\otimes E_2]$}
-        \AxiomC{$P => \texttt{Un}\ \tau$}
-        \BinaryInfC{$P \mid \Gamma \vdash \texttt{snd}_{sep}\ M: \tau'$}
       \end{prooftree}
     \end{minipage}
   \end{framed}
@@ -219,30 +306,6 @@ Proof derivation and definitions for sum type is given in \cref{sec:sums}.
 \label{fig:bi-sum-types}
 \end{figure}
 
-
-\begin{figure}[h]
-  % sharing constructor
-  \begin{framed}
-    \TODO{How do we write about type constructors?}
-\begin{minipage}{1\textwidth}
-  \begin{prooftree}
-    \AxiomC{$P \mid \Gamma \vdash C: \tau_1 \sepimp \tau_2 \rightarrow \tau_3 \rightarrow \dots \rightarrow \tau_n \rightarrow T$}
-    \AxiomC{$\Delta \equiv H(x_1 : \tau_1 ; x_2 : \tau_2 ; \ldots ; x_n:\tau_n)$}\RightLabel{$[\text{C-sh}]$}
-    \BinaryInfC{$P \mid \Gamma; \Delta \vdash C \vec{x} : T $}
-  \end{prooftree}
-\end{minipage}
-% Separating constructor
-\begin{minipage}{1\textwidth}
-  \begin{prooftree}
-    \AxiomC{$P \mid \Gamma \vdash C: \tau_1 \sepimp \tau_2 \sepimp \tau_3 \sepimp \dots \sepimp \tau_n \sepimp T$}
-    \AxiomC{$\Delta \equiv H(x_1: \tau_1, x_2:\tau_2, \dots ,x_n:\tau_n)$}\RightLabel{$[\text{C-se}]$}
-    \BinaryInfC{$P \mid \Gamma, \Delta \vdash C \vec{x} : T $}
-  \end{prooftree}
-\end{minipage}
-\end{framed}
-  \caption{User Defined Datatypes}
-  \label{fig:ud-datatypes}
-\end{figure}
 
 The datatypes are user defined types:
 There are 2 main kinds of non-recursive datatypes

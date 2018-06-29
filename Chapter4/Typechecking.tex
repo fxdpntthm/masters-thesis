@@ -108,7 +108,7 @@ on the type that is dropped or duplicated.
       \begin{prooftree}
         \AxiomC{$P \mid \Gamma \vdash M : \sigma$}
         \AxiomC{$P' \mid \Gamma'_{x} \sqcup x: \sigma \vdash N: \tau$} \RightLabel{[LET]}
-        \BinaryInfC{$P \cup P' \mid \Gamma \sqcup \Gamma' \vdash \Let{x}{M}{N}: \tau$}
+        \BinaryInfC{$P \cup P' \mid \Gamma \sqcup \Gamma' \vdash (\Let{x}{M}{N}): \tau$}
       \end{prooftree}
     \end{minipage}
     \newline\newline\newline
@@ -340,7 +340,7 @@ or which are not in sharing with the terms used.
         \noLine
         \UnaryInfC{$P \mid (\Gamma_x \sqcup x:\sigma) \varoplus \Gamma_x'' \circledast \Delta \vdashs N:\tau\ \ \ \ \
           \sigma = \texttt{Gen}(\{\Gamma' \varoplus \Gamma_x'' \circledast \Delta \}, Q => v)$}\RightLabel{[Let$^s$]}
-        \UnaryInfC{$P \mid (\Gamma \circledast \Gamma') \varoplus \Gamma'' \circledast \Delta \vdashs (\Let{x}{M}{N} : \tau) $}
+        \UnaryInfC{$P \mid (\Gamma \circledast \Gamma') \varoplus \Gamma'' \circledast \Delta \vdashs (\Let{x}{M}{N}) : \tau$}
       \end{prooftree}
     \end{minipage}
     \newline\newline\newline
