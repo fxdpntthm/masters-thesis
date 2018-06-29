@@ -504,11 +504,12 @@ is interpretation of the logic of \BI. It introduces 2 kinds of arrows by modify
   \label{fig:bi-logic}
 \end{figure}
 
-\TODO{
-Some more examples about $\alpha\lambda$-calculus programming?
-}
+
 Due to the rules of $\alpha\lambda$-calculus $f: \tau \sepimp \tau'; x:\tau \nvdash f x:\tau'$.
 As $f$ needs an argument that does not share any resources with its context.
+Also, $\lambda^{*}f. \lambda^{*}x. f x x: (\tau \rightarrow \tau \rightarrow \tau') \sepimp \tau \rightarrow \tau \rightarrow \tau'$ is a typable term
+This illustrates the difference between logic of \BI and linear logic, as even tough the argument is separate from the function,
+it may be used twice. Linear logic would prohibit such use of arguments to function.
 
 %%% Local Variables:
 %%% mode: latex
