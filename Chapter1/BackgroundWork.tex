@@ -1,34 +1,35 @@
 \chapter{Background Work}
-\section{Type Inference Algorithm}\label{sec:damas-milner-algo-w}
-Algorithm $\mathcal{W}$ \citep{damas_principal_1982} and its variant algorithm $\mathcal{M}$ \citep{lee_proofs_1998}
-are the basis of most of the modern statically typed functional programming languages. Type inference
-is decidable in the sense, type checking algorithm always completes with a success or failure.
-The algorithms also grantee a most general typing scheme for an expression in
-the Hindley-Milner type system \textbf{HM} which is typed lambda calculus with parametric polymorphism (or restricted version of System F)
-extended with a polymorphic \texttt{let} construct having a term language
+\section{Hindley-Milner Type System and Inference Algorithm}\label{hm-system}
+Hindley-Milner (\textbf{HM}) type system \citeyearpar{milner_theory_1978} for lambda calculus with parametric polymorphism or restricted version
+of System F \citep{girard_proofs_1989} forms the basis of ML like languages and also many modern functional programming languages.
+The type language contains type variables, primitive types
+(such as integers, floats), the type constructor ($\rightarrow$) which constructs function types, and type scheme ($\sigma$) as shown in \cref{fig:hm-lang}.
+The expression language contains variables, lambda expressions
+and applications extended with a polymorphic \texttt{let} construct. Type inference algorithm $\mathcal{W}$ \citep{damas_principal_1982} and its varient
+type checking algorithm $\mathcal{M}$ \citep{lee_proofs_1998} is decidable in the sense, the algorithm always completes with a success or failure.
+The algorithms also guarantee a most general typing scheme or principal types for an expression.
+
+\begin{figure}[h]
 \begin{framed}
   \begin{flalign*}
-    \text{Expressions}\ \ \ M, N ::= x: \sigma \mid \lambda x: \tau. M \mid M N
-    \mid \Let{x}{M}{N} \nonumber
+                              t, u, v &\in \text{Type Variables}\\
+    \text{Types}\ \ \  \tau           &::= \iota \mid \tau \rightarrow \tau \\
+    \text{Typing Scheme}\ \ \  \sigma &::= \tau \mid \forall t. \tau\\
+         \text{Expressions}\ \ \ M, N &::= x: \sigma \mid \lambda x. M \mid M N \mid \Let{x}{M}{N}
   \end{flalign*}
 \end{framed}
-and a type language specified by
-\begin{framed}
-  \begin{flalign*}
-                              t, u, v &\in \text{Type Variables}\nonumber\\
-    \text{Types}\ \ \  \tau           &::= \iota \mid \tau \rightarrow \tau \nonumber \\
-    \text{Typing Scheme}\ \ \  \sigma &::= \tau \mid \forall t. \tau \nonumber
-  \end{flalign*}
-\end{framed}
-where $t$ is a type variable, $\iota$ are primitive types in the language, $\rightarrow$
-is a type constructor for functions and $\sigma$ is a typing scheme.
+\caption{Hindley-Milner Type and Expression Language}
+\label{fig:hm-lang}
+\end{figure}
 
 Robinson's \citeyearpar{robinson_machine-oriented_1965} unification algorithm plays a key role
-in ensuring that types are well formed. Its purely syntactic approach in creating
+in computation of well-formed types. Its purely syntactic approach in creating
 substitutions to unify types keeps the complete process elegant.
-Algorithm $\mathcal{W}$ or $\mathcal{M}$ works in an interesting way where the types of all well-typed terms can be
+Algorithm $\mathcal{M}$ works in an interesting way where the types of all well-typed terms can be
 inferred automatically and if types are specified, the same algorithm can be used
-to verify that the specified type of expression term matches the actual type.
+to verify that the specified type of expression term matches the actual type. The same
+can be obtained using algorithm $\mathcal{W}$ but it would require an additional machinery of
+computing equality of types.
 
 \begin{figure}[h]
   \begin{framed}
@@ -52,14 +53,15 @@ to verify that the specified type of expression term matches the actual type.
       \begin{prooftree}
         \AxiomC{$\Gamma \vdash M : \sigma$}\RightLabel{[$\forall$ I]}
         \AxiomC{$t \notin \text{fvs}(\Gamma)$}
-        \BinaryInfC{$\Gamma \vdash \lambda t. M : \forall t. \sigma$}
+        \BinaryInfC{$\Gamma \vdash M : \forall t. \sigma$}
       \end{prooftree}
     \end{minipage}
     % forall E
     \begin{minipage}{0.5\textwidth}
       \begin{prooftree}
-        \AxiomC{$\Gamma \vdash M : \forall t. \sigma$} \RightLabel{[$\forall$ E]}
-        \UnaryInfC{$\Gamma \vdash M \tau : [\tau \backslash t] \sigma$}
+        \AxiomC{$\Gamma \vdash M : \sigma$}
+        \AxiomC{$(\sigma' \sqsubset \sigma)$}\RightLabel{[$\forall$ E]}
+        \BinaryInfC{$\Gamma \vdash M : \sigma'$}
       \end{prooftree}
     \end{minipage}
     % -> I
@@ -88,13 +90,6 @@ definitions within an expression term. [$\rightarrow$ I] and [$\rightarrow$ E] a
 for typing lambda terms and application respectively. We also include the rules for
 type abstraction and application [$\forall$I] and [$\forall$ E] i.e. parametric polymorphism.
 
-By Curry-Howard correspondence the HM type system correspondes to the implication fragment of intuionistic propositional logic
-the rules of which are given in \cref{fig:intuitionistic-logic} in Gentzen style natural deduction
-where $\Gamma$, $\Phi$ and $\Psi$ are propositions. The [Ax] rule corresponds to [ID] rule while [$\rightarrow$I] and [$\rightarrow$E] correspond
-to [$\rightarrow$I] and [$\rightarrow$E] respectively. The structural rules of weakening [WKN] and contraction [CTR] are implicitly obeyed
-by \textbf{HM} type-system. The weakening rule states that we can add unrelated assumptions to our derivation without
-affecting the proofs while contraction states that we can get rid of the unrelated assumptions from our derivation and the
-proof will still hold.
 
 \begin{figure}[h]\centering
   \begin{framed}
@@ -102,26 +97,42 @@ proof will still hold.
     \begin{minipage}{0.20\linewidth}
       \begin{prooftree}
         \AxiomC{${\color{white}\Phi\Gamma\Psi}$}\RightLabel{[Ax]}
-        \UnaryInfC{$\Gamma, \Phi \vdash \Phi $}
+        \UnaryInfC{$\Phi \vdash \Phi $}
       \end{prooftree}
     \end{minipage}
     \begin{minipage}{0.33\linewidth}
       \begin{prooftree}
         \AxiomC{$\Gamma \vdash \Phi$}\RightLabel{[WKN]}
-        \UnaryInfC{$\Gamma, \Gamma' \vdash \Phi$}
+        \UnaryInfC{$\Gamma, \Gamma \vdash \Phi$}
       \end{prooftree}
     \end{minipage}
     \begin{minipage}{0.33\linewidth}
       \begin{prooftree}
-        \AxiomC{$\Gamma, \Gamma' \vdash \Phi $}\RightLabel{[CTR]}
+        \AxiomC{$\Gamma, \Gamma \vdash \Phi $}\RightLabel{[CTR]}
         \UnaryInfC{$\Gamma \vdash \Phi $}
+      \end{prooftree}
+    \end{minipage}
+    % \forall I
+    \begin{minipage}{0.33\linewidth}
+      \begin{prooftree}
+        \AxiomC{$\Psi$}
+        \AxiomC{$x \notin \Psi$}\RightLabel{[$\forall$I]}
+        \BinaryInfC{$\forall x. \Psi$}
+      \end{prooftree}
+    \end{minipage}
+    % \forall E
+    \begin{minipage}{0.33\linewidth}
+      \begin{prooftree}
+        \AxiomC{$\Gamma$}
+        \AxiomC{$\forall x. \Psi$}\RightLabel{[$\forall$E]}
+        \BinaryInfC{$\Psi[x/\Gamma]$}
       \end{prooftree}
     \end{minipage}
     % -> I
     \begin{minipage}{0.33\linewidth}
       \begin{prooftree}
         \AxiomC{$\Gamma \vdash \Phi$}
-        \AxiomC{$\Gamma, \Phi \vdash \Psi $}\RightLabel{[$\rightarrow$I]}
+        \AxiomC{$\Phi \vdash \Psi $}\RightLabel{[$\Rightarrow$I]}
         \BinaryInfC{$\Gamma \vdash \Phi \rightarrow \Psi$}
       \end{prooftree}
     \end{minipage}
@@ -129,15 +140,23 @@ proof will still hold.
     \begin{minipage}{0.33\linewidth}
       \begin{prooftree}
         \AxiomC{$\Gamma \vdash \Phi \rightarrow \Psi$}
-        \AxiomC{$\Gamma \vdash \Phi$}\RightLabel{[$\rightarrow$E]}
-        \BinaryInfC{$\Gamma, \Phi \vdash \Psi $}
+        \AxiomC{$\Gamma \vdash \Phi$}\RightLabel{[$\Rightarrow$E]}
+        \BinaryInfC{$\Gamma \vdash \Psi $}
       \end{prooftree}
     \end{minipage}
   \end{framed}
-  \caption{Logic rules in Implication fragment of Intuitionistic Propositional
-    Logic}
+  \caption{Logic rules: Implication fragment of second order Intuitionistic Propositional Logic}
   \label{fig:intuitionistic-logic}
 \end{figure}
+
+The Curry-Howard correspondence the \textbf{HM} type system correspondes to the implication fragment of intuionistic propositional logic
+the rules of which are given in \cref{fig:intuitionistic-logic} in Gentzen style natural deduction
+where $\Gamma$, $\Phi$ and $\Psi$ are propositions. The [Ax] rule corresponds to [ID] rule while [$\rightarrow$I] and [$\rightarrow$E] correspond
+to [$\Rightarrow$I] and [$\Rightarrow$E] respectively. The structural rules of weakening [WKN] and contraction [CTR] are implicitly obeyed
+by \textbf{HM} type-system. The weakening rule states that we can duplicate assumptions to derivations without
+affecting the proofs while contraction states that we can remove unrelated assumptions in our derivations and the
+proof will still hold.
+
 % This simple type system is powerful in its
 % expressiveness and can encode a large variety of computations. The type checking algorithm
 % asserts that undefined programs can be be detected statically i.e. without actually
