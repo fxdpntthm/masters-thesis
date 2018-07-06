@@ -1,7 +1,7 @@
 \chapter{\qub{} Extention and Datatypes}\label{chp:datatypes}
 
 In this chapter we discuss how \qub{} can be extended to have a kind system which makes
-the type language powerful enough to accept user defined datatypes\cref{sec:kind-system}. We also discuss
+the type language powerful enough to accept user defined datatypes in \cref{sec:kind-system}. We also discuss
 how we can encode sums and multiplicative and additive products in \cref{sec:pairs-types}.
 
 
@@ -13,7 +13,7 @@ of type constructors. This idea was introduced by Barendregt \citeyearpar{barend
 is desribed in detail by Jones \citeyearpar{jones_system_1993}. We will follow Jones' approach
 to add the language of type constructors and kinds in our system. The modified type system is shown in \cref{fig:qub-kind-extension}. All types have kind $\star$ and the
 kind of the type constructors depends on its arity. The language of type constructors is extendible
-by using a specialized syntax on surface level. In Haskell, this is done by using \mintinline{Haskell}{class} keywork.
+by using a specialized syntax on surface level. In Haskell, this is done by using \mintinline{Haskell}{class} keywork
 and then declaring datatypes as instances of the defined class.
 
 \begin{figure}[h]

@@ -6,10 +6,11 @@ into a sharing graph and represent it as a collection of three tuple sets inorde
 \begin{figure}[h]
   \begin{framed}
     \begin{flalign*}
-      \text{Type Variables}\ \ \      t, u, v         &\in \text{Type Variables}  \\
+                               t, u, \upsilon         &\in \text{Type Variables}\\
+                                      P, Q            &\in \text{Finite Predicate Set}\\
       \text{Types}\ \ \               \tau            &::= t \mid \tau \rightarrow \tau\
                                 \text{where}\ \{\overset{!}{\sepimp}, \sepimp, \xrightarrow{!}, \rightarrow \} \subseteq \rightarrow \\
-      \text{Predicates}\ \ \          \pi             &::= \texttt{Un}\ \tau \mid \texttt{SeFun}\ \tau \mid \texttt{ShFun}\ \tau \mid \tau \geq \tau' \\
+      \text{Predicates}\ \ \        \pi,\omega        &::= \texttt{Un}\ \tau \mid \texttt{SeFun}\ \tau \mid \texttt{ShFun}\ \tau \mid \tau \geq \tau' \\
       \text{Qualified Types}\ \ \     \rho            &::= \tau \mid \pi => \rho \\
       \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma 
     \end{flalign*}
