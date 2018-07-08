@@ -159,7 +159,7 @@ affecting the proofs while contraction states that we can discard duplicate assu
 proof will still hold. The [$\forall$I] introduces the universal quantifier for a proposition and [$\forall$E] instantiates
 the proposition. Both the rules correspond to parametric polymorphism introduction [$\forall$I] and elimination [$\forall$E] rules in \cref{fig:hm-system}
 
-The algorithm $\M$ is given in figure \cref{fig:hm-algo-m}. $u_i$ represents fresh type variables. $\mathcal{U}$ is the Robinson's unification
+The algorithm $\M$ is given in figure \cref{fig:hm-algo-m}. $\mathcal{U}$ is the Robinson's unification
 algorithm that computes the substitution required to unify two types and $\text{Gen}(\Gamma,\tau)$ generalizes a type to type scheme.
 
 \begin{figure}[h]
@@ -200,7 +200,7 @@ algorithm that computes the substitution required to unify two types and $\text{
       \end{flalign*}
     \end{minipage}
 
-    \fbox{Auxilary Definitions}
+    \fbox{Auxilary Definition}
 
     \begin{minipage}{1.0\linewidth}
       \begin{flalign*}

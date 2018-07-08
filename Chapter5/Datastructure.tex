@@ -6,16 +6,14 @@ how we can encode sums and multiplicative and additive products in \cref{sec:pai
 
 
 \section{Kind System}\label{sec:kind-system}
-In the original system, there is no concept of type constructors, it would be tedious to add in
-new types into the system as we would have to introduce new syntax and associated typing rules for
-each of the new syntax. The kind system alleviates this tedious process by adding in the language
-of type constructors. This idea was introduced by Barendregt \citeyearpar{barendregt_1991} and
-is desribed in detail by Jones \citeyearpar{jones_system_1993}. We will follow Jones' approach
-to add the language of type constructors and kinds in our system. The modified type system is shown in \cref{fig:qub-kind-extension}. All types have kind $\star$ and the
-kind of the type constructors depends on its arity. The language of type constructors is extendible
-by using a specialized syntax on surface level. In Haskell, this is done by using \mintinline{Haskell}{class} keywork
-and then declaring datatypes as instances of the defined class.
-
+In the original system, it would be tedious to extend the system with new types as we would have to introduce new syntax and associated typing rules for
+each of the new syntax in our core language. The kind system generalizes the concept of adding new types by abstracting them as type
+constructors. This generalization alleviates the burden of modifying the core language by
+treating all types to be instances of type constructors. The idea was introduced by Barendregt \citeyearpar{barendregt_1991} and
+is used by Jones \citeyearpar{jones_system_1993} for qualified types. We will follow Jones' approach
+to add the language of type constructors and kinds in our system.
+The modified type system is shown in \cref{fig:qub-kind-extension}.
+All types have kind $\star$ and the kind of the type constructors depends on its arity.
 \begin{figure}[h]
   \begin{framed}
     \begin{flalign*}
@@ -40,7 +38,8 @@ The type constructor application rule that computes kinds is given in \cref{fig:
 $\tau$ is of kind $\kappa' \rightarrow \kappa$ and $\tau'$ is of kind $\kappa'$. The application
 of both the constructors would result in a kind $\kappa$.
 $\sepimp$, $\overset{!}{\sepimp}$, $\rightarrow$ and $\overset{!}{\rightarrow}$
-are now treated as type constructors with an arity of two and would have a kind $\star \rightarrow \star \rightarrow \star$ while
+are now treated as type constructors with an arity of two and would have a kind $\star \rightarrow \star \rightarrow \star$, The
+type constructor for List will have a kind $\star \rightarrow \star$ while
 type like Int and Float will have a kind $\star$.
 
 \begin{figure}
@@ -72,7 +71,7 @@ states that type constructors of the form $T T'$ can be unified with $H H'$ only
 can be unified which asserts that they have to have the same kind $\kappa' \rightarrow \kappa$.
 
 \begin{figure}[h]
-  \begin{framed}
+  \begin{framed}\centering
     \begin{minipage}[l]{0.5\linewidth}
       \begin{flalign*}
         t \overset{id}{\sim}_{\kappa} t \tag{[ID-KVar]}
@@ -85,12 +84,12 @@ can be unified which asserts that they have to have the same kind $\kappa' \righ
     \end{minipage}
     \begin{minipage}[l]{0.5\linewidth}
       \begin{flalign*}
-        t \overset{[C/t]}{\sim}_{\kappa} T, t \notin \texttt{fvs}(T) \tag{[KVar]}
+        t \overset{[T/t]}{\sim}_{\kappa} T, t \notin \texttt{fvs}(T) \tag{[KVar]}
       \end{flalign*}
     \end{minipage}
     \begin{minipage}[r]{0.5\linewidth}
       \begin{flalign*}
-        T \overset{[C/t]}{\sim}_{\kappa} t, t \notin \texttt{fvs}(T) \tag{[KVar']}
+        T \overset{[T/t]}{\sim}_{\kappa} t, t \notin \texttt{fvs}(T) \tag{[KVar']}
       \end{flalign*}
     \end{minipage}
     \begin{minipage}[c]{1.0\linewidth}
@@ -111,8 +110,8 @@ can be unified which asserts that they have to have the same kind $\kappa' \righ
     \begin{flalign*}
       \text{Term Variables}\ \ \  x, y, z  &\in \text{Var}\\
       \text{Expressions}\ \ \     M, N     &::= x \mid \lambda^{*}x. M \mid \lambda^{\alpha}x. M \mid M N \mid \Let{x}{M}{N}\\
-      &\mid \Pair{M,N} \mid \Let{\Pair{x,y}}{M}{N} \mid \Pair{M;N} \mid \texttt{fst}(M) \mid \texttt{snd}(M)\\
-      &\mid \Case{M}{\{\texttt{inl}\ x \mapsto N ; \texttt{inr}\ y \mapsto N'\}}\mid \texttt{inl}\ x \mid \texttt{inr}\ y\\
+      &\mid \Pair{M,N} \mid \Let{\Pair{x,y}}{M}{N} \mid \Pair{M;N} \mid \Fst{M} \mid \Snd{M}\\
+      &\mid \Case{M}{\{\texttt{inl}\ x \mapsto N ; \texttt{inr}\ y \mapsto N'\}}\mid \Inl{x} \mid \Inr{y}\\
     \end{flalign*}
   \end{framed}
   \caption{Extended \qub{} Language Syntax}
@@ -126,22 +125,22 @@ Introduction of two kinds of arrows in our type system leads to different flavor
 in intuitionistic logic as the structural rules allow re-use of propositions. But due to restrictions in weakening and
 contraction we obtain two kinds of pairs, additive and multiplicative. In this section we illustrate how the
 extented \qub{} can be used to introduce new types. We introduce syntax and type constructors for multiplicative pairs in \cref{subsec:mul-pairs}
-and the same for additive pairs in \cref{subsec:mul-pairs}. We then introduce the
-syntax and type constructors for sum types in \cref{subsec:sums} and verify that they indeed work as expected.
+and the same for additive pairs in \cref{subsec:add-pairs}. We then introduce the
+syntax and type constructors for sum types in \cref{subsec:sums} and illustrate that they indeed work as expected.
 
 \subsection{Multiplicative Pair Type}\label{subsec:mul-pairs}
 Lambda encoding of muliplicative pairs is given in \cref{fig:mul-pair}. The typing rules
-are given in \cref{fig:mul-pair-rules}. The significance of a multiplicative pair can be thought of as
+are given in \cref{fig:mul-pair-rules}. We give the proofs of the typing rules in \cref{subsec:mul-pairs-deriv}.
+The meaning of a multiplicative pair can be thought of as
 having separate resouce entities together in the program environment context and they would have to be
-explicitly disposed off. Failure to do so, would raise a type error regarding either of the resources
-not being unrestricted. This is different from an additive pair where we can easily use projection functions
-\texttt{fst} or \texttt{snd} to retrieve one of the components from the pair and convinently forget about the other.
+explicitly disposed off. Failure to do so, would raise a type error regarding the resources
+not being unrestricted.
 
 \begin{figure}[h]
   \begin{framed}
     \begin{flalign*}
       \otimes &\in \mathcal{T}^{\star \rightarrow \star \rightarrow \star}\\
-      \otimes &= \tau \sepimp \tau' \sepimp (\tau \sepimp \tau' \sepimp \upsilon) \sepimp \upsilon\\
+      \tau \otimes \tau' &= \tau \sepimp \tau' \sepimp (\tau \sepimp \tau' \sepimp \upsilon) \sepimp \upsilon\\
       (,) &= \lambda^{*} x. \lambda^{*} y. \lambda^{*} f. f x y
     \end{flalign*}
   \end{framed}
@@ -161,7 +160,7 @@ not being unrestricted. This is different from an additive pair where we can eas
       \begin{prooftree}
         \AxiomC{$P \mid \Gamma \vdash M: \tau \otimes \tau'$}
         \AxiomC{$P \mid \{ x^{\{\vec{z} \mid \vec{z} \subseteq \texttt{Vars}(\Gamma')\}}:\tau \} \circledast
-          \{ y^{\{\bar{z'} \mid \bar{z'} \subseteq \texttt{Vars}(\Gamma')\}} : \tau'\} \sqcup \Gamma'_{x,y}$}\RightLabel{$[\otimes E]$}
+          \{ y^{\{\bar{z'} \mid \bar{z'} \subseteq \texttt{Vars}(\Gamma')\}} : \tau'\} \sqcup \Gamma'_{x,y} \vdash N:\upsilon$}\RightLabel{$[\otimes E]$}
         \BinaryInfC{$P \mid \Gamma \sqcup \Gamma' \vdash (\Let{\Pair{x, y}}{M}{N}): \upsilon$}
       \end{prooftree}
     \end{minipage}
@@ -170,16 +169,19 @@ not being unrestricted. This is different from an additive pair where we can eas
   \label{fig:mul-pair-rules}
 \end{figure}
 
-
-
 \subsection{Additive Pair Type}\label{subsec:add-pairs}
+The lambda encoding for additive pairs is given in \cref{fig:add-pairs}. The typing rules are given in \cref{fig:add-pair-rules}. We give
+proof of derivations for the rules in \cref{subsec:add-pairs-deriv}. Additive pairs can be thought of as program
+entities that have sharing resources. We use \Fst{} and \Snd{} as projection functions on the additive pair to obtain the
+constituent objects. It is worthwhile to note that we do not provide these projection functions for multiplicative pairs
+so as to restrict the programmer from implicitly discarding one of the components of the multipicative pair.
 
 \begin{figure}[h]
   \centering
   \begin{framed}
     \begin{flalign*}
-      \with &\in \mathcal{T}^{\star \rightarrow \rightarrow \star}\\
-      \with &= \tau \sepimp \tau' \rightarrow (\tau \sepimp \tau' \rightarrow \nu) \rightarrow \nu\\
+      \with &\in \mathcal{T}^{\star \rightarrow \star \rightarrow \star}\\
+      \tau \with \tau' &= \tau \sepimp \tau' \rightarrow (\tau \sepimp \tau' \rightarrow \upsilon) \rightarrow \upsilon\\
       (;) &= \lambda^{*} x. \lambda^{\alpha} by. \lambda^{\alpha} f. f x y
     \end{flalign*}
   \end{framed}
@@ -214,41 +216,133 @@ not being unrestricted. This is different from an additive pair where we can eas
 
 
 \subsection{Sum Type}\label{subsec:sums}
+The lambda encoding of sum types is given in \cref{fig:sum-types} and the derivable typing rules are given in \cref{fig:bi-sum-types}.
+We give proof of derivations in \cref{sec:sums-deriv}. Sum types can be thought of as a choice between two types. At a given point of
+time only one of the two types would exist. We provide two functions to be used has handlers for both the types. The $\Case{M}{\{f;g\}}$ construct
+is the deconstructor that would decide which function to use $f$ or $g$ depending on the value evaluated for $M$. The return type
+of both the functions $f$ and $g$ would have to be the same for them to have correct typing. Encoding sum types within the language would be
+helpful in defining data structures such as lists, trees and option types.
 
-
-\section{Generic Type constructors}\label{sec:type-constructors}
-We add two new typing rules for handling generic datatypes using type constructors.
-We only consider a specific case of type constructors where all the type variables
-involved are either all shared or all separate and give an insight of how this
-can be generalized to have a mix of sharing and separation between the type parameters
-for a type constructor.
-
-
-It gets tricky with the surface syntax.
-
-
-\TODO{How do we write about type constructors?}
 \begin{figure}[h]
-  % sharing constructor
-  \begin{framed}
-\begin{minipage}{1\textwidth}
+  \begin{framed}\centering
+    \begin{flalign*}
+      \oplus &\in \mathcal{T}^{\star \rightarrow \star \rightarrow \star}\\
+      \tau \oplus \tau' &= (\tau \rightarrow \upsilon) \rightarrow (\tau' \rightarrow \upsilon) \rightarrow \upsilon\\
+      \Inl{} &: \tau \sepimp (\tau \oplus \tau')\\
+      \Inl{} &= \lambda^{*}x. \lambda^{\alpha} f. \lambda^{\alpha} g. f x\\
+      \Inr{} &: \tau' \sepimp (\tau \oplus \tau')\\
+      \Inr{} &= \lambda^{*}y. \lambda^{\alpha} f. \lambda^{\alpha} g. g y
+    \end{flalign*}
+  \end{framed}
+  \caption{Sum Type}
+  \label{fig:sum-types}
+\end{figure}
+
+\begin{figure}[h]
+\begin{framed}
+% sum type I_l
+\begin{minipage}{0.5\textwidth}
   \begin{prooftree}
-    \AxiomC{$P \mid \Gamma \vdash C: \tau_1 \sepimp \tau_2 \rightarrow \tau_3 \rightarrow \dots \rightarrow \tau_n \rightarrow T$}
-    \AxiomC{$\Delta \equiv H(x_1 : \tau_1 ; x_2 : \tau_2 ; \ldots ; x_n:\tau_n)$}\RightLabel{$[\text{C-sh}]$}
-    \BinaryInfC{$P \mid \Gamma; \Delta \vdash C \vec{x} : T $}
+    \AxiomC{$P \mid \Gamma \vdash M: \tau$}\RightLabel{[$\oplus$I$_l$]}
+    \UnaryInfC{$P \mid \Delta \vdash \texttt{inl}\ M: \tau \oplus \tau'$}
   \end{prooftree}
 \end{minipage}
-% Separating constructor
+% sum type I_r
+\begin{minipage}{0.5\textwidth}
+  \begin{prooftree}
+    \AxiomC{$P \mid \Gamma \vdash M: \tau'$}\RightLabel{[$\oplus$I$_r$]}
+    \UnaryInfC{$P \mid \Delta \vdash \texttt{inr}\ M: \tau \oplus \tau'$}
+  \end{prooftree}
+\end{minipage}
+% sum type E
 \begin{minipage}{1\textwidth}
   \begin{prooftree}
-    \AxiomC{$P \mid \Gamma \vdash C: \tau_1 \sepimp \tau_2 \sepimp \tau_3 \sepimp \dots \sepimp \tau_n \sepimp T$}
-    \AxiomC{$\Delta \equiv H(x_1: \tau_1, x_2:\tau_2, \dots ,x_n:\tau_n)$}\RightLabel{$[\text{C-se}]$}
-    \BinaryInfC{$P \mid \Gamma, \Delta \vdash C \vec{x} : T $}
+    \AxiomC{$P \mid \Gamma \vdash M: \tau \oplus \tau'$}
+    \AxiomC{$P \mid \Gamma \circledast x:\tau \vdash N :\upsilon$}
+    \AxiomC{$P \mid \Gamma \circledast y:\tau' \vdash N':\upsilon$}\RightLabel{[$\oplus$E]}
+    \TrinaryInfC{$P \mid \Gamma \vdash \Case{M}{\{\texttt{inl}\ x \mapsto N; \texttt{inr}\ y \mapsto N'\}} : \upsilon $}
   \end{prooftree}
 \end{minipage}
 \end{framed}
+\caption{Derivable Typing Rules for Sum Type}
+\label{fig:bi-sum-types}
+\end{figure}
+
+
+\section{Generic Type Constructors}\label{sec:type-constructors}
+
+To leverage the full power of introducing the sharing concept in a programming language,
+we would want to have users be able to define datatypes with sharing and separation of its
+constituent resources.  We add two new typing rules as shown in \cref{fig:ud-datatypes}
+for handling generic datatypes using type constructors.
+In the current implimentation, we only consider a specific case of type constructors where all the type variables
+involved are either all shared or all separate. % and give an insight of how this
+% can be generalized to have a mix of sharing and separation between the type parameters
+% for a type constructor.
+
+\TODO{How do we write about type constructors?}
+\begin{figure}[h]
+  \begin{framed}\centering
+    % sharing constructor
+    \begin{minipage}{0.45\textwidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma \varoplus x:\tau^{\kappa} \vdash C:\tau^{\kappa} \rightarrow T$}\RightLabel{$[\text{C-sh}]$}
+        \UnaryInfC{$P \mid \Gamma \vdash C x : T $}
+      \end{prooftree}
+    \end{minipage}
+    % Separating constructor
+    \begin{minipage}{0.45\textwidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma \circledast x:\tau^{\kappa} \vdash C:\tau^{\kappa} \sepimp T$}\RightLabel{$[\text{C-se}]$}
+        \UnaryInfC{$P \mid \Gamma \vdash C x : T $}
+      \end{prooftree}
+    \end{minipage}
+  \end{framed}
   \caption{User Defined Datatypes}
   \label{fig:ud-datatypes}
+\end{figure}
+
+We illustrate using examples how the type system works.
+The sharing pair has shared resources and using \Fst{} and \Snd{} works
+to get both the individual constituents as shown in \cref{fig:sharing-pair}
+The (!!) denots that a and b are in sharing. The fstp and sndp functions
+typecheck as expected.
+
+\begin{figure}[h]
+  \begin{framed}
+\begin{minted}{haskell}
+data Pair' a b = ShP !! a b
+
+fstp::Pair' a b -> a
+fstp (ShP x y) = x
+
+sndp :: Pair' a b -> b
+sndp (ShP x y) = y
+\end{minted}
+  \end{framed}
+
+  \caption{Shared Pairs}
+  \label{fig:sharing-pair}
+\end{figure}
+
+Separating pair is defined in \cref{fig:sep-pair}. The functions fst and snd do not type check
+as on of the resources is being dropped and we would need the resource to be unrestricted.
+
+\begin{figure}[h]
+  \begin{framed}
+\begin{minted}{haskell}
+data Pair a b = SeP a b
+
+fst :: Pair' a b -> a
+fst (SeP x y) = x
+
+snd :: Pair' a b -> b
+snd (SeP x y) = y
+\end{minted}
+  \end{framed}
+
+  \caption{Separating Pair}
+  \label{fig:sep-pair}
 \end{figure}
 
 
@@ -262,124 +356,80 @@ It gets tricky with the surface syntax.
 % We also have a sum type whose rules are shown in \cref{fig:bi-sum-types}.
 % Proof derivation and definitions for sum type is given in \cref{sec:sums}.
 
-\begin{figure}[h]
-  \begin{framed}
-    \begin{minipage}{1\linewidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma  \vdash M : \tau$}
-        \AxiomC{$P \mid \Delta \vdash N: \tau'$} \RightLabel{$[\with I]$}
-        \BinaryInfC{$P \mid \Gamma \oplus \Delta \vdash \Pair{M;N} : \tau \with \tau'$}
-      \end{prooftree}
-    \end{minipage}
-  \end{framed}
-  \caption{Derivable Typing rules for Pair types}
-  \label{fig:pair-typing-rules}
-\end{figure}
 
-\begin{figure}[h]
-\begin{framed}
-% sum type I_l
-\begin{minipage}{0.5\textwidth}
-  \begin{prooftree}
-    \AxiomC{$P \mid \Gamma \vdash M: \tau$}
-    \UnaryInfC{$P \mid \Delta \vdash \texttt{inl}\ M: \tau \oplus \tau'$}
-  \end{prooftree}
-\end{minipage}
-% sum type I_r
-\begin{minipage}{0.5\textwidth}
-  \begin{prooftree}
-    \AxiomC{$P \mid \Gamma \vdash M: \tau_2$}
-    \UnaryInfC{$P \mid \Delta \vdash \texttt{inr}\ M: \tau \oplus \tau'$}
-  \end{prooftree}
-\end{minipage}
-% sum type E
-\begin{minipage}{1\textwidth}
-  \begin{prooftree}
-    \AxiomC{$P \mid \Gamma \vdash M: \tau \oplus \tau'$}
-    \AxiomC{$P \mid \Gamma \circledast x:\tau \vdash N :\nu$}
-    \AxiomC{$P \mid \Gamma \circledast y:\tau' \vdash N':\nu$}\RightLabel{[$\oplus$E]}
-    \TrinaryInfC{$P \mid \Gamma \vdash \Case{M}{\{\texttt{inl}\ x \mapsto N; \texttt{inr}\ y \mapsto N'\}} : v $}
-  \end{prooftree}
-\end{minipage}
-\end{framed}
-\caption{Derivable Typing Rules for Sum Type}
-\label{fig:bi-sum-types}
-\end{figure}
+% The datatypes are user defined types:
+% There are 2 main kinds of non-recursive datatypes
 
+% 1) data Choice a b = L a | R b
 
-The datatypes are user defined types:
-There are 2 main kinds of non-recursive datatypes
+% where the types a and b do not appear in both the constructors.
+% Choice here is a sum type a + b. How can we handle sum types in the current scenario?
+% 1 way is to have a and b both not share resources. in this case we will have
+% a and b to be both un restricted.
 
-1) data Choice a b = L a | R b
+% a and b cannot direclty share resources. As the meaning of a sum type is that
+% either a or b can exist and not both. So we will always have separating arrow
+% for the sum types
 
-where the types a and b do not appear in both the constructors.
-Choice here is a sum type a + b. How can we handle sum types in the current scenario?
-1 way is to have a and b both not share resources. in this case we will have
-a and b to be both un restricted.
+% Write the elemination rules for Either
 
-a and b cannot direclty share resources. As the meaning of a sum type is that
-either a or b can exist and not both. So we will always have separating arrow
-for the sum types
+% for functions the closure has to be equal.
 
-Write the elemination rules for Either
+% 2) data Pair a b = P a b
 
-for functions the closure has to be equal.
+% The constructor uses both the resources a and b
+% Here we can have 2 subtypes:
 
-2) data Pair a b = P a b
+% a and b share resources or can be completely different.
+% We would want the programmer to specify whether the arguments are shared or separate.
 
-The constructor uses both the resources a and b
-Here we can have 2 subtypes:
+% For current purposes this syntactical specification is given via a modified syntax
 
-a and b share resources or can be completely different.
-We would want the programmer to specify whether the arguments are shared or separate.
+% data SeparatingPair a b = MkSeP a, b
+% data SharingPair a b = MkShP !! a b
 
-For current purposes this syntactical specification is given via a modified syntax
+% We can of-course mix and match the sharing or separation.
 
-data SeparatingPair a b = MkSeP a, b
-data SharingPair a b = MkShP !! a b
+% data MixTuple a b c d e = MkMixTuple a,b;c,d
 
-We can of-course mix and match the sharing or separation.
+% The question now that needs to be answered is how should the sharing be interpreted?
+% There are various options.
 
-data MixTuple a b c d e = MkMixTuple a,b;c,d
+% 1. interpreted right to left. i.e. MkMixTuple (a, (b; (c,d)))
+%    so the b is shared with separating pair (c,d) and a is separate than b
 
-The question now that needs to be answered is how should the sharing be interpreted?
-There are various options.
+% 2. interpreted left to right. i.e. MkMixTuple (((a, b);c),d)
+%    so the c is shared with separating pair (a,b) and d is separate from c
 
-1. interpreted right to left. i.e. MkMixTuple (a, (b; (c,d)))
-   so the b is shared with separating pair (c,d) and a is separate than b
+% 3. Sharing ; has precedence over separating , i.e. MkMixTuple a,(b;c),d
 
-2. interpreted left to right. i.e. MkMixTuple (((a, b);c),d)
-   so the c is shared with separating pair (a,b) and d is separate from c
+% 4. Separating , has lower precedence over ; i.e. MkMixTuple (a,b);(c,d)
 
-3. Sharing ; has precedence over separating , i.e. MkMixTuple a,(b;c),d
+% This should be handled during the AST generating while parsing.
+% The type checking algorithm should be robust enough
+% to perform type checking either of these 4 types of sharing as they are
+% all perfectly valid scenarios.
 
-4. Separating , has lower precedence over ; i.e. MkMixTuple (a,b);(c,d)
+% Recursive datatypes have some kind of structural similarities within themselves
 
-This should be handled during the AST generating while parsing.
-The type checking algorithm should be robust enough
-to perform type checking either of these 4 types of sharing as they are
-all perfectly valid scenarios.
+% data Tree a = Leaf a | Node a (Tree a) (Tree a)
 
-Recursive datatypes have some kind of structural similarities within themselves
+% data Tree a b = Leaf b | Node a (Tree a b) (Tree a b)
 
-data Tree a = Leaf a | Node a (Tree a) (Tree a)
-
-data Tree a b = Leaf b | Node a (Tree a b) (Tree a b)
-
-Open questions:
-How do we specify sharing of data between nodes?
-eg. How can we say that all the leaves have shared data? and the data in nodes is sparating
+% Open questions:
+% How do we specify sharing of data between nodes?
+% eg. How can we say that all the leaves have shared data? and the data in nodes is sparating
 
 
-What happens when lesser unrestrictedness with datatypes? Choice a b >:= f
+% What happens when lesser unrestrictedness with datatypes? Choice a b >:= f
 
 
-\section{Examples}
+% \section{Examples}
 
-\subsection{Pairs}
+% \subsection{Pairs}
 
-Our language has a notion of 2 kinds of pairs. The pairs representing resources that do not share
-are denoted using separating pair $A \otimes B$. This means that when ever 
+% Our language has a notion of 2 kinds of pairs. The pairs representing resources that do not share
+% are denoted using separating pair $A \otimes B$. This means that when ever 
 
 
 
