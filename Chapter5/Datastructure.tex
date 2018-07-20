@@ -1,9 +1,7 @@
 \chapter{\qub{} Extention and Datatypes}\label{chp:datatypes}
-
 In this chapter we discuss how \qub{} can be extended to have a kind system which makes
 the type language powerful enough to accept user defined datatypes in \cref{sec:kind-system}. We also discuss
 how we can encode sums and multiplicative and additive products in \cref{sec:pairs-types}.
-
 
 \section{Kind System}\label{sec:kind-system}
 In the original system, it would be tedious to extend the system with new types as we would have to introduce new syntax and associated typing rules for
@@ -40,7 +38,7 @@ of both the constructors would result in a kind $\kappa$.
 $\sepimp$, $\overset{!}{\sepimp}$, $\rightarrow$ and $\overset{!}{\rightarrow}$
 are now treated as type constructors with an arity of two and would have a kind $\star \rightarrow \star \rightarrow \star$, The
 type constructor for List will have a kind $\star \rightarrow \star$ while
-type like Int and Float will have a kind $\star$.
+types like Int and Float will have a kind $\star$.
 
 \begin{figure}
   \begin{framed}
@@ -103,7 +101,6 @@ can be unified which asserts that they have to have the same kind $\kappa' \righ
   \caption{Kind Preserving Unification of Type Constructors}
   \label{fig:unify-types}
 \end{figure}
-
 
 \begin{figure}[h]
   \begin{framed}

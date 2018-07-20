@@ -38,71 +38,63 @@ shown in \cref{fig:structural-rules} and the second part includes connectives wi
 introduction and elimination rules shown in \cref{fig:typing-rules}.
 
 % structural rules
-\begin{figure}[h]
+\begin{figure}[h]\centering
   \begin{framed}
     % ID
-    \begin{minipage}{.5\textwidth}
+    \begin{minipage}{1\textwidth}
       \begin{prooftree}
-        \AxiomC{} \RightLabel{[ID]}
+        \AxiomC{{\color{white}$\Gamma \circledast \Delta \circledast$}} \RightLabel{[ID]}
         \UnaryInfC{$P \mid x^{\vec{y}} : \sigma \vdash x : \sigma $}
       \end{prooftree}
     \end{minipage}
-    % EXCH
-    \begin{minipage}{.5\textwidth}
+
+    % CTR UN
+    \begin{minipage}{.50\textwidth}
       \begin{prooftree}
-        \AxiomC{$\Gamma \sqcup \Delta \vdash M : \sigma$} \RightLabel{[EXCH]}
-        \UnaryInfC{$P \mid \Delta \sqcup \Gamma \vdash M : \sigma $}
-      \end{prooftree}
-    \end{minipage}
-        % CTR UN
-    \begin{minipage}{.5\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \circledast \Delta \vdash M : \sigma$}
-        \AxiomC{$P'\vdash \Delta\ \texttt{un}$} \RightLabel{[CTR-UN]}
-        \BinaryInfC{$P \mid \Gamma \vdash M : \sigma$}
-      \end{prooftree}
-    \end{minipage}
-    % WKN UN
-    \begin{minipage}{.5\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash M : \sigma$}
-        \AxiomC{$P' \vdash \Delta\ \texttt{un}$} \RightLabel{[WKN-UN]}
+        \AxiomC{$P \mid \Gamma \circledast \Delta \circledast \Delta \vdash M : \sigma$}
+        \AxiomC{$P \vdash \Delta\ \texttt{un}$} \RightLabel{[CTR-UN]}
         \BinaryInfC{$P \mid \Gamma \circledast \Delta \vdash M : \sigma$}
       \end{prooftree}
-    \end{minipage}
+    \end{minipage}%
     % CTR Sh
-    \begin{minipage}{.5\textwidth}
+    \begin{minipage}{.50\textwidth}
       \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \varoplus \Delta \vdash M : \sigma$} \RightLabel{[CTR-SH]}
-        \AxiomC{$P \mid \Gamma \vdash M : \sigma$} \RightLabel{[CTR-SH]}
-        \BinaryInfC{$P \mid \Gamma \vdash M : \sigma$}
+        \AxiomC{$P \mid \Gamma \varoplus \Delta \varoplus \Delta\vdash M : \sigma$}\RightLabel{[CTR-SH]}
+        \UnaryInfC{$P \mid \Gamma \varoplus \Delta \vdash M : \sigma$}
       \end{prooftree}
     \end{minipage}
+
+    % WKN UN
+    \begin{minipage}{.50\textwidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma \vdash M : \sigma$}
+        \AxiomC{$P \vdash \Delta\ \texttt{un}$} \RightLabel{[WKN-UN]}
+        \BinaryInfC{$P \mid \Gamma \circledast \Delta \vdash M : \sigma$}
+      \end{prooftree}
+    \end{minipage}%
     % WKN Sh
-    \begin{minipage}{.5\textwidth}
+    \begin{minipage}{.50\textwidth}
       \begin{prooftree}
         \AxiomC{$P  \mid \Gamma \vdash M : \sigma$} \RightLabel{[WKN-SH]}
         \UnaryInfC{$P \mid \Gamma \varoplus \Delta \vdash M : \sigma$}
       \end{prooftree}
     \end{minipage}
-   \end{framed}
-    \caption{Structural Typing Rules}
-    \label{fig:structural-rules}
+  \end{framed}
+  \caption{Structural Typing Rules}
+  \label{fig:structural-rules}
   \end{figure}
 
-The tautology rule ([ID]) is a simple type assignment lookup for checking the type of the term.
-The exchange rule ([EXCH]) justifies the fact that the order in which the type assignments are witnessed
-in the type assignment is insignificant and we can commute the individual term typing schemes
-with no effect to the typing derivations. The weakening and contraction rules are made explicit in contrast to standard
+The tautology rule [ID] is a simple type assignment lookup for checking the type of the term.
+The weakening and contraction rules are made explicit in contrast to standard
 Hindley-Milner type system. The contraction sharing rule [CTR-SH] and weakening sharing rule [WKN-SH]
-convey that we can duplicate or drop certain pairs of type assignments as per our convenience as we know they are in sharing with other
+convey that we can duplicate or drop certain pairs of type assignments as we know they are in sharing with other
 terms that remain in the context. The contraction separation rule [CTR-UN] and weakening separation rule [WKN-SH] can be
-applied to terms only if we can prove that they are of unrestricted type which is captured by the ($\Delta$ \texttt{un}) antecedent predicate
+applied to terms only if we can prove that they are of unrestricted type which is captured by the antecedent predicate $\Delta$ \texttt{un}
 on the type that is dropped or duplicated.
 
 % Connective rules
-  \begin{figure}[h]
-    \begin{framed}
+\begin{figure}[h]\centering
+  \begin{framed}
     % let
     \begin{minipage}{1\textwidth}
       \begin{prooftree}
@@ -111,78 +103,78 @@ on the type that is dropped or duplicated.
         \BinaryInfC{$P \cup P' \mid \Gamma \sqcup \Gamma' \vdash (\Let{x}{M}{N}): \tau$}
       \end{prooftree}
     \end{minipage}
-    \newline\newline\newline
+\newline\newline\newline
     % forall I
-    \begin{minipage}{0.5\textwidth}
+    \begin{minipage}{0.50\textwidth}
       \begin{prooftree}
         \AxiomC{$P \mid \Gamma \vdash M: \sigma$}
-        \AxiomC{$t \notin \texttt{fvs}(\Gamma) \cup \texttt{fvs}(P)$}\RightLabel{$[\forall I]$}
+        \AxiomC{$t \notin \texttt{fvs}(\Gamma) \cup \texttt{fvs}(P)$}\RightLabel{[$\forall$ I]}
         \BinaryInfC{$P \mid \Gamma \vdash M: \forall t. \sigma$}
       \end{prooftree}
-    \end{minipage}
+    \end{minipage}%
     % forall E
-    \begin{minipage}{0.5\textwidth}
+    \begin{minipage}{0.45\textwidth}
       \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash M: \forall t.\sigma$}\RightLabel{$[\forall E]$}
+        \AxiomC{$P \mid \Gamma \vdash M: \forall t.\sigma$}\RightLabel{[$\forall$ E]}
         \UnaryInfC{$P \mid \Gamma \vdash M: [\tau \backslash t] \sigma $}
       \end{prooftree}
     \end{minipage}
-    \newline\newline\newline
+\newline\newline\newline
     % => I
-    \begin{minipage}{0.5\textwidth}
+    \begin{minipage}{0.50\textwidth}
       \begin{prooftree}
-        \AxiomC{$P, \pi \mid \Gamma \vdash M : \rho$} \RightLabel{$[=> I]$}
+        \AxiomC{$P, \pi \mid \Gamma \vdash M : \rho$} \RightLabel{[$\Rightarrow$ I]}
         \UnaryInfC{$P \mid \Gamma \vdash M : \pi \Rightarrow \rho$}
       \end{prooftree}
-    \end{minipage}
+    \end{minipage}%
     % => E
-    \begin{minipage}{0.5\textwidth}
+    \begin{minipage}{0.45\textwidth}
       \begin{prooftree}
         \AxiomC{$P \mid \Gamma \vdash M : \pi \Rightarrow \rho$}
-        \AxiomC{$P \Rightarrow \pi$} \RightLabel{$[=> E]$}
+        \AxiomC{$P \vdash \pi$} \RightLabel{[$\Rightarrow$ E]}
         \BinaryInfC{$P \mid \Gamma \vdash M: \rho$}
       \end{prooftree}
     \end{minipage}
-    \newline\newline\newline
+\newline\newline\newline
     % -&> I
-    \begin{minipage}{0.5\textwidth}
+    \begin{minipage}{0.45\textwidth}
       \begin{prooftree}
         \AxiomC{$P \Rightarrow \texttt{ShFun}\ \phi\ \ \ \ \
-          P \vdash \Gamma \geq \phi$}\noLine
-        \UnaryInfC{$P \mid \Gamma^{[\emptyset\mapsto \{x\}]},x^{\text{Vars}(\Gamma)}: \tau \vdash M : \tau'$}\RightLabel{$[\rightarrow I]$}
-        \UnaryInfC{$P \mid \Gamma \vdash \lambda^{\alpha}x. M : \phi \tau \tau'$}
+          P \vdash \Gamma \geq \phi$}\noLine\def\extraVskip{-0.2pt}
+        \UnaryInfC{$P \mid \Gamma^{[\emptyset\mapsto \{x\}]},x^{\text{Vars}(\Gamma)}: \tau \vdash M : \tau'$}\RightLabel{[$\shimp$ I]}\def\extraVskip{2pt}
+        \UnaryInfC{$P \mid \Gamma \vdash \lambda^{\shimp}x. M : \phi \tau \tau'$}
       \end{prooftree}
-    \end{minipage}
+    \end{minipage}%
     % -&> E
-    \begin{minipage}{0.5\textwidth}
+    \begin{minipage}{0.50\textwidth}
       \begin{prooftree}
-        \AxiomC{$P => \texttt{ShFun}\ \phi\ \ \ \ \
-          P \vdash \Gamma \geq \phi$}\noLine
+        \AxiomC{$P \Rightarrow \texttt{ShFun}\ \phi$}\noLine\def\extraVskip{0pt}
         \UnaryInfC{$P \mid \Gamma \vdash M : \phi \tau \tau'\ \ \ \ \
-          P \mid \Delta \vdash N : \tau'$} \RightLabel{$[\rightarrow E]$}
-        \UnaryInfC{$P \mid \Gamma \varoplus \Delta \vdash M N : \tau'$}
+          P \mid \Gamma' \vdash N : \tau$} \RightLabel{[$\shimp$ E]}\def\extraVskip{2pt}
+        \UnaryInfC{$P \mid \Gamma \varoplus \Gamma' \vdash M N : \tau'$}
       \end{prooftree}
     \end{minipage}
-    \newline\newline\newline
+\newline\newline\newline
     % -*> I
-    \begin{minipage}{0.5\textwidth}
+    \begin{minipage}{0.50\textwidth}
       \begin{prooftree}
-        \AxiomC{$P => \texttt{SeFun}\ \phi\ \ \ \ \ P \vdash \Gamma \geq \phi$}\noLine
-        \UnaryInfC{$P \mid \Gamma,x^{\emptyset}: \tau \vdash M : \tau'$} \RightLabel{$[\sepimp I]$}
-        \UnaryInfC{$P \mid \Gamma \vdash \lambda^{*}x. M : \phi \tau \tau'$}
+        \AxiomC{$P \Rightarrow \texttt{SeFun}\ \phi\ \ \ \ \ P \vdash \Gamma \geq \phi$}\noLine\def\extraVskip{0pt}
+        \UnaryInfC{${\color{white}\ \ \ \ }P \mid \Gamma,x^{\emptyset}: \tau \vdash M : \tau'{\color{white}\ \ \ \ }$} \RightLabel{[$\sepimp$ I]}\def\extraVskip{2pt}
+        \UnaryInfC{$P \mid \Gamma \vdash \lambda^{\sepimp}x. M : \phi \tau \tau'$}
       \end{prooftree}
-    \end{minipage}
+    \end{minipage}%
     % -*> E
-    \begin{minipage}{0.5\textwidth}
+    \begin{minipage}{0.45\textwidth}
       \begin{prooftree}
-        \AxiomC{$P => \texttt{SeFun}\ \phi\ \ \ \ \ P \vdash \Gamma \geq \phi$}\noLine
-        \UnaryInfC{$P \mid \Gamma \vdash M : \phi \tau \tau'\ \ \ \ P \mid \Delta \vdash N : \tau$} \RightLabel{$[\sepimp E]$}
-        \UnaryInfC{$P \mid \Gamma \circledast \Delta \vdash M N : \tau'$}
+        \AxiomC{$P \Rightarrow \texttt{SeFun}\ \phi$}\noLine\def\extraVskip{0pt}
+        \UnaryInfC{$P \mid \Gamma \vdash M : \phi \tau \tau'\ \ \ \
+          P \mid \Gamma' \vdash N : \tau$}\RightLabel{[$\sepimp$ E]}\def\extraVskip{2pt}
+        \UnaryInfC{$P \mid \Gamma \circledast \Gamma' \vdash M N : \tau'$}
       \end{prooftree}
     \end{minipage}
   \end{framed}
-    \caption{Connective Typing Rules}
-    \label{fig:typing-rules}
+  \caption{Connective Typing Rules}
+  \label{fig:typing-rules}
 \end{figure}
 
 The rules of [$\rightarrow$I] and [$\sepimp$I] describes the abstraction over shared and
@@ -335,11 +327,11 @@ or which are not in sharing with the terms used.
     % Let^s
     \begin{minipage}{1.0\textwidth}
       \begin{prooftree}
-        \AxiomC{$Q \mid (\Gamma_x' \varoplus \Gamma_x'') \circledast \Delta \vdashs M: v\ \ \ \ \
+        \AxiomC{$Q \mid (\Gamma_x' \varoplus \Gamma_x'') \circledast \Delta \vdashs M: \upsilon\ \ \ \ \
           P \vdash \Delta\ \texttt{un}$}
         \noLine
         \UnaryInfC{$P \mid (\Gamma_x \sqcup x:\sigma) \varoplus \Gamma_x'' \circledast \Delta \vdashs N:\tau\ \ \ \ \
-          \sigma = \texttt{Gen}(\{\Gamma' \varoplus \Gamma_x'' \circledast \Delta \}, Q => v)$}\RightLabel{[Let$^s$]}
+          \sigma = \texttt{Gen}(\{\Gamma' \varoplus \Gamma_x'' \circledast \Delta \}, Q => \upsilon)$}\RightLabel{[Let$^s$]}
         \UnaryInfC{$P \mid (\Gamma \circledast \Gamma') \varoplus \Gamma'' \circledast \Delta \vdashs (\Let{x}{M}{N}) : \tau$}
       \end{prooftree}
     \end{minipage}
@@ -349,24 +341,24 @@ or which are not in sharing with the terms used.
       \begin{prooftree}
         \AxiomC{$P => \SeFun{\phi}$}
         \AxiomC{$P \vdash \Gamma \geq \phi$}\noLine
-        \BinaryInfC{$\ \ \ \ \ \ \ P \mid \Gamma \circledast x^{\emptyset}:\tau \vdashs M: v\ \ \ \ \ \ \ $} \RightLabel{[$\sepimp$I$^s$]}
-        \UnaryInfC{$P \mid \Gamma \vdashs \lambda^{*}x. M : \phi \tau v$}
+        \BinaryInfC{$\ \ \ \ \ \ \ P \mid \Gamma \circledast x^{\emptyset}:\tau \vdashs M: \upsilon\ \ \ \ \ \ \ $} \RightLabel{[$\sepimp$I$^s$]}
+        \UnaryInfC{$P \mid \Gamma \vdashs \lambda^{*}x. M : \phi \tau \upsilon$}
       \end{prooftree}
-    \end{minipage}
+    \end{minipage}%
     % -&>I^s
     \begin{minipage}{0.5\textwidth}
       \begin{prooftree}
         \AxiomC{$P => \ShFun{\phi}\ \ \ \ \ P \vdash \Gamma \geq \phi$}\noLine
-        \UnaryInfC{$P \mid \Gamma^{[\emptyset \mapsto \{x\}]} \varoplus x^{\texttt{Vars}(\Gamma)}:\tau \vdashs M: v$}\RightLabel{[$\rightarrow$I$^s$]}
-        \UnaryInfC{$P \mid \Gamma \vdashs \lambda^{\alpha}x. M : \phi \tau v$}
+        \UnaryInfC{$P \mid \Gamma^{[\emptyset \mapsto \{x\}]} \varoplus x^{\texttt{Vars}(\Gamma)}:\tau \vdashs M: \upsilon$}\RightLabel{[$\rightarrow$I$^s$]}
+        \UnaryInfC{$P \mid \Gamma \vdashs \lambda^{\alpha}x. M : \phi \tau \upsilon$}
       \end{prooftree}
     \end{minipage}
     \newline\newline\newline
     % App^s
     \begin{minipage}{1.0\textwidth}
       \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \circledast \Delta \vdashs M: \phi v \tau\ \ \ \ \
-          P \mid  \Gamma' \circledast \Delta \vdashs N: v$}
+        \AxiomC{$P \mid \Gamma \circledast \Delta \vdashs M: \phi \upsilon \tau\ \ \ \ \
+          P \mid  \Gamma' \circledast \Delta \vdashs N: \upsilon$}
         \AxiomC{$P \vdash \Delta\ \texttt{un}$}\noLine
         \BinaryInfC{$(\Gamma \varoplus \Gamma' \wedge (P => \ShFun{\phi}))
           \vee (\Gamma \circledast \Gamma' \wedge (P => \SeFun{\phi}))$}\RightLabel{[App$^s$]}

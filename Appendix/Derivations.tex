@@ -12,22 +12,23 @@ If the resources are in sharing we say they are additive pairs.
 \begin{minipage}[h]{1.0\linewidth}
   \begin{prooftree}
     \AxiomC{$$}\RightLabel{[ID]}
-    \UnaryInfC{$\emptyset \mid y^{xf}:B \vdash y: B $}
+    \UnaryInfC{$\emptyset \mid y^{xf}: \tau' \vdash y: \tau' $}
 
     \AxiomC{$$}
-    \UnaryInfC{$\emptyset \mid x^{fy}: A \vdash x: A$}\RightLabel{[ID]}
+    \UnaryInfC{$\emptyset \mid x^{fy}: \tau \vdash x: \tau$}\RightLabel{[ID]}
 
     \AxiomC{$$}\RightLabel{[ID]}
     \UnaryInfC{$\emptyset \mid f^{xy}: A \rightarrow B \rightarrow C \vdash f: A \rightarrow B \rightarrow C $}\RightLabel{[$\sepimp E$]}
     \BinaryInfC{$\emptyset \mid x^{xy}:A \varoplus f^{xy}: A \rightarrow B \rightarrow C \vdash f x: (B \rightarrow C)$}\RightLabel{[$\rightarrow E$]}
 
     \BinaryInfC{$\emptyset \mid y^{xf}:B \varoplus x^{yf}:A \varoplus f^{xy}:A \rightarrow B \rightarrow C \vdash f x y: C$}\RightLabel{[$EXCH$]}
-    \UnaryInfC{$\emptyset \mid x^{yf}:A \varoplus y^{xf}:B \varoplus f^{xy}: A \rightarrow B \rightarrow C \vdash f x y: C$}\RightLabel{[$\rightarrow I$]}
-    \UnaryInfC{$\emptyset \mid x^{y}:A \varoplus y^{x}:B \vdash \lambda^{\alpha}f. f x y: (A \rightarrow B \rightarrow C) \rightarrow C$}\RightLabel{[$\rightarrow I$]}
-    \UnaryInfC{$\emptyset \mid x^{\emptyset}:A \vdash \lambda^{\alpha}y. \lambda^{\alpha}f. f x y: B \rightarrow (A \rightarrow B \rightarrow C) \rightarrow C$}\RightLabel{[$\sepimp$ I]}
-    \UnaryInfC{$\emptyset \mid I \vdash \lambda^{*}x. \lambda^{\alpha}y. \lambda^{\alpha}f. f x y: A \sepimp B \rightarrow (A \rightarrow B \rightarrow C) \rightarrow C$}
+    \UnaryInfC{$\emptyset \mid x^{yf}:\tau \varoplus y^{xf}:\tau' \varoplus f^{xy}: \tau \rightarrow \tau' \rightarrow \upsilon \vdash f x y: \upsilon$}\RightLabel{[$\rightarrow I$]}
+    \UnaryInfC{$\emptyset \mid x^{y}:\tau \varoplus y^{x}:\tau' \vdash \lambda^{\alpha}f. f x y: (\tau \rightarrow \tau' \rightarrow \upsilon) \rightarrow \upsilon$}\RightLabel{[$\rightarrow I$]}
+    \UnaryInfC{$\emptyset \mid x^{\emptyset}:\tau \vdash \lambda^{\alpha}y. \lambda^{\alpha}f. f x y: \tau' \rightarrow (\tau \rightarrow \tau' \rightarrow \upsilon) \rightarrow \upsilon$}\RightLabel{[$\sepimp$ I]}
+    \UnaryInfC{$\emptyset \mid I \vdash \lambda^{*}x. \lambda^{\alpha}y. \lambda^{\alpha}f. f x y: \tau \sepimp \tau' \rightarrow (\tau \rightarrow \tau' \rightarrow \upsilon) \rightarrow \upsilon$}
   \end{prooftree}
-\end{minipage}
+\end{minipage}\\
+
 \noindent
 We can now define sharing (additive) pair as:
 \begin{framed}\centering

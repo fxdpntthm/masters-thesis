@@ -53,7 +53,7 @@ computing equality of types.
     \begin{minipage}{0.5\textwidth}
       \begin{prooftree}
         \AxiomC{$\Gamma \vdash M : \sigma$}\RightLabel{[$\forall$ I]}
-        \AxiomC{$t \notin \text{fvs}(\Gamma)$}
+        \AxiomC{$t \notin \texttt{fvs}(\Gamma)$}
         \BinaryInfC{$\Gamma \vdash M : \forall t. \sigma$}
       \end{prooftree}
     \end{minipage}
@@ -61,7 +61,7 @@ computing equality of types.
     \begin{minipage}{0.5\textwidth}
       \begin{prooftree}
         \AxiomC{$\Gamma \vdash M : \sigma$}
-        \AxiomC{$(\sigma' \sqsubset \sigma)$}\RightLabel{[$\forall$ E]}
+        \AxiomC{$(\sigma' \sqsubseteq \sigma)$}\RightLabel{[$\forall$ E]}
         \BinaryInfC{$\Gamma \vdash M : \sigma'$}
       \end{prooftree}
     \end{minipage}
@@ -85,9 +85,9 @@ computing equality of types.
   \label{fig:hm-system}
 \end{figure}
 The rules for type inference for \textbf{HM} type system are shown in \cref{fig:hm-system}. $\Gamma$ is the
-collection of assumptions or context in which the expression is typed. The $[VAR]$ rule is tautology or a simple
+collection of assumptions or context in which the expression is typed. The [VAR] rule is tautology or a simple
 lookup of the term variable $x$ in the context $\Gamma$. The [LET] allows creating local
-definitions within an expression term. [$\rightarrow$ I] and [$\rightarrow$ E] are rules
+definitions within an expression term. [$\rightarrow$I] and [$\rightarrow$E] are rules
 for typing lambda terms and application respectively. We also include the rules for parametric polymorphism where
 [$\forall$I] generalizes the type scheme by adding implicit universal quantifiers and [$\forall$E] generates and instance
 of the type scheme by substituting free type variables.

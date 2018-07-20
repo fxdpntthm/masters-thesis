@@ -1,5 +1,20 @@
 \chapter{Introduction}
 \section{Motivation}
-What problem are we trying to solve
+Resources are treated as normal values in Hindley-Milner based type systems. Thus, statically typed modern programming languages such as
+Haskell, ML, etc. do little to track resource usage at compile time to detect errors, such as, not closing open file handles
+or closing the file handle more than once. Substructural logic systems such as linear logic, restrict the use of
+structural rules---contraction and weakening---to view values as resources. There have been several attempts to create a practical
+type system for programming language but they have not gained popularity due to practical limitations.
+We develop a type system based on the logic of bunched implications and implement a type inference algorithm $\M$ for the language.
+We extend the system with kinds that allows users to define their own datatypes.
+
+
 \section{Contributions}
-How does our work solve the problem
+\begin{itemize}
+\item \qub{}, A type system based on logic of \BI{} that treates resources as first class citizens in the programming language.
+  We introduce two kinds of program objects---restricted and unrestriced---and two kinds of functions---the ones that share resrouces with
+  their arguments and the other that do not.
+\item Design a sound and complete syntax directed type system and implement a type inference algorithm based on modified Algorithm $\M$.
+\item Examples related to file handling and exceptions that show how \qub{} is more expressive than standard
+  Hindley-Milner type system for by tracing resource use at compile time to detect anomalies.
+\end{itemize}
