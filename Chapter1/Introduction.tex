@@ -1,13 +1,13 @@
 \chapter{Introduction}
-\section{Motivation}
+
 Resources are treated as normal values in Hindley-Milner based type systems. Thus, statically typed modern programming languages such as
 Haskell, ML, etc. do little to track resource usage at compile time to detect errors, such as, not closing open file handles
 or closing the file handle more than once. Substructural logic systems such as linear logic, restrict the use of
-structural rules---contraction and weakening---to view values as resources. There have been several attempts to create a practical
-type system for programming language but they have not gained popularity due to practical limitations.
+structural rules---contraction and weakening---to view values as resources. There have been several attempts to create a practical linear
+type system for programming languages but they have not been included in main stream languages due to practical limitations.
 We develop a type system based on the logic of bunched implications and implement a type inference algorithm $\M$ for the language.
-We extend the system with kinds that allows users to define their own datatypes.
-
+We then extend the system with kinds that allows users to define their own datatypes that expresses sharing and separation between
+fields.
 
 \section{Contributions}
 \begin{itemize}
