@@ -1,12 +1,12 @@
-\chapter{Background Work}
-\section{Hindley-Milner Type System and Inference Algorithm}\label{hm-system}
+\chapter{Background Work}\label{chp:background-work}
+\section{Hindley-Milner Type System and Type Inference Algorithm}\label{hm-system}
 
-Hindley-Milner (\textbf{HM}) type system \citeyearpar{milner_theory_1978} for lambda calculus with parametric polymorphism or restricted version
-of System F \citep{girard_proofs_1989} forms the basis of ML like languages and also many modern functional programming languages.
-The type language contains type variables, primitive types
-(such as integers, floats), the type constructor ($\rightarrow$) which constructs function types, and type scheme ($\sigma$) as shown in \cref{fig:hm-lang}.
-The expression language contains variables, lambda expressions
-and applications extended with a polymorphic \texttt{let} construct. Type inference algorithm $\mathcal{W}$ \citep{damas_principal_1982} and its varient
+Hindley-Milner (\textbf{HM}) type system \citeyearpar{milner_theory_1978} for lambda calculus extended with parametric polymorphism or restricted version
+of System F \citep{girard_proofs_1989} forms the basis many modern functional programming languages such as Haskell, ML, etc.
+The type language contains type variables, primitive types (such as integers, floats), the type constructor ($\rightarrow$)---
+which constructs function types---and type scheme ($\sigma$) as shown in \cref{fig:hm-lang}.
+The expression language contains variables, lambda expressions and applications extended with a
+polymorphic \texttt{let} construct. Type inference algorithm $\mathcal{W}$ \citep{damas_principal_1982} and its variant
 type checking algorithm $\mathcal{M}$ \citep{lee_proofs_1998} is decidable in the sense, the algorithm always completes with a success or failure.
 The algorithms also guarantee a most general typing scheme or principal types for an expression.
 
@@ -29,8 +29,8 @@ substitutions to unify types keeps the complete process elegant.
 Algorithm $\mathcal{M}$ works in an interesting way where the types of all well-typed terms can be
 inferred automatically and if types are specified, the same algorithm can be used
 to verify that the specified type of expression term matches the actual type. The same
-can be obtained using algorithm $\mathcal{W}$ but it would require an additional machinery of
-computing equality of types.
+can be obtained using algorithm $\mathcal{W}$ with an additional machinery of
+computing equality over types.
 
 \begin{figure}[h]
   \begin{framed}
@@ -84,13 +84,27 @@ computing equality of types.
   \caption{Typing Rules for \textbf{HM} Type System}
   \label{fig:hm-system}
 \end{figure}
+
 The rules for type inference for \textbf{HM} type system are shown in \cref{fig:hm-system}. $\Gamma$ is the
 collection of assumptions or context in which the expression is typed. The [VAR] rule is tautology or a simple
 lookup of the term variable $x$ in the context $\Gamma$. The [LET] allows creating local
 definitions within an expression term. [$\rightarrow$I] and [$\rightarrow$E] are rules
 for typing lambda terms and application respectively. We also include the rules for parametric polymorphism where
-[$\forall$I] generalizes the type scheme by adding implicit universal quantifiers and [$\forall$E] generates and instance
-of the type scheme by substituting free type variables.
+[$\forall$I] generalizes the type scheme by adding implicit universal quantifiers and [$\forall$E] generates an instance
+of the type scheme by substituting free type variables. It is worthwhile to note that when we generalize over types using the rule
+[$\forall$I] we need to ensure that the new type variable introduced should not be free in the existing typing context,
+hence, the side condition of $t \notin \texttt{fvs}(\Gamma)$ where $\texttt{fvs}(\Gamma)$ denotes free type variables in $\Gamma$.
+
+\begin{figure}[h]
+  \centering
+  \begin{framed}
+  \begin{flalign*}
+    A, B, C ::= X \mid A \rightarrow B \mid A \times B \mid A \plus B
+  \end{flalign*}
+\end{framed}
+\caption{Grammar for Intuitionistic Logic}
+\label{fig:intu-logic-grammar}
+\end{figure}
 
 \begin{figure}[h]\centering
   \begin{framed}
@@ -100,19 +114,22 @@ of the type scheme by substituting free type variables.
         \AxiomC{${\color{white}\Phi\Gamma\Psi}$}\RightLabel{[Ax]}
         \UnaryInfC{$\Phi \vdash \Phi $}
       \end{prooftree}
-    \end{minipage}
+    \end{minipage}%
+    % WKN
     \begin{minipage}{0.33\linewidth}
       \begin{prooftree}
         \AxiomC{$\Gamma \vdash \Phi$}\RightLabel{[WKN]}
-        \UnaryInfC{$\Gamma, \Gamma \vdash \Phi$}
+        \UnaryInfC{$\Gamma, \Delta \vdash \Phi$}
       \end{prooftree}
-    \end{minipage}
+    \end{minipage}%
+    % CTR
     \begin{minipage}{0.33\linewidth}
       \begin{prooftree}
         \AxiomC{$\Gamma, \Gamma \vdash \Phi $}\RightLabel{[CTR]}
         \UnaryInfC{$\Gamma \vdash \Phi $}
       \end{prooftree}
     \end{minipage}
+
     % \forall I
     \begin{minipage}{0.33\linewidth}
       \begin{prooftree}
@@ -120,7 +137,7 @@ of the type scheme by substituting free type variables.
         \AxiomC{$x \notin \Psi$}\RightLabel{[$\forall$I]}
         \BinaryInfC{$\forall x. \Psi$}
       \end{prooftree}
-    \end{minipage}
+    \end{minipage}%
     % \forall E
     \begin{minipage}{0.33\linewidth}
       \begin{prooftree}
@@ -129,6 +146,7 @@ of the type scheme by substituting free type variables.
         \BinaryInfC{$\Psi[x/\Gamma]$}
       \end{prooftree}
     \end{minipage}
+
     % -> I
     \begin{minipage}{0.33\linewidth}
       \begin{prooftree}
@@ -136,7 +154,7 @@ of the type scheme by substituting free type variables.
         \AxiomC{$\Phi \vdash \Psi $}\RightLabel{[$\supset$I]}
         \BinaryInfC{$\Gamma \vdash \Phi \supset \Psi$}
       \end{prooftree}
-    \end{minipage}
+    \end{minipage}%
     % -> E
     \begin{minipage}{0.33\linewidth}
       \begin{prooftree}
@@ -150,8 +168,11 @@ of the type scheme by substituting free type variables.
   \label{fig:intuitionistic-logic}
 \end{figure}
 
-The Curry-Howard correspondence the \textbf{HM} type system correspondes to the second order implication fragment of intuionistic propositional logic
-the rules of which are given in \cref{fig:intuitionistic-logic} in Gentzen style natural deduction
+The Curry-Howard correspondence of \textbf{HM} type system
+corresponds to the second order implication fragment of intuitionistic propositional logic.
+The grammar of intuitionistic logic is shown in \cref{fig:intu-logic-grammar} where $A \rightarrow B$ denotes implication,
+$A \times B$ denotes conjunction and $A \plus B$ denotes disjunction.
+The rules of the logic system are shown in \cref{fig:intuitionistic-logic} in Gentzen style natural deduction
 where $\Gamma$, $\Phi$ and $\Psi$ are propositions. The [Ax] rule corresponds to [ID] rule while [$\rightarrow$I] and [$\rightarrow$E] correspond
 to [$\supset$I] and [$\supset$E] respectively. The structural rules of weakening [WKN] and contraction [CTR] are implicitly obeyed
 by \textbf{HM} type-system. The weakening rule states that we can add unrelated assumptions to derivations without
@@ -160,54 +181,58 @@ proof will still hold. The [$\forall$I] introduces the universal quantifier for 
 the proposition. Both the rules correspond to parametric polymorphism introduction [$\forall$I] and elimination [$\forall$E] rules in \cref{fig:hm-system}
 
 The algorithm $\M$ is given in figure \cref{fig:hm-algo-m}. $\mathcal{U}$ is the Robinson's unification
-algorithm that computes the substitution required to unify two types and $\text{Gen}(\Gamma,\tau)$ generalizes a type to type scheme.
+algorithm that computes the most general unifier required to unify two types
+and $\text{Gen}(\Gamma,\tau)$ generalizes a type to type scheme. All the type variables denoted by $u$ are
+fresh and do not shadow the existing type variables in the context.
 
 \begin{figure}[h]
   \begin{framed}
+    \singlespacing
     \centering
-    \fbox{$\M(\Gamma \vdash M:\tau) = S$}
+    {\small
+      \fbox{$\M(\Gamma \vdash M:\tau) = S$}
+      % VAR
+      \begin{minipage}{0.45\linewidth}
+        \begin{flalign*}
+            \M(\Gamma \vdash &x:\tau)  = \mathcal{U}(\tau, [\vec{u}/\vec{t}]\upsilon)\\
+            &\text{where\qquad}\  \forall \vec{t}. \upsilon = \Gamma(x)
+        \end{flalign*}
+      \end{minipage}%
+      % \x. M
+      \begin{minipage}{0.50\linewidth}
+        \begin{flalign*}
+          \M(\Gamma \vdash &\lambda x. M:\tau) = S_1 \circ S_2\\
+            \text{where\qquad}\ S_1 &= \mathcal{U}(\tau, u_1 \rightarrow u_2)\\
+            S_2 &= \M(S_1\Gamma \cup \{ x: S_1 u_1\} \vdash M : S_1u_2)
+          \end{flalign*}
+      \end{minipage}
 
-    % VAR
-    \begin{minipage}{0.45\linewidth}
-      \begin{flalign*}
-        \M(\Gamma \vdash x:\tau) &= \mathcal{U}(\tau, [\vec{u}/\vec{t}]\upsilon)\ \text{fresh}\ \vec{u}\\
-          \text{where}\  \forall \vec{t}. \upsilon &= \Gamma(x)
-    \end{flalign*}
-    \end{minipage}
-    % \x. M
-    \begin{minipage}{0.45\linewidth}
-      \begin{flalign*}
-        \M(\Gamma \vdash \lambda x. M:\tau) &= S_1 \circ S_2\\
-        \text{where}\ S_1 &= \mathcal{U}(\tau, u_1 \rightarrow u_2)\ \text{fresh}\ u_1, u_2 \\
-                      S_2 &= \M(S_1\Gamma \cup \{ x: S_1 u_1\} \vdash M : S_1u_2)
-      \end{flalign*}
-    \end{minipage}
+      % M N
+      \begin{minipage}{0.45\linewidth}
+        \begin{flalign*}
+          \M(\Gamma \vdash &M N:\tau)  = S_1 \circ S_2\\
+          \text{where\qquad}\ S_1 &= \M(\Gamma \vdash M: u \rightarrow \tau)\\
+          S_2 &= \M(S_1 \Gamma \vdash N: S_1u)
+        \end{flalign*}
+      \end{minipage}%
+      % let x = M in N
+      \begin{minipage}{0.50\linewidth}
+        \begin{flalign*}
+          \M(\Gamma \vdash (&\Let{x}{M}{N}):\tau) = S_1 \circ S_2\\
+          \text{where\qquad}\ S_1 &= \M(\Gamma \vdash M: u)\\
+          S_2 &= \M(S_1\Gamma \cup \{x:\text{Gen}(S_1\Gamma, S_1u)\} \vdash N:\tau)\\
+        \end{flalign*}
+      \end{minipage}
 
-    % M N
-    \begin{minipage}{0.45\linewidth}
-      \begin{flalign*}
-        \M(\Gamma \vdash M N:\tau)     &= S_1 \circ S_2\\
-                     \text{where}\ S_1 &= \M(\Gamma \vdash M: u \rightarrow \tau)\ \text{fresh}\ u\\
-                                   S_2 &= \M(S_1 \Gamma \vdash N: S_1u)
-      \end{flalign*}
-    \end{minipage}
-    % let x = M in N
-    \begin{minipage}{0.45\linewidth}
-      \begin{flalign*}
-        \M(\Gamma \vdash (\Let{x}{M}{N}):\tau) &= S_1 \circ S_2\\
-                             \text{where}\ S_1 &= \M(\Gamma \vdash M: u)\ \text{fresh}\ u\\
-                                           S_2 &= \M(S_1\Gamma \cup \{x:\text{Gen}(S_1\Gamma, S_1u)\} \vdash N:\tau)\\
-      \end{flalign*}
-    \end{minipage}
+      \fbox{Auxiliary Definition}
 
-    \fbox{Auxilary Definition}
-
-    \begin{minipage}{1.0\linewidth}
-      \begin{flalign*}
-        \text{Gen}(\Gamma, \tau) &= \forall \vec{t}. \tau\\
-           \text{where}\ \vec{t} &= \texttt{fvs}(\tau)\backslash\texttt{fvs}(\Gamma)
-  \end{flalign*}
-  \end{minipage}
+      \begin{minipage}{1.0\linewidth}
+        \begin{flalign*}
+          \texttt{Gen}(\Gamma, \tau) &= \forall \vec{t}. \tau\\
+          \text{where\qquad}\ \vec{t} &= \texttt{fvs}(\tau)\backslash\texttt{fvs}(\Gamma)
+        \end{flalign*}
+      \end{minipage}
+    }
   \end{framed}
   \caption{Algorithm $\M$ for \textbf{HM} type system}
   \label{fig:hm-algo-m}
@@ -215,10 +240,9 @@ algorithm that computes the substitution required to unify two types and $\text{
 
 
 \section{Linear Logic}\label{sec:linear-logic}
-While propositional logic deals with truth of propositions and their connectives, linear logic deals with availability of resources.
-Linear logic \citep{girard_linear_1987} promises to help cope with the resource and resource control problem.
-It is refinement of classical intuitionistic logic. The core idea is that propositions
-cannot be freely duplicated or discarded as allowed in intuitionistic logic.
+While propositional logic deals with truth of propositions and their connectives, linear logic \citep{girard_linear_1987} deals with availability of resources.
+Linear logic promises to help cope with the resource and resource control problem.
+The core idea is that propositions cannot be freely duplicated or discarded as allowed in intuitionistic logic.
 In formal terms, the contraction and weakening logical rules are restricted.
 This instigates a view of propositions that behave like resources. In real world software applications,
 resources may not be freely copied or dropped from a program context.
@@ -230,31 +254,19 @@ the system gets overly restrictive. To work around, this modality operator $\oc$
 allows intuitionistic rules in fragments. Wadler describes a refinement of
 linear logic based on Girard's Logic of Unity \citep{wadler_taste_1993, girard_unity_1993}.
 It can be considered as a disjoint union of linear logic and intuitionistic logic.
-$[A]$ would mean that it is an intuistionistic assumption and the rules of weakening and contraction are not restricted in this
-fragment, while $\Pair{A}$ means that it is a linear assumption where weakening and contraction is prohibited. The grammar
-of intuitionistic logic is shown in \cref{fig:intu-logic-grammar} where $A \rightarrow B$ denotes implication,
-$A \times B$ denotes conjunction and $A \plus B$ denotes disjunction.
-
-\begin{figure}
-  \centering
-  \begin{framed}
-  \begin{flalign*}
-    A, B, C ::= X \mid A \rightarrow B \mid A \times B \mid A \plus B
-  \end{flalign*}
-\end{framed}
-\caption{Grammar for Intuitionistic Logic}
-\label{fig:intu-logic-grammar}
-\end{figure}
+$[A]$ would mean that it is an intuitionistic assumption and the rules of weakening and contraction are not restricted in this
+fragment, while $\Pair{A}$ means that it is a linear assumption where weakening and contraction is prohibited.
 
 In a linear logic setting, the assumptions can not be used more than once. This instigates
-a new view of implication which is different from intuistionistic logic. The implication obtains a meaning of
+a new view of implication which is different from intuitionistic logic. The implication obtains a meaning of
 consume which is represented as $A \rightspoon B$ where the assumption $A$ cannot be used again after
 it has been used to obtain $B$. Its logical rules is given by [$\rightspoon$I] and [$\rightspoon$E].
 Similarly there are two kinds of connectives, multiplicative and additive that
-arise in this logic system. More symbols are added in place of $\plus$ and $\times$ to differentiate between the
-multiplicative conjunction and disjunction ($\otimes$ and $\parr$), and additive conjunction and disjunction ($\with $ and $\oplus$).
+arise in this logic system. More symbols are added in place of $\plus$ and $\times$.
+Multiplicative conjunction is represented as $\otimes$ , and additive conjunction and disjunction ($\with $ and $\oplus$).
 The structural and connective logical rules for the system is given in \cref{fig:linear-logic-rules}.
-\begin{figure}
+
+\begin{figure}[h]
   \centering
   \begin{framed}
     \begin{flalign*}
@@ -416,12 +428,12 @@ be duplicated or dropped without restriction. $\oc A$ can be thought of as {\em`
 The intuitionistic $A \rightarrow B$ can be encoded in linear logic by using the modality operator as $\oc A \rightspoon B$.
 Similarly $A \plus B$ would be represented as $\oc A \otimes \oc B$ and $A \times B$ would be represented as $A \with B$ \citep{wadler_taste_1993}.
 We clearly see that this is a much powerful system in comparison to intuitionistic logic because of its enhanced expressivity with
-resources and propositions to have different treatement. However, there is an awkward asymmetry between the multiplicative
+resources and propositions to have different treatment. However, there is an awkward asymmetry between the multiplicative
 and additive constructs. The multiplicative connectives follow the intuitionistic logic implication connectives but there is no notion of
 implication for additive connectives. In other words, $\rightspoon$ is a right adjoint
 for multiplicative $\otimes$ but there is no such right adjoint counter part for additive $\with$.
 
-There have been research efforts in building prototypes for building type systmes using linear logic. L$^3$\citep{ahmed_l3_2007} is an intermediate
+There have been research efforts in the past to build prototype languages that have type systems based on linear logic. L$^3$\citep{ahmed_l3_2007} is an intermediate
 language that is built on a linear type system and supports strong updates. Linear Haskell \citep{bernardy_linear_2017} is a surface level language
 that overloads function arrows to incorporate linearity.
 
@@ -429,7 +441,7 @@ that overloads function arrows to incorporate linearity.
 Jones \citeyearpar{jones_theory_1994} proposed a general framework of incorporating predicates in the type language.
 Predicates are used to build constraints on the domain of the type of a term in the language expression.
 It introduces additional layer between polymorphic and monomorphic typing of programs.
-A modification of Damas-Milner algorithm to incorporate predicates ensures that type inference
+A modification of Damas-Milner algorithm $\mathcal{W}$ to incorporate predicates ensures that type inference
 is sound and complete. The types that satisfy all the predicates are called qualified types for the term.
 Qualified types are powerful enough to expresses type classes with functional dependencies \citep{mark_type_2000},
 record types, sub-typing \citep{jones_theory_1994} and first class polymorphism \citep{jones_first-class_1997}.
@@ -442,8 +454,8 @@ relation $P \Vdash \pi$ asserts that the predicate $\pi$ can be inferred from th
 The typing rules in \textbf{HM} type system are slightly modified and 2 new rules are added
 as shown in \cref{fig:qualified-types-rules}. [$=>$I] and [$=>$E] serve the purpose of for introduction and elimination of qualified types respectively.
 The changes to the \textbf{HM} type system are \colorbox{blue!30}{highlighted}. The predicate set $P$ is threaded throughout the other rules
-but are not used anywhere except [$=>$I] and [$=>$E]. The system not only remains sound and complete with respect to \textbf{HM} type system but
-also makes it more flexible {\color{red} i need more words here flexible how? powerful how?}.
+but are not used anywhere except [$=>$I] and [$=>$E]. % The system not only remains sound and complete with respect to \textbf{HM} type system but
+% also makes it more flexible {\color{red} i need more words here flexible how? powerful how?}.
 
 \begin{figure}[h]
   \centering
@@ -483,7 +495,7 @@ also makes it more flexible {\color{red} i need more words here flexible how? po
     \begin{minipage}{0.45\textwidth}
       \begin{prooftree}
         \AxiomC{$P \mid \Gamma \vdash M : \sigma$}\RightLabel{[$\forall$ I]}
-        \AxiomC{$t \notin \text{fvs}(\Gamma) \cup \text{fvs}(P)$}
+        \AxiomC{$t \notin \texttt{fvs}(\Gamma) \cup \texttt{fvs}(P)$}
         \BinaryInfC{$P \mid \Gamma \vdash M : \forall t. \sigma$}
       \end{prooftree}
     \end{minipage}
@@ -534,19 +546,19 @@ also makes it more flexible {\color{red} i need more words here flexible how? po
 \end{figure}
 
 \section{Linear logic with Qualified Types: Quill}\label{sec:quill}
-Quill \citep{morris_best_2016} implements a linear type system which is sound and complete using qualified types.
+Quill \citep{morris_best_2016} implements a linear type system with a sound and complete type inference using qualified types.
 It uses a modified version of Algorithm $\M$ to compute principal types of the terms.
 % In practice, due to higher ordered kind system, it may not be possible to deduce the
 % type of the terms but a work around is to annotate some or all parts of
 % the terms. Annotation is usually done at a top level function declaration. Specifying types
 % also serves as some kind of documentation for the programmers.
-The key idea of Morris is to introduce two predicates for types into the language: \texttt{Un} and \texttt{Fun} with an predicate for ordering
-of types depending on their admittance to structrual rules. The predicate $\tau \geq \tau'$ will hold only if $\tau$ admits more
-structural rules than $\tau'$ or in other words, if $\tau'$ is more restricting than $\tau$.
+The key idea of Morris is to introduce two predicates for types into the language: \texttt{Un} and \texttt{Fun} with a predicate for ordering
+types depending on their admittance to structural rules. The predicate $\tau \geq \tau'$ will hold only if $\tau$ admits more
+structural rules than $\tau'$ or, in other words, if $\tau'$ is more restricting than $\tau$.
 The predicate \Un{$\tau$} implies that the type $\tau$ is unrestricted which means it does not
 contain any resources or the resources that it captures can be easily duplicated and dropped.
 In traditional sense of type classes in Haskell, we can think of the \texttt{Un} to be a type-class with methods supporting the operation
-of duplication and dropping shown in \cref{fig:un-typeclass}. In a proof theoritic setting, it would mean
+of duplication and dropping shown in \cref{fig:un-typeclass}. In a proof theoretic setting, it would mean
 that it admits to weakening and contraction. The predicate \texttt{Fun$\tau$} implies that the type $\tau$ is of a function type. The function
 depending on its use, may or may not capture resources in its closure and the functions
 themselves can be of restricted or unrestricted type.
@@ -596,9 +608,9 @@ There are two flavors of implication---additive and multiplicative---which is cl
 \end{framed}
 In the logic of \BI the question then faced is choosing what kind of
 implication should be used in place of $\lozenge$---the additive kind or the multiplicative kind.
-O'Hearn et al. \citeyearpar{ohearn_logic_1999} introduce 2 kinds of arrows
+\cite{ohearn_logic_1999} introduce 2 kinds of arrows
 and use them depending on the connectives used in the context. A multiplicative implication ($\sepimp$)
-is used when the context is connected with a comma and an additive implication ($\rightarrow$) is used when the
+is used when the context is connected with a comma and an additive implication ($\shimp$) is used when the
 context is connected using semicolon. This gives rise to two rules
 \begin{framed}
 \begin{minipage}{0.5\linewidth}
@@ -609,8 +621,8 @@ context is connected using semicolon. This gives rise to two rules
 \end{minipage}
 \begin{minipage}{0.5\linewidth}
   \begin{prooftree}
-    \AxiomC{$\Gamma; A \vdash B$} \RightLabel{$[\rightarrow I]$}
-    \UnaryInfC{$\Gamma \vdash A \rightarrow B$}
+    \AxiomC{$\Gamma; A \vdash B$} \RightLabel{$[\shimp I]$}
+    \UnaryInfC{$\Gamma \vdash A \shimp B$}
   \end{prooftree}
 \end{minipage}
 \end{framed}
@@ -625,13 +637,13 @@ The logic of \BI combines the additive logic i.e. intuitionistic logic with the 
 The promise of this logic system is that the multiplicative side can be used to model the behavior of resources in the programming language
 while the additive side would help the programmers fall back to the non-resource intuitionistic parts. This patches
 up the awkward asymmetry experienced in linear logic. The multiplicative conjunction $\otimes$ has a right adjoint
-counter part as $\sepimp$ while additive conjunction $\with$ has a right adjoint counterpart of $\rightarrow$.
+counter part as $\sepimp$ while additive conjunction $\with$ has a right adjoint counterpart of $\shimp$.
 The logic of \BI argues that instead of looking at the number of times an argument is used within the function,
 it should be viewed in terms of {\em sharing}. $\alpha \lambda$-calculus \citep{ohearn_resource_1999, pym_semantics_2002}
 is the Curry-Howard interpretation of the logic of \BI. It introduces 2 kinds of arrows by modifying the the syntax of lambda calculus:
 \begin{enumerate}
   \item $\sepimp$     : Functions do not share resources with their arguments
-  \item $\rightarrow$ : Functions share resources with their arguments
+  \item $\shimp$ : Functions share resources with their arguments
 \end{enumerate}
 
 The types and terms of $\alpha\lambda$-calculus are summarized in \cref{fig:al-cal-types}. The contexts $\{\}_m$ represents a multiplicative empty context
@@ -643,8 +655,8 @@ summarized in \cref{fig:bi-typing-rules}.
   \begin{flalign*}
                        t, u, \upsilon &\in \text{Type Variables}\\
    \text{Context}\ \ \ \Gamma, \Delta &::= \{\}_m \mid \{\}_a \mid x:\tau \mid \Gamma, \Delta \mid \Gamma;\Delta\\
-    \text{Types}\ \ \  \tau           &::= t \mid \iota \mid \tau \rightarrow \tau \mid \tau \sepimp \tau \\
-    \text{Expressions}\ \ \ M, N      &::= x \mid \lambda^{\alpha} x. M \mid \lambda^{*} x. M \mid M N
+    \text{Types}\ \ \  \tau           &::= t \mid \iota \mid \tau \shimp \tau \mid \tau \sepimp \tau \\
+    \text{Expressions}\ \ \ M, N      &::= x \mid \lambda x. M \mid \alpha x. M \mid M N
   \end{flalign*}
 \end{framed}
 \caption{$\alpha\lambda$-Calculus Types and Terms}
@@ -663,15 +675,15 @@ summarized in \cref{fig:bi-typing-rules}.
     % CTRN
     \begin{minipage}{0.30\textwidth}
       \begin{prooftree}
-        \AxiomC{$\Gamma; \Delta \vdash M:\tau$} \RightLabel{[CTRN]}
+        \AxiomC{$\Gamma; \Gamma \vdash M:\tau$} \RightLabel{[CTRN]}
         \UnaryInfC{$\Gamma \vdash M:\tau$}
       \end{prooftree}
     \end{minipage}
     % WKN
     \begin{minipage}{0.30\textwidth}
       \begin{prooftree}
-        \AxiomC{$\Gamma; \Delta \vdash M:\tau$} \RightLabel{[WKN]}
-        \UnaryInfC{$\Gamma;\Delta;\Delta \vdash M:\tau $}
+        \AxiomC{$\Gamma \vdash M:\tau$} \RightLabel{[WKN]}
+        \UnaryInfC{$\Gamma;\Delta \vdash M:\tau $}
       \end{prooftree}
     \end{minipage}
 
@@ -679,7 +691,7 @@ summarized in \cref{fig:bi-typing-rules}.
     \begin{minipage}{0.45\textwidth}
       \begin{prooftree}
         \AxiomC{$\Gamma_{x}, x: \tau \vdash M : \tau'$} \RightLabel{[$\sepimp$ I]}
-        \UnaryInfC{$\Gamma \vdash \lambda^{*} x. M : \tau \sepimp \tau'$}
+        \UnaryInfC{$\Gamma \vdash \lambda  x. M : \tau \sepimp \tau'$}
       \end{prooftree}
     \end{minipage}
     % -* E
@@ -694,15 +706,15 @@ summarized in \cref{fig:bi-typing-rules}.
     % -> I
     \begin{minipage}{0.45\textwidth}
       \begin{prooftree}
-        \AxiomC{$\Gamma_{x}; x: \tau \vdash M : \tau'$} \RightLabel{[$\rightarrow$ I]}
-        \UnaryInfC{$\Gamma \vdash \lambda^{\alpha} x. M : \tau \rightarrow \tau'$}
+        \AxiomC{$\Gamma_{x}; x: \tau \vdash M : \tau'$} \RightLabel{[$\shimp$ I]}
+        \UnaryInfC{$\Gamma \vdash \alpha  x. M : \tau \shimp \tau'$}
       \end{prooftree}
     \end{minipage}
     % -> E
     \begin{minipage}{0.45\textwidth}
       \begin{prooftree}
-        \AxiomC{$\Gamma \vdash M : \tau \rightarrow \tau' \ \ \ \ \
-          \Delta \vdash N : \tau$} \RightLabel{[$\rightarrow$ E]}
+        \AxiomC{$\Gamma \vdash M : \tau \shimp \tau' \ \ \ \ \
+          \Delta \vdash N : \tau$} \RightLabel{[$\shimp$ E]}
         \UnaryInfC{$\Gamma;\Delta \vdash M N : \tau'$}
       \end{prooftree}
     \end{minipage}
@@ -714,7 +726,7 @@ summarized in \cref{fig:bi-typing-rules}.
 
 Due to the rules of $\alpha\lambda$-calculus $f: \tau \sepimp \tau'; x:\tau \nvdash f x:\tau'$,
 as $f$ needs an argument that does not share any resources with its context.
-The term $\lambda^{*}x. \lambda^{\alpha} f. f x x: \tau \sepimp (\tau \rightarrow \tau \rightarrow \tau') \rightarrow \tau'$ is a typable term in
+The term $\lambda x. \alpha  f. f x x: \tau \sepimp (\tau \shimp \tau \shimp \tau') \shimp \tau'$ is a typable term in
 $\alpha\lambda$-calculus as shown in \cref{fig:multi-bi-example}. This illustrates the difference between logic of \BI and linear logic
 as even tough the argument is separate from the function, it may be used twice. Linear logic would prohibit such use of arguments to function.
 
@@ -723,31 +735,31 @@ as even tough the argument is separate from the function, it may be used twice. 
     \begin{minipage}{1.0\linewidth}
       \begin{prooftree}
         \AxiomC{}\RightLabel{[VAR]}
-        \UnaryInfC{$f:\tau \rightarrow \tau \rightarrow \tau' \vdash f: \tau \rightarrow \tau \rightarrow \tau'$}
+        \UnaryInfC{$f:\tau \shimp \tau \shimp \tau' \vdash f: \tau \shimp \tau \shimp \tau'$}
 
         \AxiomC{}\RightLabel{[VAR]}
-        \UnaryInfC{$x:\tau \vdash x:\tau$} \RightLabel{[$\rightarrow$E]}
-        \BinaryInfC{$f:\tau \rightarrow \tau \rightarrow \tau'; x:\tau \vdash f x: \tau \rightarrow \tau'$}
+        \UnaryInfC{$x:\tau \vdash x:\tau$} \RightLabel{[$\shimp$E]}
+        \BinaryInfC{$f:\tau \shimp \tau \shimp \tau'; x:\tau \vdash f x: \tau \shimp \tau'$}
 
         \AxiomC{}\RightLabel{[VAR]}
-        \UnaryInfC{$x:\tau \vdash x: \tau$}\RightLabel{[$\rightarrow$E]}
+        \UnaryInfC{$x:\tau \vdash x: \tau$}\RightLabel{[$\shimp$E]}
 
-        \BinaryInfC{$x:\tau; f:\tau \rightarrow \tau \rightarrow \tau';x:\tau \vdash f x x: \tau'$}\RightLabel{[CTRN]}
-        \UnaryInfC{$x:\tau; f:\tau \rightarrow \tau \rightarrow \tau' \vdash f x x: \tau'$} \RightLabel{[$\rightarrow$I]}
-        \UnaryInfC{$x:\tau \vdash \lambda^{*}x. f x x: (\tau \rightarrow \tau \rightarrow \tau') \rightarrow  \tau'$}\RightLabel{[$\sepimp$I]}
-        \UnaryInfC{$\vdash \lambda^{*}x. \lambda^{\alpha} f. f x x: \tau \sepimp (\tau \rightarrow \tau \rightarrow \tau') \rightarrow \tau'$}
+        \BinaryInfC{$x:\tau; f:\tau \shimp \tau \shimp \tau';x:\tau \vdash f x x: \tau'$}\RightLabel{[CTRN]}
+        \UnaryInfC{$x:\tau; f:\tau \shimp \tau \shimp \tau' \vdash f x x: \tau'$} \RightLabel{[$\shimp$I]}
+        \UnaryInfC{$x:\tau \vdash \lambda x. f x x: (\tau \shimp \tau \shimp \tau') \shimp  \tau'$}\RightLabel{[$\sepimp$I]}
+        \UnaryInfC{$\vdash \lambda x. \alpha f. f x x: \tau \sepimp (\tau \shimp \tau \shimp \tau') \shimp \tau'$}
       \end{prooftree}
     \end{minipage}
   \end{framed}
-  \caption{Multiplicative Arugment used Twice in $\alpha\lambda$-calculus}
+  \caption{Multiplicative Argument used Twice in $\alpha\lambda$-calculus}
   \label{fig:multi-bi-example}
 \end{figure}
 
 The use of logic of \BI as a type inference system is currently an unexplored area of research in functional programming language implementation.
-There has been research on building proof theoritic and semantic models logic system \citep{pym_semantics_2002}. The use of bunches instead of
+There has been research on building proof theoretic and semantic models of the logic system \citep{pym_semantics_2002}. The use of bunches instead of
 lists as typing environment makes it difficult to have a direct implementation of the type inference algorithm. \cite{atkey_lambda_sep_2004}
-developed $\lambda_{sep}$ calculus which is based on the affine varient of $\alpha\lambda$-calculus focusing on separation of resources used by objects and
-\cite{collinson_bunched_2005} developed a polymorphic varient of $\alpha\lambda$-calculus.
+developed $\lambda_{sep}$ calculus which is based on the affine variant of $\alpha\lambda$-calculus focusing on separation of resources used by objects and
+\cite{collinson_bunched_2005} developed a polymorphic variant of $\alpha\lambda$-calculus.
 
 %%% Local Variables:
 %%% mode: latex

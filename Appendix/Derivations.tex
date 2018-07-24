@@ -1,9 +1,9 @@
-\chapter{Derivations for Products and Sums}
+\chapter{Derivations for Products and Sums}\label{chp:derivation}
 We start this section by adding few auxilary defitions for terms and types from first principles.
 By convention, we denote an empty typing context by $I$ and empty predicate context with $\emptyset$
 
 \section{Derivable Typing Rules For Product Types (Addiditive and Multiplicative Pairs)}\label{sec:pairs-deriv}
-Pairs can now have two meanings. Either they have sharing resources or they have separating resources. We define each
+Pairs now have two meanings. Either they have sharing resources or they have separating resources. We define each
 of them below.
 
 \subsection{Additive Pairs}\label{subsec:add-pairs-deriv}
@@ -18,125 +18,106 @@ If the resources are in sharing we say they are additive pairs.
     \UnaryInfC{$\emptyset \mid x^{fy}: \tau \vdash x: \tau$}\RightLabel{[ID]}
 
     \AxiomC{$$}\RightLabel{[ID]}
-    \UnaryInfC{$\emptyset \mid f^{xy}: A \rightarrow B \rightarrow C \vdash f: A \rightarrow B \rightarrow C $}\RightLabel{[$\sepimp E$]}
-    \BinaryInfC{$\emptyset \mid x^{xy}:A \varoplus f^{xy}: A \rightarrow B \rightarrow C \vdash f x: (B \rightarrow C)$}\RightLabel{[$\rightarrow E$]}
+    \UnaryInfC{$\emptyset \mid f^{xy}: \tau \shimp \tau' \shimp \upsilon \vdash f: \tau \shimp \tau' \shimp \upsilon$}\RightLabel{[$\sepimp E$]}
+    \BinaryInfC{$\emptyset \mid x^{xy}:\tau \varoplus f^{xy}: \tau \shimp \tau' \shimp \upsilon \vdash f x: (\tau' \shimp \upsilon)$}\RightLabel{[$\shimp E$]}
 
-    \BinaryInfC{$\emptyset \mid y^{xf}:B \varoplus x^{yf}:A \varoplus f^{xy}:A \rightarrow B \rightarrow C \vdash f x y: C$}\RightLabel{[$EXCH$]}
-    \UnaryInfC{$\emptyset \mid x^{yf}:\tau \varoplus y^{xf}:\tau' \varoplus f^{xy}: \tau \rightarrow \tau' \rightarrow \upsilon \vdash f x y: \upsilon$}\RightLabel{[$\rightarrow I$]}
-    \UnaryInfC{$\emptyset \mid x^{y}:\tau \varoplus y^{x}:\tau' \vdash \lambda^{\alpha}f. f x y: (\tau \rightarrow \tau' \rightarrow \upsilon) \rightarrow \upsilon$}\RightLabel{[$\rightarrow I$]}
-    \UnaryInfC{$\emptyset \mid x^{\emptyset}:\tau \vdash \lambda^{\alpha}y. \lambda^{\alpha}f. f x y: \tau' \rightarrow (\tau \rightarrow \tau' \rightarrow \upsilon) \rightarrow \upsilon$}\RightLabel{[$\sepimp$ I]}
-    \UnaryInfC{$\emptyset \mid I \vdash \lambda^{*}x. \lambda^{\alpha}y. \lambda^{\alpha}f. f x y: \tau \sepimp \tau' \rightarrow (\tau \rightarrow \tau' \rightarrow \upsilon) \rightarrow \upsilon$}
+    \BinaryInfC{$\emptyset \mid y^{xf}:\tau' \varoplus x^{yf}:\tau \varoplus f^{xy}:\tau \shimp \tau' \shimp \upsilon \vdash f x y: \upsilon$}\RightLabel{[$EXCH$]}
+    \UnaryInfC{$\emptyset \mid x^{yf}:\tau \varoplus y^{xf}:\tau' \varoplus f^{xy}: \tau \shimp \tau' \shimp \upsilon \vdash f x y: \upsilon$}\RightLabel{[$\shimp I$]}
+    \UnaryInfC{$\emptyset \mid x^{y}:\tau \varoplus y^{x}:\tau' \vdash \lambda^{\shimp}f. f x y: (\tau \shimp \tau' \shimp \upsilon) \shimp \upsilon$}\RightLabel{[$\shimp I$]}
+    \UnaryInfC{$\emptyset \mid x^{\emptyset}:\tau \vdash \lambda^{\shimp}y. \lambda^{\shimp}f. f x y: \tau' \shimp (\tau \shimp \tau' \shimp \upsilon) \shimp \upsilon$}\RightLabel{[$\sepimp$ I]}
+    \UnaryInfC{$\emptyset \mid I \vdash \lambda^{\sepimp}x. \lambda^{\shimp}y. \lambda^{\shimp}f. f x y: \tau \sepimp \tau' \shimp (\tau \shimp \tau' \shimp \upsilon) \shimp \upsilon$}
   \end{prooftree}
 \end{minipage}\\
 
 \noindent
-We can now define sharing (additive) pair as:
+We assign a new type symbol ($\with$) to describe type of additive pair
 \begin{framed}\centering
-    $; = \lambda^{*}x. \lambda^{\alpha}y. \lambda^{\alpha}f. f x y$
-\end{framed}
-and assign a new type to this pair and call it $\with$
-\begin{framed}\centering
-  $A \with B = (A \rightarrow B \rightarrow C) \rightarrow C$
+  $\tau \with \tau' = (\tau \shimp \tau' \shimp \upsilon) \shimp \upsilon$
 \end{framed}
 
 \noindent
-We now define left and right projections or deconstructors for sharing pairs below:
+We now define sharing (additive) pair constructor as:
+\begin{framed}\centering
+  \begin{flalign*}
+    ; &: \tau \sepimp \tau' \shimp (\tau \with \tau')\\
+    ; &= \lambda^{\sepimp}x. \lambda^{\shimp}y. \lambda^{\shimp}f. f x y
+  \end{flalign*}
+\end{framed}
+
+\noindent
+We now derive left and right projections or deconstructors for sharing pairs below:
+
 \begin{minipage}[h]{1.0\linewidth}
   \begin{prooftree}
     \AxiomC{$$}\RightLabel{[ID]}
-    \UnaryInfC{$\emptyset \mid x^{y}:A \vdash x: A $}\RightLabel{[WKN-SH]}
-    \UnaryInfC{$\emptyset \mid x^{y}:A \varoplus y^{x}:B \vdash x: A $}\RightLabel{[$\rightarrow I$]}
-    \UnaryInfC{$\emptyset \mid x^{\emptyset}:A \vdash \lambda^{\alpha}y. x : B \rightarrow A $}\RightLabel{[$\rightarrow$I]}
-    \UnaryInfC{$\emptyset \mid I \vdash \lambda^{\alpha}x. \lambda^{\alpha}y. x: A \rightarrow B \rightarrow A$}
+    \UnaryInfC{$\emptyset \mid x^{y}:\tau \vdash x: \tau$}\RightLabel{[WKN-SH]}
+    \UnaryInfC{$\emptyset \mid x^{y}:\tau \varoplus y^{x}:\tau' \vdash x: \tau$}\RightLabel{[$\shimp I$]}
+    \UnaryInfC{$\emptyset \mid x^{\emptyset}:\tau \vdash \lambda^{\shimp}y. x : \tau' \shimp \tau $}\RightLabel{[$\shimp$I]}
+    \UnaryInfC{$\emptyset \mid I \vdash \lambda^{\shimp}x. \lambda^{\shimp}y. x: \tau \shimp \tau' \shimp \tau$}
   \end{prooftree}
 \end{minipage}
 \begin{framed}
-  \centering
-  $\texttt{fst}_{sh} = \lambda^{\alpha}x. \lambda^{\alpha}y. x$
+  \begin{flalign*}
+  \texttt{fst} &: \tau \shimp \tau' \shimp \tau\\
+  \texttt{fst} &= \lambda^{\shimp}x. \lambda^{\shimp}y. x
+\end{flalign*}
 \end{framed}
 
 \begin{minipage}[h]{1.0\linewidth}
   \begin{prooftree}
     \AxiomC{$$}\RightLabel{[ID]}
-    \UnaryInfC{$\emptyset \mid y^{x}:B \vdash y: B $}\RightLabel{[WKN-SH]}
-    \UnaryInfC{$\emptyset \mid x^{y}:A \varoplus y^{x}:B \vdash y: B $}\RightLabel{[$\rightarrow I$]}
-    \UnaryInfC{$\emptyset \mid x^{\emptyset}:A \vdash \lambda^{\alpha}y: B \rightarrow B $}\RightLabel{[$\rightarrow I$]}
-    \UnaryInfC{$\emptyset \mid I \vdash \lambda^{\alpha}x. \lambda^{\alpha}y. y: A \rightarrow B \rightarrow B$}
+    \UnaryInfC{$\emptyset \mid y^{x}:\tau' \vdash y: \tau' $}\RightLabel{[WKN-SH]}
+    \UnaryInfC{$\emptyset \mid x^{y}:\tau \varoplus y^{x}:\tau' \vdash y: \tau' $}\RightLabel{[$\shimp I$]}
+    \UnaryInfC{$\emptyset \mid x^{\emptyset}:\tau \vdash \lambda^{\shimp}y: \tau' \shimp \tau'$}\RightLabel{[$\shimp I$]}
+    \UnaryInfC{$\emptyset \mid I \vdash \lambda^{\shimp}x. \lambda^{\shimp}y. y: \tau \shimp \tau' \shimp \tau'$}
   \end{prooftree}
 \end{minipage}
 
 \begin{framed}\centering
-    $\texttt{snd}_{sh} = \lambda^{\alpha}x. \lambda^{\alpha}y. y$
+  \begin{flalign*}
+    \texttt{snd} &: \tau \shimp \tau' \shimp \tau'\\
+    \texttt{snd} &= \lambda^{\shimp}x. \lambda^{\shimp}y. y
+  \end{flalign*}
 \end{framed}
 
 \subsection{Multiplicative Pairs}\label{subsec:mul-pairs-deriv}
-If the resources are separate we say they are multiplicative pairs.
+If the resources are separate we say they are multiplicative or separating pairs.
 
 \begin{minipage}[h]{1.0\linewidth}
   \begin{prooftree}
     \AxiomC{$$}\RightLabel{[ID]}
-    \UnaryInfC{$\emptyset \mid y^{\emptyset}:B \vdash y: B $}
+    \UnaryInfC{$\emptyset \mid y^{\emptyset}:\tau' \vdash y: \tau' $}
 
     \AxiomC{$$}\RightLabel{[ID]}
-    \UnaryInfC{$\emptyset \mid x^{\emptyset}: A \vdash x: A$}
+    \UnaryInfC{$\emptyset \mid x^{\emptyset}: \tau \vdash x: \tau$}
 
     \AxiomC{$$}\RightLabel{[ID]}
-    \UnaryInfC{$\emptyset \mid f^{\emptyset}: A \sepimp B \sepimp C \vdash f: A \sepimp B \sepimp C $}\RightLabel{[$\sepimp E$]}
-    \BinaryInfC{$\emptyset \mid x^{\emptyset}:A \circledast f^{\emptyset}: A \sepimp B \sepimp C \vdash f x: (B \sepimp C)$}\RightLabel{[$\sepimp E$]}
+    \UnaryInfC{$\emptyset \mid f^{\emptyset}: \tau \sepimp \tau' \sepimp \upsilon \vdash f: \tau \sepimp \tau' \sepimp \upsilon $}\RightLabel{[$\sepimp$E]}
+    \BinaryInfC{$\emptyset \mid x^{\emptyset}: \tau \circledast f^{\emptyset}: \tau \sepimp \tau' \sepimp \upsilon \vdash f x: (\tau' \sepimp \upsilon)$}
+        \RightLabel{[$\sepimp$E]}
 
-    \BinaryInfC{$\emptyset \mid y^{\emptyset}:B \circledast x^{\emptyset}:A \circledast f^{\emptyset}:A \sepimp B \sepimp C \vdash f x y: C$}\RightLabel{[$EXCH$]}
-    \UnaryInfC{$\emptyset \mid x^{\emptyset}:A \circledast y^{\emptyset}:B \circledast f^{\emptyset}:A \sepimp B \sepimp C \vdash f x y: C$}\RightLabel{[$\sepimp I$]}
-    \UnaryInfC{$\emptyset \mid x^{\emptyset}:A \circledast y^{\emptyset}:B \vdash \lambda^{*}f. f x y: (A \sepimp B \sepimp C) \sepimp C$}\RightLabel{[$\sepimp I$]}
-    \UnaryInfC{$\emptyset \mid x^{\emptyset}:A \vdash \lambda^{*}y. \lambda^{*}f. f x y: B \sepimp (A \sepimp B \sepimp C) \sepimp C$}\RightLabel{[$\equiv$]}
-    \UnaryInfC{$\emptyset \mid I \vdash \lambda^{*}x. \lambda^{*}y. \lambda^{*}f. f x y: A \sepimp B \sepimp (A \sepimp B \sepimp C) \sepimp C$}
+    \BinaryInfC{$\emptyset \mid y^{\emptyset}:\tau' \circledast x^{\emptyset}:\tau \circledast f^{\emptyset}:\tau \sepimp \tau' \sepimp \upsilon \vdash f x y: \upsilon$}
+        \RightLabel{[$EXCH$]}
+    \UnaryInfC{$\emptyset \mid x^{\emptyset}:\tau \circledast y^{\emptyset}:\tau' \circledast f^{\emptyset}:\tau \sepimp \tau' \sepimp \upsilon \vdash f x y: \upsilon$}\RightLabel{[$\sepimp$ I]}
+    \UnaryInfC{$\emptyset \mid x^{\emptyset}:\tau \circledast y^{\emptyset}:\tau' \vdash \lambda^{\sepimp}f. f x y: (\tau \sepimp \tau' \sepimp \upsilon) \sepimp \upsilon$}\RightLabel{[$\sepimp$ I]}
+    \UnaryInfC{$\emptyset \mid x^{\emptyset}:\tau \vdash \lambda^{\sepimp}y. \lambda^{\sepimp}f. f x y: \tau' \sepimp (\tau \sepimp \tau' \sepimp \upsilon) \sepimp \upsilon$}\RightLabel{[$\equiv$]}
+    \UnaryInfC{$\emptyset \mid I \vdash \lambda^{\sepimp}x. \lambda^{\sepimp}y. \lambda^{\sepimp}f. f x y: \tau \sepimp \tau' \sepimp (\tau \sepimp \tau' \sepimp \upsilon) \sepimp \upsilon$}
   \end{prooftree}
-\end{minipage}
+\end{minipage}\\
 
+\noindent
+We assign a type symbol ($\otimes$) for the multiplicative pair
+\begin{framed}\centering
+  $\tau \otimes \tau' = (\tau \sepimp \tau' \sepimp \upsilon) \sepimp \upsilon$
+\end{framed}
+
+\noindent
 We can now define separating (multiplicative) pair as:
-\begin{framed}\centering
-    $,= \lambda^{*}x. \lambda^{*}y. \lambda^{*}f. f x y$
-\end{framed}
-We assign a new type to this pair construct and call it $\otimes$
-\begin{framed}\centering
-  $A \otimes B = (A \sepimp B \sepimp C) \sepimp C$
-\end{framed}
-
-\begin{minipage}[h]{1.0\linewidth}
-  \begin{prooftree}
-    \AxiomC{$$}\RightLabel{[ID]}
-    \UnaryInfC{$\Un{B} \mid x^{\emptyset}:A \vdash x:A $}
-
-    \AxiomC{$$}
-    \UnaryInfC{$\Un{B} => \Un{B}$}\RightLabel{[UN-$\Gamma$, UN-$\sigma$, UN-$\tau$]}
-    \UnaryInfC{$\Un{B} \vdash y^{\emptyset}:B\ \texttt{un} $}\RightLabel{[WKN-UN]}
-
-    \BinaryInfC{$\Un{B} \mid x^{\emptyset}:A \circledast y^{\emptyset}:B \vdash x: A $}\RightLabel{[$\sepimp I$]}
-    \UnaryInfC{$\Un{B} \mid x^{\emptyset}:A \vdash \lambda^{*}y. x: B \sepimp A $}\RightLabel{[$\sepimp I$]}
-    \UnaryInfC{$\Un{B} \mid I \vdash \lambda^{*}x. \lambda^{*}y. x: A \sepimp B \sepimp A$}
-  \end{prooftree}
-\end{minipage}
-
-\begin{framed}\centering
-    $\texttt{fst}_{sep} = \lambda^{*}x. \lambda^{*}y. x$
-\end{framed}
-
-\begin{minipage}[h]{1.0\linewidth}
-  \begin{prooftree}
-    \AxiomC{$$}\RightLabel{[ID]}
-    \UnaryInfC{$\Un{A} \mid y^{\emptyset}:B \vdash y: B $}
-
-    \AxiomC{$$}
-    \UnaryInfC{$\Un{A} => \Un{A}$}\RightLabel{[UN-$\Gamma$, UN-$\sigma$, UN-$\tau$]}
-    \UnaryInfC{$\Un{A} \vdash x^{\emptyset}:A\ \texttt{un} $}\RightLabel{[WKN-UN]}
-
-    \BinaryInfC{$\Un{A} \mid x^{\emptyset}:A \circledast y^{\emptyset}:B \vdash y: B $}\RightLabel{[$\sepimp I$]}
-    \UnaryInfC{$\Un{A} \mid x^{\emptyset}:A \vdash \lambda^{*}y.y: B \sepimp B $}\RightLabel{[$\sepimp I$]}
-    \UnaryInfC{$\Un{A} \mid I \vdash \lambda^{*}x. \lambda^{*}y. y: A \sepimp B \sepimp B$}
-  \end{prooftree}
-\end{minipage}
-
-\begin{framed}\centering
-    $\texttt{snd}_{sep} = \lambda^{*}x. \lambda^{*}y. y$
+\begin{framed}
+  \begin{flalign*}
+    , &: \tau \sepimp \tau' \sepimp (\tau \otimes \tau')\\
+    , &= \lambda^{\sepimp}x. \lambda^{\sepimp}y. \lambda^{\sepimp}f. f x y
+  \end{flalign*}
 \end{framed}
 
 We will abuse the notation of lambda calculus for $;$ and $,$ as use them as infix operators for syntactic convinence
@@ -145,58 +126,48 @@ We will abuse the notation of lambda calculus for $;$ and $,$ as use them as inf
   \langle x ; y \rangle \equiv (;) x y
 \end{flalign*}
 
-We are now in a position to write the proof derivations for \cref{fig:pair-typing-rules} using
+We are now in a position to write the proof derivations for \cref{fig:add-pair-rules} and \cref{fig:mul-pair-rules} using
 the auxilary definitions from above.
 \begin{framed}
-  \noindent
-  \begin{minipage}{0.5\linewidth}
-    \begin{prooftree}
-      \AxiomC{$\emptyset \mid \texttt{fst}_{sh}\ : A \rightarrow B \rightarrow A \vdash M: A \with B$}\RightLabel{$\with E_1$}
-      \UnaryInfC{$\emptyset \mid I \vdash \texttt{fst}_{sh}\  M : A$}
-    \end{prooftree}
-  \end{minipage}
-  \begin{minipage}{0.5\linewidth}
-    \begin{prooftree}
-      \AxiomC{$\emptyset \mid \texttt{snd}_{sh}\ : A \rightarrow B \rightarrow B \vdash M: A \with B $}\RightLabel{$\with E_2$}
-      \UnaryInfC{$\emptyset \mid I \vdash \texttt{snd}_{sh}\  M : B$}
-    \end{prooftree}
-  \end{minipage}
-  \noindent
-  \begin{minipage}{1\linewidth}
-    \begin{prooftree}
-      \AxiomC{$P \mid \emptyset \vdash (;) : \with $}
-      \AxiomC{$P \mid \Gamma  \vdash M : A$}
-      \AxiomC{$P \mid \Delta \vdash N: B $} \RightLabel{$[\with I]$}
-      \TrinaryInfC{$P \mid \Gamma \varoplus \Delta \vdash \langle M ; N \rangle: A \with B$}
-    \end{prooftree}
-  \end{minipage}
-  \noindent
-  \begin{minipage}{0.5\linewidth}
-    \begin{prooftree}
-      \AxiomC{$\Un{B} \mid \texttt{fst}_{sep}\ : A \sepimp B \sepimp A \vdash  M: A \otimes B $}\RightLabel{$\otimes E_1$}
-      \UnaryInfC{$\Un{B} \mid I \vdash \texttt{fst}_{sep}\  M : A$}
-    \end{prooftree}
-  \end{minipage}
-  \begin{minipage}{0.5\linewidth}
-    \begin{prooftree}
-      \AxiomC{$\Un{A} \mid \texttt{snd}_{sep}\ : A \sepimp B \sepimp B \vdash M: A \otimes B $}\RightLabel{$\otimes E_2$}
-      \UnaryInfC{$\Un{A} \mid I \vdash \texttt{snd}_{sep}\  M : B$}
-    \end{prooftree}
-  \end{minipage}
-  \noindent
-  \begin{minipage}{1\linewidth}
-    \begin{prooftree}
-      \AxiomC{$P \mid \emptyset \vdash (,) : \otimes $}
-      \AxiomC{$P \mid \Gamma  \vdash M : A$}
-      \AxiomC{$P \mid \Delta \vdash N: B $} \RightLabel{$[\otimes I]$}
-      \TrinaryInfC{$P \mid \Gamma \circledast \Delta \vdash \langle M , N \rangle: A \otimes B$}
-    \end{prooftree}
-  \end{minipage}
+    \begin{minipage}{1\linewidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma  \vdash M : \tau$}
+        \AxiomC{$P \mid \Delta \vdash N: \tau'$} \RightLabel{[$\with$ I]}
+        \BinaryInfC{$P \mid \Gamma \varoplus \Delta \vdash \Pair{M;N}: \tau \with \tau'$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{.5\linewidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma \vdash M: \tau \with \tau'$} \RightLabel{[$\with$ E$_1$]}
+        \UnaryInfC{$P \mid \Gamma \vdash \texttt{fst}\ M: \tau$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{.5\linewidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma \vdash M: \tau \with \tau'$} \RightLabel{[$\with$ E$_1$]}
+        \UnaryInfC{$P \mid \Gamma \vdash \texttt{snd}\ M: \tau'$}
+      \end{prooftree}
+    \end{minipage}
+
+    \begin{minipage}{1\linewidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma  \vdash M : \tau$}
+        \AxiomC{$P \mid \Delta \vdash N: \tau'$} \RightLabel{$[\otimes I]$}
+        \BinaryInfC{$P \mid \Gamma \circledast \Delta \vdash \Pair{M,N}: \tau \otimes \tau'$}
+      \end{prooftree}
+    \end{minipage}
+    \begin{minipage}{1\linewidth}
+      \begin{prooftree}
+        \AxiomC{$P \mid \Gamma \vdash M: \tau \otimes \tau'$}
+        \AxiomC{$P \mid \{ x^{\{\vec{z} \mid \vec{z} \subseteq \texttt{Vars}(\Gamma')\}}:\tau \} \circledast
+          \{ y^{\{\bar{z'} \mid \bar{z'} \subseteq \texttt{Vars}(\Gamma')\}} : \tau'\} \sqcup \Gamma'_{x,y} \vdash N:\upsilon$}\RightLabel{$[\otimes E]$}
+        \BinaryInfC{$P \mid \Gamma \sqcup \Gamma' \vdash (\Let{\Pair{x, y}}{M}{N}): \upsilon$}
+      \end{prooftree}
+    \end{minipage}
 \end{framed}
 
 \section{Derivable Typing rules for Sum Types}\label{sec:sums-deriv}
-Sum types can hold only one of the enclosing types.
-In our case they there can be two kinds of typing for sums.
+Sum types can hold only one of the enclosing types at a given point of time.
 
 \begin{landscape}
   % choice
@@ -204,55 +175,56 @@ In our case they there can be two kinds of typing for sums.
   \begin{small}
   \begin{prooftree}
     \AxiomC{$$}\RightLabel{[ID]}
-    \UnaryInfC{$\emptyset \mid  g^{cf}:(B \rightarrow E) \vdash g: (B \rightarrow E)$}
+    \UnaryInfC{$\emptyset \mid  g^{cf}:(B \shimp E) \vdash g: (B \shimp E)$}
 
     \AxiomC{$$}\RightLabel{[ID]}
-    \UnaryInfC{$\emptyset \mid f^{cg}: (A \rightarrow E) \vdash f: (A \rightarrow E)$}
+    \UnaryInfC{$\emptyset \mid f^{cg}: (A \shimp E) \vdash f: (A \shimp E)$}
     \AxiomC{$$}\RightLabel{[ID]}
-    \UnaryInfC{$\emptyset \mid c^{fg}: ((A \rightarrow E) \rightarrow (B \rightarrow E) \rightarrow E)
-      \vdash c:((A \rightarrow E) \rightarrow (B \rightarrow E) \rightarrow E)$}\RightLabel{[$\rightarrow$E]}
-    \BinaryInfC{$\emptyset \mid c^{fg}:((A \rightarrow E) \rightarrow (B \rightarrow E) \rightarrow E)
-      \varoplus f^{cg}:(A \rightarrow E) \vdash c f: (B \rightarrow E) \rightarrow E$}\RightLabel{[$\rightarrow$E]}
+    \UnaryInfC{$\emptyset \mid c^{fg}: ((A \shimp E) \shimp (B \shimp E) \shimp E)
+      \vdash c:((A \shimp E) \shimp (B \shimp E) \shimp E)$}\RightLabel{[$\shimp$E]}
+    \BinaryInfC{$\emptyset \mid c^{fg}:((A \shimp E) \shimp (B \shimp E) \shimp E)
+      \varoplus f^{cg}:(A \shimp E) \vdash c f: (B \shimp E) \shimp E$}\RightLabel{[$\shimp$E]}
 
-    \BinaryInfC{$\emptyset \mid  c^{fg}:((A \rightarrow E) \rightarrow (B \rightarrow E) \rightarrow E)  \varoplus
-      f^{cg}:(A \rightarrow E)  \varoplus g^{cf}:(B \rightarrow E) \vdash c f g : E$}\RightLabel{[$\rightarrow$I]}
-    \UnaryInfC{$\emptyset \mid  c^{f}:((A \rightarrow E) \rightarrow (B \rightarrow E) \rightarrow E) \varoplus
-      f^{c}:(A \rightarrow E) \vdash \lambda^{\alpha} g. c f g :(B \rightarrow E) \rightarrow  E$}\RightLabel{[$\rightarrow$I]}
-    \UnaryInfC{$\emptyset \mid  c^{\emptyset}:((A \rightarrow E) \rightarrow (B \rightarrow E) \rightarrow E)
-      \vdash  \lambda^{\alpha} f. \lambda^{\alpha} g. c f g :(A \rightarrow E) \rightarrow (B \rightarrow E) \rightarrow E$}\RightLabel{[$\sepimp$I]}
-    \UnaryInfC{$\emptyset \mid I \vdash \lambda^{*} c. \lambda^{\alpha} f. \lambda^{\alpha} g. c f g
-      : ((A \rightarrow E) \rightarrow (B \rightarrow E) \rightarrow E) \sepimp (A \rightarrow E) \rightarrow (B \rightarrow E) \rightarrow E$}
+    \BinaryInfC{$\emptyset \mid  c^{fg}:((A \shimp E) \shimp (B \shimp E) \shimp E)  \varoplus
+      f^{cg}:(A \shimp E)  \varoplus g^{cf}:(B \shimp E) \vdash c f g : E$}\RightLabel{[$\shimp$I]}
+    \UnaryInfC{$\emptyset \mid  c^{f}:((A \shimp E) \shimp (B \shimp E) \shimp E) \varoplus
+      f^{c}:(A \shimp E) \vdash \lambda^{\shimp} g. c f g :(B \shimp E) \shimp  E$}\RightLabel{[$\shimp$I]}
+    \UnaryInfC{$\emptyset \mid  c^{\emptyset}:((A \shimp E) \shimp (B \shimp E) \shimp E)
+      \vdash  \lambda^{\shimp} f. \lambda^{\shimp} g. c f g :(A \shimp E) \shimp (B \shimp E) \shimp E$}\RightLabel{[$\sepimp$I]}
+    \UnaryInfC{$\emptyset \mid I \vdash \lambda^{\sepimp} c. \lambda^{\shimp} f. \lambda^{\shimp} g. c f g
+      : ((A \shimp E) \shimp (B \shimp E) \shimp E) \sepimp (A \shimp E) \shimp (B \shimp E) \shimp E$}
   \end{prooftree}
 \end{small}
 
 \noindent
 We now define sum type to be
 \begin{framed}\centering
-  $A \oplus B = (A \rightarrow E) \rightarrow (B \rightarrow E) \rightarrow E$\\
+  $A \oplus B = (A \shimp E) \shimp (B \shimp E) \shimp E$\\
 \end{framed}
 
 We now define left and right {\it injections} or constructors for the sum type.
+
 % left
 \begin{prooftree}
   \AxiomC{$$}\RightLabel{[ID]}
   \UnaryInfC{$\emptyset \mid x^{fg}: A  \vdash x : A$}
 
   \AxiomC{$$}\RightLabel{[ID]}
-  \UnaryInfC{$\emptyset \mid f^{gx}: (A \rightarrow E) \vdash f: (A \rightarrow E)$}\RightLabel{[$\rightarrow$E]}
+  \UnaryInfC{$\emptyset \mid f^{gx}: (A \shimp E) \vdash f: (A \shimp E)$}\RightLabel{[$\shimp$E]}
 
-  \BinaryInfC{$\emptyset \mid x^{fg}: A \varoplus f^{xg}: (A \rightarrow E)  \vdash f x : E$}\RightLabel{[WKN-UN]}
-  \UnaryInfC{$\emptyset \mid x^{fg}: A \varoplus f^{xg}: (A \rightarrow E) \varoplus g^{fx}: (B \rightarrow E) \vdash f x : E$}\RightLabel{[$\rightarrow$I]}
-  \UnaryInfC{$\emptyset \mid x^{f}: A \varoplus f^{x}: (A \rightarrow E) \vdash \lambda^{\alpha} g. f x : (B \rightarrow E) \rightarrow E$}\RightLabel{[$\rightarrow$I]}
-  \UnaryInfC{$\emptyset \mid  x^{\emptyset}: A \vdash  \lambda^{\alpha} f. \lambda^{\alpha} g. f x
-    :(A \rightarrow E) \rightarrow (B \rightarrow E) \rightarrow E$}\RightLabel{[$\sepimp$I]}\RightLabel{[$\sepimp$I]}
-  \UnaryInfC{$\emptyset \mid I \vdash \lambda^{*} x. \lambda^{\alpha} f. \lambda^{\alpha} g. f x
-    : A \sepimp  (A \rightarrow E) \rightarrow (B \rightarrow E) \rightarrow E$}
+  \BinaryInfC{$\emptyset \mid x^{fg}: A \varoplus f^{xg}: (A \shimp E)  \vdash f x : E$}\RightLabel{[WKN-UN]}
+  \UnaryInfC{$\emptyset \mid x^{fg}: A \varoplus f^{xg}: (A \shimp E) \varoplus g^{fx}: (B \shimp E) \vdash f x : E$}\RightLabel{[$\shimp$I]}
+  \UnaryInfC{$\emptyset \mid x^{f}: A \varoplus f^{x}: (A \shimp E) \vdash \lambda^{\shimp} g. f x : (B \shimp E) \shimp E$}\RightLabel{[$\shimp$I]}
+  \UnaryInfC{$\emptyset \mid  x^{\emptyset}: A \vdash  \lambda^{\shimp} f. \lambda^{\shimp} g. f x
+    :(A \shimp E) \shimp (B \shimp E) \shimp E$}\RightLabel{[$\sepimp$I]}\RightLabel{[$\sepimp$I]}
+  \UnaryInfC{$\emptyset \mid I \vdash \lambda^{\sepimp} x. \lambda^{\shimp} f. \lambda^{\shimp} g. f x
+    : A \sepimp  (A \shimp E) \shimp (B \shimp E) \shimp E$}
 \end{prooftree}
 
 \noindent Left injection defined below as:
 \begin{framed}\centering
   $\texttt{inl} : A \sepimp A \oplus B$\\
-  $\texttt{inl} = \lambda^{*} x. \lambda^{\alpha} f. \lambda^{\alpha} g. f x$
+  $\texttt{inl} = \lambda^{\sepimp} x. \lambda^{\shimp} f. \lambda^{\shimp} g. f x$
 \end{framed}
 
 % right
@@ -262,27 +234,27 @@ We now define left and right {\it injections} or constructors for the sum type.
   \UnaryInfC{$\emptyset \mid y^{fg}: B  \vdash y : B$}
 
   \AxiomC{$$}\RightLabel{[ID]}
-  \UnaryInfC{$\emptyset \mid g^{yf}: (B \sepimp E) \vdash g: (B \sepimp E)$}\RightLabel{[$\rightarrow$I]}
+  \UnaryInfC{$\emptyset \mid g^{yf}: (B \sepimp E) \vdash g: (B \sepimp E)$}\RightLabel{[$\shimp$I]}
 
-  \BinaryInfC{$\emptyset \mid y^{fg}: B \varoplus g^{yf}: (B \rightarrow E) \vdash g y : E$}\RightLabel{[WKN-UN]}
-  \UnaryInfC{$\emptyset \mid y^{fg}: B \varoplus f^{yg}: (A \rightarrow E) \varoplus g^{yf}: (B \rightarrow E) \vdash g y : E$}\RightLabel{[$\rightarrow$I]}
-  \UnaryInfC{$\emptyset \mid y^{f}: B \varoplus f^{y}: (A \rightarrow E) \vdash \lambda^{\alpha} g. g y : (B \rightarrow E) \rightarrow E$}\RightLabel{[$\rightarrow$I]}
-  \UnaryInfC{$\emptyset \mid  y^{\emptyset}: B \vdash \lambda^{\alpha} f. \lambda^{\alpha} g. g y
-    :(A \rightarrow E) \rightarrow (B \rightarrow E) \rightarrow E$}\RightLabel{[$\sepimp$I]}\RightLabel{[$\sepimp$I]}
-  \UnaryInfC{$\emptyset \mid I \vdash \lambda^{*} y. \lambda^{\alpha} f. \lambda^{\alpha} g. g y: B \sepimp  (A \rightarrow E) \rightarrow (B \rightarrow E) \rightarrow E$}
+  \BinaryInfC{$\emptyset \mid y^{fg}: B \varoplus g^{yf}: (B \shimp E) \vdash g y : E$}\RightLabel{[WKN-UN]}
+  \UnaryInfC{$\emptyset \mid y^{fg}: B \varoplus f^{yg}: (A \shimp E) \varoplus g^{yf}: (B \shimp E) \vdash g y : E$}\RightLabel{[$\shimp$I]}
+  \UnaryInfC{$\emptyset \mid y^{f}: B \varoplus f^{y}: (A \shimp E) \vdash \lambda^{\shimp} g. g y : (B \shimp E) \shimp E$}\RightLabel{[$\shimp$I]}
+  \UnaryInfC{$\emptyset \mid  y^{\emptyset}: B \vdash \lambda^{\shimp} f. \lambda^{\shimp} g. g y
+    :(A \shimp E) \shimp (B \shimp E) \shimp E$}\RightLabel{[$\sepimp$I]}\RightLabel{[$\sepimp$I]}
+  \UnaryInfC{$\emptyset \mid I \vdash \lambda^{\sepimp} y. \lambda^{\shimp} f. \lambda^{\shimp} g. g y: B \sepimp  (A \shimp E) \shimp (B \shimp E) \shimp E$}
 \end{prooftree}
 
 \noindent Right injection defined below as:
 \begin{framed}\centering
   $\texttt{inr} : B \sepimp A \oplus B$\\
-  $\texttt{inr} = \lambda^{*} y. \lambda^{\alpha} f. \lambda^{\alpha} g. g y$
+  $\texttt{inr} = \lambda^{\sepimp} y. \lambda^{\shimp} f. \lambda^{\shimp} g. g y$
 \end{framed}
 \end{landscape}
 
 We can now derive sum types in our language using the auxilary definitions given above
 and provide a new syntax for deconstructing the sum type by matching on its structure by a case statement.
 \begin{framed}\centering
-    $\texttt{case}\ {c}\ \texttt{of}\ {\{ f;g \}} = \lambda^{*}c. \lambda^{\alpha}f. \lambda^{\alpha}g. c f g$
+    $\texttt{case}\ {c}\ \texttt{of}\ {\{ f;g \}} = \lambda^{\sepimp}c. \lambda^{\shimp}f. \lambda^{\shimp}g. c f g$
 \end{framed}
 
 \begin{framed}

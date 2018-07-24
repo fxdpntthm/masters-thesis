@@ -190,19 +190,19 @@ so as to restrict the programmer from implicitly discarding one of the component
     \begin{minipage}{1\linewidth}
       \begin{prooftree}
         \AxiomC{$P \mid \Gamma  \vdash M : \tau$}
-        \AxiomC{$P \mid \Delta \vdash N: \tau'$} \RightLabel{$[\with I]$}
+        \AxiomC{$P \mid \Delta \vdash N: \tau'$} \RightLabel{[$\with$ I]}
         \BinaryInfC{$P \mid \Gamma \varoplus \Delta \vdash \Pair{M;N}: \tau \with \tau'$}
       \end{prooftree}
     \end{minipage}
     \begin{minipage}{.5\linewidth}
       \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash M: \tau \with \tau'$} \RightLabel{$[\with E_1]$}
+        \AxiomC{$P \mid \Gamma \vdash M: \tau \with \tau'$} \RightLabel{[$\with$ E$_1$]}
         \UnaryInfC{$P \mid \Gamma \vdash \texttt{fst}\ M: \tau$}
       \end{prooftree}
     \end{minipage}
     \begin{minipage}{.5\linewidth}
       \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash M: \tau \with \tau'$} \RightLabel{$[\with E_2]$}
+        \AxiomC{$P \mid \Gamma \vdash M: \tau \with \tau'$} \RightLabel{[$\with$ E$_2$]}
         \UnaryInfC{$P \mid \Gamma \vdash \texttt{snd}\ M: \tau'$}
       \end{prooftree}
     \end{minipage}
