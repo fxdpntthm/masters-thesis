@@ -18,7 +18,7 @@ a line from it and then closes the file handle using this flavor of file handlin
 
 \begin{figure}[h]
   \begin{framed}
-    \begin{minted}{haskell}
+    \begin{minted}[linenos]{haskell}
 openFile :: FilePath -> IO FileHandle
 closeFile :: FileHandle -> IO ()
 readLine :: FileHandle -> IO (String, FileHandle)
@@ -31,7 +31,7 @@ writeFile :: String -> FileHandle -> IO ((), FileHandle)
 
 \begin{figure}[h]
   \begin{framed}
-    \begin{minted}{haskell}
+    \begin{minted}[linenos]{haskell}
 do f  <- openFile "sample.txt"
    (s, f)  <- readLine f
    () <- closeFile f
@@ -48,7 +48,7 @@ When another thread tries to write on this closed file handle, it would throw an
 Haskell's type system would happily accept this program but it might generate a runtime exception.
 \begin{figure}[h]
   \begin{framed}
-    \begin{minted}{haskell}
+    \begin{minted}[linenos]{haskell}
 do f  <- openFile "sample.txt"
    (s, f)  <- readLine f
    () <- closeFile f
@@ -91,7 +91,7 @@ and the operating system would close the file handle without waiting for the buf
 written on the file system.
 \begin{figure}[h]
   \begin{framed}
-    \begin{minted}{haskell}
+    \begin{minted}[linenos]{haskell}
 do f <- openFile "sample.txt"
    (s, f)  <- readLine f
    return s
@@ -108,7 +108,7 @@ is shown in \cref{fig:file-read-close-2times-desugared} and the desugared versio
 
 \begin{figure}[h]
 \begin{framed}
-\begin{minted}{haskell}
+\begin{minted}[linenos]{haskell}
 (>>=) (openFile "sample.txt" ReadMode) (\f ->
        >>= (closeFile f) (\(s, f) -> return s)
 \end{minted}
@@ -119,7 +119,7 @@ is shown in \cref{fig:file-read-close-2times-desugared} and the desugared versio
 
 \begin{figure}[h]
   \begin{framed}
-    \begin{minted}[escapeinside=||,mathescape=true]{haskell}
+    \begin{minted}[escapeinside=||,mathescape=true, linenos]{haskell}
 (>>=|$_1$|) (openFile "sample.txt") (\f ->
             (>>=|$_2$|) (readFile f) (\(s, f) ->
                         (>>=|$_3$|) (close f) (\_ -> closeFile f)))
@@ -142,7 +142,7 @@ separate from its arguments. % The arrow \mintinline{haskell}{-!*>} means that t
 
 \begin{figure}[h]
   \begin{framed}
-    \begin{minted}{haskell}
+    \begin{minted}[linenos]{haskell}
 openFile :: FilePath -*> IO FileHandle
 closeFile :: FileHandle -*> IO ()
 readLine :: FileHandle -*> IO (String, FileHandle)
@@ -161,28 +161,28 @@ and second bind \mintinline[escapeinside=||,mathescape=true]{haskell}{(>>=|$_2$|
 where each argument is separate from the the function. The file handing functions
 return a new binding for the file resource \HaskellF{f}. However, we notice that the third bind operation
 \mintinline[escapeinside=||,mathescape=true]{haskell}{(>>=|$_3$|)} would have a problem. It  would be typed as
-\mintinline{haskell}{IO () -*> (() -!*> IO ()) -&> IO ()}\\
+\mintinline{haskell}{IO () -*> (() -*> IO ()) -&> IO ()}\\
 as both the arguments share the file variable \HaskellF{f} which would be a type error
-as the bind operation should have a type signature of \mintinline{haskell}{IO () -*> (() -!*> IO ()) -*> IO ()}.
+as the bind operation should have a type signature of \mintinline{haskell}{IO () -*> (() -*> IO ()) -*> IO ()}.
 This mismatch in the types would be caught statically during the type checking phase of compilation.
 
 \begin{figure}[h]
 \begin{framed}
-\begin{minted}[escapeinside=||,mathescape=true]{haskell}
+\begin{minted}[escapeinside=||,mathescape=true, linenos]{haskell}
 (>>=|$_1$|) (openFile "sample.txt") (\f ->
             (>>=|$_2$|) (readFile f) (\(s, f) ->
                         (>>=|$_3$|) (close f) (\_ -> closeFile f)))
 
 
-(>>=|$_1$|):: IO FileHandle -*> (FileHandle -!*> IO ()) -*> IO ()
+(>>=|$_1$|):: IO FileHandle -*> (FileHandle -*> IO ()) -*> IO ()
 (>>=|$_1$|) (openFile "sample.txt" ReadMode) (\f -> ...)
 
 (>>=|$_2$|) :: IO FileHandle
-            -*> (FileHandle -!*> IO (String, Filehandle))
+            -*> (FileHandle -*> IO (String, Filehandle))
             -*> IO (String, FileHandle)}
 (>>=|$_2$|) (readLine f) (\(s,f) -> ... )
 
-(>>=|$_3$|) :: IO () -*> (() -!*> IO ()) -&> IO ()
+(>>=|$_3$|) :: IO () -*> (() -*> IO ()) -&> IO ()
 (>>=|$_3$|) (closeFile f) (\_ -> closeFile f)}
 \end{minted}
 \end{framed}
@@ -190,61 +190,110 @@ This mismatch in the types would be caught statically during the type checking p
 \label{fig:qub-close-file-twice}
 \end{figure}
 
-In the second faulty program, shown in \cref{fig:file-read-noclose-desugared} the file handle \texttt{f} is not closed.
-It is declared but not used in its scope. This would be tagged as an unrestricted value by the \qub{} type checker.
-This is in violation of our assumption that resources cannot be of the unrestricted type. Thus
-the program would not type check due to mismatch of the file handle type to be unrestricted.
+We also have the concept of unrestricted types similar to Quill. A type that contains no resources, or which is implicitly
+copied or dropped in the program is tagged as an unrestriced type. In the second faulty program,
+shown in \cref{fig:file-read-noclose-desugared} the file handle \HaskellF{f} is not closed.
+It is declared but not used in its scope. This would force the file handle to be be tagged as an unrestricted type by the \qub{} type checker.
+This is a violation of our assumption that resources cannot be of the unrestricted type. Thus
+the program would not type check due to mismatch of the file handle type to be inferred as unrestricted.
+
+To summarize, \qub{} has two kinds of program objects---restricted and unrestricted---and two kinds of functions---sharing and separating.
+Each type in \qub{} can be of these two kinds.
 
 \section{Exception handling}
 We expand on the file handling scenario and consider the code that can throw runtime exceptions.
 The motivation to do so lies in the fact that memory leaks are caused because of runtime
 exceptions where the part of code that is responsible to clean up resources or in this case
-closing the file is skipped due to an alternate execution path.
-
-The \HaskellF{IOMonad} is a class that encapsulates two kinds of IOs. \HaskellF{IO} that does not fail
-or throw exceptions, and \HaskellF{IOF} that can fail and throw exceptions.
-For a concrete example we will assume that \HaskellF{readLine} can throw an exception during runtime, where
-it might fail to read a line due to the file mode being used has incorrect permissions.
-For the sake of simplicity \HaskellF{openFile} and \HaskellF{closeFile} do not throw exceptions.
-\HaskellF{onExcept} accepts a code that can fail and executes the second
-parameter only if the actual code throws an exception. The \HaskellF{onExcept} gives a chance
-to clean up resources in a systematic way. It may convert a code that can fail to a code
-that does not fail by using \HaskellF{catch} function, or it may re throw the exception after
-cleaning up the resources.
-
-In the exceptionless execution path in \cref{fig:file-exceptions}, a single line would be read from the file and its uppercased
-version would be returned after closing it. If suppose, an exception is thrown by \HaskellF{readLine}
-the \HaskellF{onExcept} would close the filehandle. Notice that \HaskellF{onExcept}
-shares the context with the file readline code, thus the appropriate file handle would be closed and
-we would not have any memory leak.
+closing the file is skipped due to an alternate execution path. In Haskell, error handing is done using \HaskellF{MonadError}.
+The type class definition is shown in \cref{fig:haskell-monaderror}. \HaskellF{throwError} is used inside a monadic context to initiate
+exception processing and \HaskellF{catchError} is used to handle a previously thrown error and return
+to a normal execution.
 
 \begin{figure}[h]
   \begin{framed}
-    \begin{minted}{haskell}
-openFile :: FilePath -*> IO FileHandle
+\begin{minted}[linenos=true, mathescape=true]{haskell}
+class Monad m => MonadError e m | m -> e where
+    throwError :: e -> m a
+    catchError :: m a -> (e -> m a) -> m a
+\end{minted}
+  \end{framed}
+  \caption{Haskell's MonadError Typeclass}
+  \label{fig:haskell-monaderror}
+\end{figure}
+
+\noindent
+A common way of handling error in Haskell is shown in \cref{fig:haskell-error-handling}.
+We use the same file handling API as defined previously in \cref{fig:file-handling-function}
+In normal code execution path, the first line of the file will be returned after closing the file.
+In case of a runtime error, say \HaskellF{readLine f} throws an error, the \HaskellF{catchError} function will
+invoke the handler function and return an appropriate error message. We notice that in case of an error the file handle \HaskellF{f}
+is never closed and will cause a resource leak. The Haskell type system has no way to detect this memory leak.
+
+\begin{figure}[h]
+  \begin{framed}
+\begin{minted}[linenos=true, escapeinside=||, mathescape=true]{haskell}
+do f <- openFile "sample.txt"
+   ((s, f)  <- readLine f
+    let c = caps s
+    () <- closeFile f
+    return $ Right c) `catchError` (\_ ->
+                             return $ Left "Error in reading file")
+\end{minted}
+  \end{framed}
+  \caption{Handling Errors in Haskell}
+  \label{fig:haskell-error-handling}
+\end{figure}
+
+In \qub{} the \HaskellF{onExcept} function would have a sharing arrow between the two arguments.
+This will force the type checker to ensure that the file handle is indeed closed by performing
+the error handing actions in the second argument of \HaskellF{onExcept}.
+\HaskellF{IO} that does not fail or throw exceptions, and \HaskellF{IOF} that can fail and throw exceptions.
+
+For a concrete example we will assume that \HaskellF{readLine} can throw an exception during runtime, where
+it might fail to read a line due to the file mode being used has incorrect permissions.
+For the sake of simplicity \HaskellF{closeFile} does not throw exceptions. \HaskellF{openFile} throwing
+an exception would not be a problem as there would be no resource leak in that case. A sample code block
+is shown in \cref{fig:qub-file-exceptions}.
+
+% \HaskellF{onExcept} accepts a code that can fail and executes the second
+% parameter only if the actual code throws an exception. The \HaskellF{onExcept} gives a chance
+% to clean up resources in a systematic way. It may convert a code that can fail to a code
+% that does not fail by using \HaskellF{catch} function, or it may re throw the exception after
+% cleaning up the resources.
+
+% In the exceptionless execution path in \cref{fig:file-exceptions}, a single line would be read from the file and its uppercased
+% version would be returned after closing it. If suppose, an exception is thrown by \HaskellF{readLine}
+% the \HaskellF{onExcept} would close the filehandle. Notice that \HaskellF{onExcept}
+% shares the context with the file readline code, thus the appropriate file handle would be closed and
+% we would not have any memory leak.
+
+\begin{figure}[h]
+  \begin{framed}
+    \begin{minted}[linenos]{haskell}
+openFile :: FilePath -*> Mode -*> IO FileHandle
 closeFile :: FileHandle -*> IO ()
 readFile :: FileHandle -*> IOF (String, FileHandle)
 writeFile :: String -*> FileHandle -*> IOF ((), FileHandle)
 
-throw :: Exception -> IO a
-catch :: IOMonad IOM => IO a -*> (IO a -> IOM b) -&> IOM b
+throw :: Exception -*> IO a
+catch :: IOF a -*> (Exception -> IO a) -&> IO a
 
 onExcept :: IOF a -*> IOF () -&> IOF a
 m `onExcept` n = m `catch` (\e -> n >> throw e)
 
-readFromFile :: String -*> IO (Either String String)
-readFromFile f =
-do fh  <- openFile f WriteMode
+readFromFile :: FilePath -*> IO (Either String String)
+readFromFile fpath =
+do fh  <- openFile fpath ReadMode
    ((s, fh)  <- readLine fh
    let l = caps s
    () <- close fh
    return $ Right l) `onExcept` (do () <- closeFile fh)
                      `catch` (\e ->
-                              return $ Left "Could not read file")
+                                 return $ Left "Could not read file")
     \end{minted}
   \end{framed}
   \caption{Exception Handling in Files}
-  \label{fig:file-exceptions}
+  \label{fig:qub-file-exceptions}
 \end{figure}
 
 
