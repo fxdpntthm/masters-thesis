@@ -1,12 +1,12 @@
 \chapter{Type System and Type Inference}\label{chp:qub-type-system}
-We describe the type system in this chapter with the types and terms defined in previous
-chapter. We first describe \qub{}'s type system in \cref{sec:type-system}. We then describe a
-syntax directed type system in \cref{sec:syntax-typing-rules} and give a modified algorithm $\M$ in \cref{sec:algorithm-m}.
-First we give some conventions and notations that will be used throughout the sections that follow.
+In this chapter we describe the type system using the types and terms defined in previous
+chapter. We describe in \qub{}'s type system \cref{sec:type-system} and then describe a
+syntax directed type system in \cref{sec:syntax-typing-rules} and give a type inference algorithm $\M$ in \cref{sec:algorithm-m}.
+To begin with, we give some conventions and notations with priliminary definitions that will be used throughout the sections that follow.
 
 \section{Conventions and Notations}
-Vector $\vec{t}$ is a shorthand for a finite set of variables $\{t_1, t_2, \dots, t_n\}$ and $\forall \vec{t}. Q => \tau$
-abbreviates $\forall t_1 \dots \forall t_n. P_1 => \dots => P_m => \tau$.
+The vector $\vec{t}$ is a shorthand for a finite set of variables $\{t_1, t_2, \dots, t_n\}$ and  $\forall \vec{t}. P => \tau$ abbreviates
+$\forall t_1 \dots \forall t_n. P_1 => \dots => P_m => \tau$.
 $\Gamma$ denotes the type assignment which is a collection of three-tuple containg the variable, its type and its sharing information.
 $\Gamma_{x}$ denotes the type assignment excluding the type variable $x$.
 We write $\sigma = \Gamma(x)$ for the type scheme assigned to the term x in $\Gamma$.
@@ -14,12 +14,11 @@ We write $\sigma = \Gamma(x)$ for the type scheme assigned to the term x in $\Ga
 \texttt{dom}($\Gamma$) = $\{ x \mid (x:\sigma) \in \Gamma\}$.
 $\Gamma \sqcup \Delta$ would mean that the contexts can either
 be sharing union ($\Gamma \varoplus \Delta$) or separating union ($\Gamma \circledast \Delta$).
-Similar to Jones' \citeyearpar{jones_theory_1994} qualified types and type schemes are overloaded Hindley-Milner calculi.
 
 \begin{defn}[Free Type Variables]
   $\texttt{fvs}(\tau)$ is the set of free type variables in the type $\tau$\\
   $\texttt{fvs}(\sigma)$ is the set of free type variables in a typing scheme $\sigma = \forall \vec{t} Q. => \tau$.\\
-  $\texttt{fvs}(\sigma) = (\texttt{fvs}(\tau) \cup \texttt{fvs}(Q)) \backslash \vec{t})${\color{red} Needs confirmation on \texttt{fvs}(Q).}\\
+  $\texttt{fvs}(\sigma) = (\texttt{fvs}(\tau) \cup \texttt{fvs}(Q)) \backslash \vec{t})$
   $\texttt{fvs}(\Gamma)$ is the set of free type variables in the type assignment $\Gamma$.\\
   $\texttt{fvs}(\Gamma) = \bigcup_{x \in \texttt{dom}(\Gamma)} \{ \texttt{fvs}(\Gamma(x)) \}$
 \end{defn}
@@ -177,19 +176,17 @@ on the type that is dropped or duplicated.
   \label{fig:typing-rules}
 \end{figure}
 
-The rules of [$\rightarrow$I] and [$\sepimp$I] describes the abstraction over shared and
-separating resources respectively, while [$\rightarrow$E] and [$\sepimp$E] is the application
+The rules of [$\shimp$I] and [$\sepimp$I] describes the abstraction over shared and
+separating resources respectively, while [$\shimp$E] and [$\sepimp$E] is the application
 rule for shared and separating resources respectively. [$=>$I] and [$=>$E] are the rules for
 qualified types that would add constraints on the type being computed. [$\forall$I] introduces
-polymorphism and [$\forall$E] eliminates it. We assume that the free type variables that
-would be substituted in the type scheme would not interfere with the sharing and separation
-of resources of the fully concretized type. The $\lambda$ abstractions $\lambda^{*} x. M$ and $\lambda^{\alpha}.M$
+polymorphism and [$\forall$E] eliminates it. The $\lambda$ abstractions $\lambda^{\sepimp}  x. M$ and $\lambda^{\shimp}.M$
 have a function type $\ShFun{\phi}$ or $\SeFun{\phi}$ only if it is more restricting that its environment.
 This is specified in the judgments $\cdot \geq \cdot$. To avoid name shadowing, we would assume that
-the binders introduce fresh names. In case of a $\lambda^{\alpha}$, the binder variable is added to the sharing information of all
-terms present in the type assignment and in case of $\lambda^{*}$ the binder variable is skipped from
+the binders introduce fresh names. In case of a $\lambda^{\shimp}$, the binder variable is added to the sharing information of all
+terms present in the type assignment and in case of $\lambda^{\sepimp} $ the binder variable is skipped from
 adding it to the sharing information to imply separation of resources. For example,
-consider the term $\lambda^{*}c. \lambda^{*} x. \lambda^{\alpha}y. c x$. The sharing graph and type assignment is shown in
+consider the term $\lambda^{\sepimp} c. \lambda^{\sepimp}  x. \lambda^{\shimp}y. c x$. The sharing graph and type assignment is shown in
 \cref{fig:example-sharing-graph}.
 
 \begin{figure}[h]
@@ -208,9 +205,13 @@ consider the term $\lambda^{*}c. \lambda^{*} x. \lambda^{\alpha}y. c x$. The sha
     $\Gamma = \{ c^{y}:\tau \sepimp \upsilon, x^{y}:\tau, y^{\{c,x\}}:\tau' \}$
   \end{minipage}
   \end{framed}
-  \caption{Sharing graph and typing context for $\lambda^{*}c. \lambda^{*} x. \lambda^{\alpha}y. c x$}
+  \caption{Sharing graph and typing context for $\lambda^{\sepimp} c. \lambda^{\sepimp}  x. \lambda^{\shimp}y. c x$}
   \label{fig:example-sharing-graph}
 \end{figure}
+
+The rules given in \cref{fig:bi-base-typing-rules}
+are convenience rules for base cases that compute predicate constraints for types within a context.
+The $P \mid \cdot \geq \cdot$ lifts $\geq$ predicate into the typing environment.
 
 \begin{figure}[h]
   \begin{framed}
@@ -263,18 +264,15 @@ consider the term $\lambda^{*}c. \lambda^{*} x. \lambda^{\alpha}y. c x$. The sha
     \end{prooftree}
   \end{minipage}
 \end{framed}
-  \caption{Typing Rules for Base cases}
+  \caption{Entailment Rules for Base cases}
   \label{fig:bi-base-typing-rules}
 \end{figure}
-The rules given in \cref{fig:bi-base-typing-rules}
-are convenience rules for base cases that compute predicate constraints for types within a context.
-The $P \mid \cdot \geq \cdot$ lifts $\geq$ predicate into the typing environment.
 
 
 \section{Syntax Directed Typing rules}\label{sec:syntax-typing-rules}
-The type system explained in the \cref{sec:type-system} are not syntax directed and will not be fit
-to develop a type inference algorithm. the typing rules and syntactic forms should have one-to-one
-correspondence. In this section we will define syntax directed typing rules
+Ideally the typing rules and syntactic forms should have one-to-one
+correspondence. The type system explained in the \cref{sec:type-system} is not syntax directed and will not be fit
+to develop a type inference algorithm. In this section we will define syntax directed typing rules
 that will simplify our type inference system shown in \cref{fig:syntax-typing-rules}
 
 We define generalization and instantiation to express introduction and elimination of polymorphism in our
@@ -306,10 +304,10 @@ Similar to Quill typing system \citep{morris_best_2016} elimination of polymorph
 types[$=>$E] is always done in the [Var$^s$], introduction of polymorphism [$\forall$I] and qualified types[$=>$I] is
 done at let bindings [Let$^s$]. This collapses the rules [$\forall$E], [$=>$E] and [ID] in one rule [VAR$^s$] where
 we use instantiation of type variables, and [$\forall$I], [$=>$I] and [Let] in one rule [Let$^s$] where we use generalization of type variables.
-[$\sepimp$I$^s$] is used in occurence of $\lambda^{*}$, and [$\rightarrow$I$^s$] is used in occurence of $\lambda^{\alpha}$.
-We would add the introduced abstraction variable, $x$, into the sharing context in case of [$\rightarrow$I$^s$].
-% The type variable $t$ in both [$\sepimp$I$^s$] and [$\rightarrow$I$^s$] are new.
-We collapse the application rules [$\sepimp$E] and [$\rightarrow$E] into one rule [App$^s$] where we check for sharing of the used variables in both
+[$\sepimp$I$^s$] is used in occurence of $\lambda^{\sepimp} $, and [$\shimp$I$^s$] is used in occurence of $\lambda^{\shimp}$.
+We would add the introduced abstraction variable, $x$, into the sharing context in case of [$\shimp$I$^s$].
+% The type variable $t$ in both [$\sepimp$I$^s$] and [$\shimp$I$^s$] are new.
+We collapse the application rules [$\sepimp$E] and [$\shimp$E] into one rule [App$^s$] where we check for sharing of the used variables in both
 the expressions and then assign a predicate of $\texttt{ShFun}$ or $\texttt{SeFun}$ depending on whether the variables
 are shared or not. The \texttt{un} predicates are added to the types of the terms that are not used directly in the expression
 or which are not in sharing with the terms used.
@@ -342,15 +340,15 @@ or which are not in sharing with the terms used.
         \AxiomC{$P => \SeFun{\phi}$}
         \AxiomC{$P \vdash \Gamma \geq \phi$}\noLine
         \BinaryInfC{$\ \ \ \ \ \ \ P \mid \Gamma \circledast x^{\emptyset}:\tau \vdashs M: \upsilon\ \ \ \ \ \ \ $} \RightLabel{[$\sepimp$I$^s$]}
-        \UnaryInfC{$P \mid \Gamma \vdashs \lambda^{*}x. M : \phi \tau \upsilon$}
+        \UnaryInfC{$P \mid \Gamma \vdashs \lambda^{\sepimp} x. M : \phi \tau \upsilon$}
       \end{prooftree}
     \end{minipage}%
     % -&>I^s
     \begin{minipage}{0.5\textwidth}
       \begin{prooftree}
         \AxiomC{$P => \ShFun{\phi}\ \ \ \ \ P \vdash \Gamma \geq \phi$}\noLine
-        \UnaryInfC{$P \mid \Gamma^{[\emptyset \mapsto \{x\}]} \varoplus x^{\texttt{Vars}(\Gamma)}:\tau \vdashs M: \upsilon$}\RightLabel{[$\rightarrow$I$^s$]}
-        \UnaryInfC{$P \mid \Gamma \vdashs \lambda^{\alpha}x. M : \phi \tau \upsilon$}
+        \UnaryInfC{$P \mid \Gamma^{[\emptyset \mapsto \{x\}]} \varoplus x^{\texttt{Vars}(\Gamma)}:\tau \vdashs M: \upsilon$}\RightLabel{[$\shimp$I$^s$]}
+        \UnaryInfC{$P \mid \Gamma \vdashs \lambda^{\shimp}x. M : \phi \tau \upsilon$}
       \end{prooftree}
     \end{minipage}
     \newline\newline\newline
@@ -530,8 +528,8 @@ obtained from the typing scheme, the variable $x$ being used and the new
 substitution which is combination of the unification algorithms output and the original
 substitution. There is no change in the sharing information and $\Psi$ is returned as is.
 
-% \&y
-In next case of sharing function introduction rule $\lambda^{\alpha}x.M$, as per the [$\rightarrow$I] rules, the entitites returned
+% \&x
+In next case of sharing function introduction rule $\lambda^{\shimp}x.M$, as per the [$\shimp$I] rules, the entitites returned
 are union of four predicate categories. The first is assigning a the predicate of the function to be
 a sharing function $\ShFun{u_1}$, where $u_1$ is a new type variable for the type of function argument $x$.
 The second assigning the function to be less restricting than the other variables in the typing assignment $\Gamma$.
@@ -541,7 +539,7 @@ being the predicates generated by recursively type checking the body of the lamb
 We create sharing links for $x$ with all the variables within the typing context $\Gamma$ in updated
 $\Psi''$.
 % \*x
-The case of separating function $\lambda^{*}x. M$ is very similar to the previous case of $\lambda^{\alpha}x. M$ except
+The case of separating function $\lambda^{\sepimp} x. M$ is very similar to the previous case of $\lambda^{\shimp}x. M$ except
 the that there is no sharing information to be updated as the argument to the function is
 separate from its body and the function predicate assigned is $\SeFun{u_1}$ to denote this very
 separating relation instead of $\ShFun u_1$

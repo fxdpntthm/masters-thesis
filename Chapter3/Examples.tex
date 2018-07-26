@@ -197,8 +197,8 @@ It is declared but not used in its scope. This would force the file handle to be
 This is a violation of our assumption that resources cannot be of the unrestricted type. Thus
 the program would not type check due to mismatch of the file handle type to be inferred as unrestricted.
 
-To summarize, \qub{} has two kinds of program objects---restricted and unrestricted---and two kinds of functions---sharing and separating.
-Each type in \qub{} can be of these two kinds.
+% To summarize, \qub{} has two kinds of program objects---restricted and unrestricted---and two kinds of functions---sharing and separating.
+% Each type in \qub{} can be of these two kinds.
 
 \section{Exception handling}
 We expand on the file handling scenario and consider the code that can throw runtime exceptions.
@@ -244,28 +244,16 @@ do f <- openFile "sample.txt"
   \label{fig:haskell-error-handling}
 \end{figure}
 
-In \qub{} the \HaskellF{onExcept} function would have a sharing arrow between the two arguments.
-This will force the type checker to ensure that the file handle is indeed closed by performing
-the error handing actions in the second argument of \HaskellF{onExcept}.
-\HaskellF{IO} that does not fail or throw exceptions, and \HaskellF{IOF} that can fail and throw exceptions.
-
-For a concrete example we will assume that \HaskellF{readLine} can throw an exception during runtime, where
+We enforce resource cleanup in a systematic way in \qub{}. For a concrete example, see \cref{fig:qub-file-exceptions}.
+We will assume that \HaskellF{readLine} can throw an exception during runtime, where
 it might fail to read a line due to the file mode being used has incorrect permissions.
-For the sake of simplicity \HaskellF{closeFile} does not throw exceptions. \HaskellF{openFile} throwing
-an exception would not be a problem as there would be no resource leak in that case. A sample code block
-is shown in \cref{fig:qub-file-exceptions}.
-
-% \HaskellF{onExcept} accepts a code that can fail and executes the second
-% parameter only if the actual code throws an exception. The \HaskellF{onExcept} gives a chance
-% to clean up resources in a systematic way. It may convert a code that can fail to a code
-% that does not fail by using \HaskellF{catch} function, or it may re throw the exception after
-% cleaning up the resources.
-
-% In the exceptionless execution path in \cref{fig:file-exceptions}, a single line would be read from the file and its uppercased
-% version would be returned after closing it. If suppose, an exception is thrown by \HaskellF{readLine}
-% the \HaskellF{onExcept} would close the filehandle. Notice that \HaskellF{onExcept}
-% shares the context with the file readline code, thus the appropriate file handle would be closed and
-% we would not have any memory leak.
+For the sake of simplicity we will assume \HaskellF{closeFile}
+does not throw exceptions. \HaskellF{openFile} throwing an exception would not be a problem as there would be
+no resource leak in that case. We have two kinds of IO operations, \HaskellF{IO} that does not fail or throw exceptions and is safe,
+and \HaskellF{IOF} that can fail and throw exceptions. \HaskellF{onExcept} can potentially convert a code that can fail, to a code
+that does not fail by using \HaskellF{catch} function, or it may re-throw the exception after
+cleaning up the resources. The sharing arrow between the two arguments of \HaskellF{onExcept} enforces
+that the file handle is indeed closed by performing the error handing actions in the second argument.
 
 \begin{figure}[h]
   \begin{framed}
