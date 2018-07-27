@@ -64,6 +64,10 @@
   {LyX}}
 %% Because html converters don't know tabularnewline
 \providecommand{\tabularnewline}{\\}
+
+\newcommand{\tightoverset}[2]{%
+  \mathop{#2}\limits^{\vbox to -.5ex{\kern-0.75ex\hbox{$#1$}\vss}}}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
 \newcommand{\BI}{\textbf{\em BI}\xspace}
 \newcommand\sepimp{\mathrel{-\mkern-6mu*}}

@@ -9,7 +9,7 @@ into a sharing graph and represent it as a collection of three tuple sets in ord
                          t, u, \upsilon, \phi         &\in \text{Type Variables}\\
                                       P, Q            &\in \text{Finite Predicate Set}\\
       \text{Types}\ \ \               \tau            &::= t \mid \tau \rightarrow \tau\
-                                \text{where}\ \{\overset{!}{\sepimp}, \sepimp, \overset{!}{\shimp}, \shimp \} \subseteq \rightarrow \\
+                                \text{where}\ \{\tightoverset{\scalebox{0.5}{!}}{\sepimp}, \sepimp, \tightoverset{\scalebox{0.5}{!}}{\shimp}, \shimp \} \subseteq \rightarrow \\
       \text{Predicates}\ \ \        \pi,\omega        &::= \texttt{Un}\ \tau \mid \texttt{SeFun}\ \tau \mid \texttt{ShFun}\ \tau \mid \tau \geq \tau' \\
       \text{Qualified Types}\ \ \     \rho            &::= \tau \mid \pi => \rho \\
       \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma 
@@ -21,7 +21,7 @@ into a sharing graph and represent it as a collection of three tuple sets in ord
 % Describe types
 The type language consists of type variables and four binary type constructors the
 sharing arrow ($\shimp$) and the separating arrow ($\sepimp$) and unrestricted
-version of both the type constructors ($\overset{!}{\sepimp}, \overset{!}{\shimp}$). The sharing arrow
+version of both the type constructors ($\tightoverset{\scalebox{0.5}{!}}{\sepimp}, \tightoverset{\scalebox{0.5}{!}}{\shimp}$). The sharing arrow
 would mean that the function shares resources with its argument and the separating
 arrow would mean that the function does not share resources with its arguments.
 We would write both the arrows in an infix notation.
@@ -35,7 +35,7 @@ We write $\ShFun{\phi}$ to describe that type $\phi$ may share resources with it
 argument types and  $\SeFun{\phi}$ to describe that type $\phi$ does not share any resources from its argument types.
 Notice that function types can also be unrestricted i.e.e it does not have any resources. If a type $\tau$ is unrestricted i.e. it qualifies with predicate
 \texttt{Un} and it also qualifies one of the function predicates---\texttt{SeFun} or \texttt{ShFun}---we write
-them as $\overset{!}{\sepimp}$ and $\xrightarrow{!}$ respectively.
+them as $\tightoverset{\scalebox{0.5}{!}}{\sepimp}$ and $\tightoverset{\scalebox{0.5}{!}}{\shimp}$ respectively.
 We also define an ordering on types by using the predicate $\geq$. The predicate $\tau \geq \tau'$ holds if the type $\tau'$
 is less restricting than $\tau$ or to say $\tau$ has admits more structural rules than $\tau'$ as previously explained in \cref{sec:quill}.
 The predicate entailment relations $P => Q$ are given in \cref{fig:entailment-rules}.
@@ -57,41 +57,41 @@ to enable users to define custom types using type constructors. We describe this
         \UnaryInfC{$P => Q$}
       \end{prooftree}
     \end{minipage}%
-    \begin{minipage}{0.20\linewidth}
+    \begin{minipage}{0.24\linewidth}
       \begin{prooftree}
         \AxiomC{${\color{white}\bigwedge_{\pi \in Q}}$}
-        \UnaryInfC{$P => \Un{(\tau \overset{!}{\sepimp} \tau')}$}
+        \UnaryInfC{$P => \Un{(\tau \tightoverset{\scalebox{0.5}{!}}{\sepimp} \tau')}$}
       \end{prooftree}
     \end{minipage}
-    \begin{minipage}{0.20\linewidth}
+    \begin{minipage}{0.24\linewidth}
       \begin{prooftree}
         \AxiomC{${\color{white}\bigwedge_{\pi \in Q}}$}
-        \UnaryInfC{$P => \Un{(\tau \overset{!}{\sepimp} \tau')}$}
+        \UnaryInfC{$P => \Un{(\tau \tightoverset{\scalebox{0.5}{!}}{\sepimp} \tau')}$}
       \end{prooftree}
     \end{minipage}
 
     \begin{minipage}{0.20\linewidth}
       \begin{prooftree}
-        \AxiomC{$\tau = \sepimp \vee \tau = \overset{!}{\sepimp}$}
+        \AxiomC{$\tau = \sepimp \vee \tau = \tightoverset{\scalebox{0.5}{!}}{\sepimp}$}
         \UnaryInfC{$P => \SeFun{\tau}$}
       \end{prooftree}
     \end{minipage}%
     \begin{minipage}{0.20\linewidth}
       \begin{prooftree}
-        \AxiomC{$\tau = \shimp \vee \tau = \overset{!}{\shimp}$}
+        \AxiomC{$\tau = \shimp \vee \tau = \tightoverset{\scalebox{0.5}{!}}{\shimp}$}
         \UnaryInfC{$P => \ShFun{\tau}$}
       \end{prooftree}
     \end{minipage}%
-    \begin{minipage}{0.20\linewidth}
+    \begin{minipage}{0.24\linewidth}
       \begin{prooftree}
         \AxiomC{$P => \Un{\tau}$}
-        \UnaryInfC{$P => \tau \geq (v \overset{!}{\sepimp} v')$}
+        \UnaryInfC{$P => \tau \geq (v \tightoverset{\scalebox{0.5}{!}}{\sepimp} v')$}
       \end{prooftree}
     \end{minipage}%
-    \begin{minipage}{0.20\linewidth}
+    \begin{minipage}{0.24\linewidth}
       \begin{prooftree}
         \AxiomC{$P => \Un{\tau}$}
-        \UnaryInfC{$P => \tau \geq (v \overset{!}{\shimp} v')$}
+        \UnaryInfC{$P => \tau \geq (v \tightoverset{\scalebox{0.5}{!}}{\shimp} v')$}
       \end{prooftree}
     \end{minipage}
 
@@ -122,7 +122,7 @@ to enable users to define custom types using type constructors. We describe this
 
 % \TODO{Need some more reading/writing about multienvironment}
 % Describe Type assignments
-In normal type systems, the contexts are represented as sets or lists. In \BI\ they are represented as binary trees and are called bunches.
+In normal type systems, the contexts are represented as sets or lists. In logic of \BI\ they are represented as binary trees and are called bunches.
 The leaf nodes contain the pair of term and its associated type. Internal nodes of the context tree are
 connectives which can either be a semicolon ($;$) or a comma ($,$).
 If a bunch $\Delta$ is a subtree of $\Gamma$, then we denote a subtree relation by $\Gamma(\Delta)$.

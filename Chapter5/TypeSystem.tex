@@ -7,19 +7,21 @@ To begin with, we give some conventions and notations with priliminary definitio
 \section{Conventions and Notations}
 The vector $\vec{t}$ is a shorthand for a finite set of variables $\{t_1, t_2, \dots, t_n\}$ and  $\forall \vec{t}. P => \tau$ abbreviates
 $\forall t_1 \dots \forall t_n. P_1 => \dots => P_m => \tau$.
-$\Gamma$ denotes the type assignment which is a collection of three-tuple containg the variable, its type and its sharing information.
+$\Gamma$ denotes the type assignment. It is a list of three-tuples containg the variable, its type scheme and its sharing information.
 $\Gamma_{x}$ denotes the type assignment excluding the type variable $x$.
 We write $\sigma = \Gamma(x)$ for the type scheme assigned to the term x in $\Gamma$.
 \texttt{dom}($\Gamma$) is the set of identifiers in the type assignment i.e.
-\texttt{dom}($\Gamma$) = $\{ x \mid (x:\sigma) \in \Gamma\}$.
-$\Gamma \sqcup \Delta$ would mean that the contexts can either
-be sharing union ($\Gamma \varoplus \Delta$) or separating union ($\Gamma \circledast \Delta$).
+\texttt{dom}($\Gamma$) = $\{ x \mid (x^{\vec{y}}:\sigma) \in \Gamma\}$.
+$\Gamma \sqcup \Delta$ is a multiset union of two type assignments $\Gamma$ and $\Delta$.
 
 \begin{defn}[Free Type Variables]
-  $\texttt{fvs}(\tau)$ is the set of free type variables in the type $\tau$\\
-  $\texttt{fvs}(\sigma)$ is the set of free type variables in a typing scheme $\sigma = \forall \vec{t} Q. => \tau$.\\
+
+  $\texttt{fvs}(\tau)$ is the set of free type variables in the type $\tau$
+
+  \noindent$\texttt{fvs}(\sigma)$ is the set of free type variables in a typing scheme $\sigma = \forall \vec{t} Q. => \tau$.\\
   $\texttt{fvs}(\sigma) = (\texttt{fvs}(\tau) \cup \texttt{fvs}(Q)) \backslash \vec{t})$
-  $\texttt{fvs}(\Gamma)$ is the set of free type variables in the type assignment $\Gamma$.\\
+
+  \noindent$\texttt{fvs}(\Gamma)$ is the set of free type variables in the type assignment $\Gamma$.\\
   $\texttt{fvs}(\Gamma) = \bigcup_{x \in \texttt{dom}(\Gamma)} \{ \texttt{fvs}(\Gamma(x)) \}$
 \end{defn}
 
@@ -211,55 +213,59 @@ consider the term $\lambda^{\sepimp} c. \lambda^{\sepimp}  x. \lambda^{\shimp}y.
 
 The rules given in \cref{fig:bi-base-typing-rules}
 are convenience rules for base cases that compute predicate constraints for types within a context.
-The $P \mid \cdot \geq \cdot$ lifts $\geq$ predicate into the typing environment.
 
-\begin{figure}[h]
+\begin{figure}[h]\centering
   \begin{framed}
-  \begin{minipage}{0.5\linewidth}
+    \fbox{$P \vdash \cdot\ \texttt{un}$}
+  \begin{minipage}{0.50\linewidth}
     \begin{prooftree}
       \AxiomC{$P => \texttt{Un}\ \tau$}\RightLabel{[\texttt{Un}-$\tau$]}
       \UnaryInfC{$P \vdash \tau\ \texttt{un}$}
     \end{prooftree}
-  \end{minipage}
-  \begin{minipage}{0.5\linewidth}
+  \end{minipage}%
+  \begin{minipage}{0.50\linewidth}
     \begin{prooftree}
       \AxiomC{$P,\pi \vdash \rho\ \texttt{un}$}\RightLabel{[\texttt{Un}-$\rho$]}
       \UnaryInfC{$P \vdash \pi => \rho\ \texttt{un}$}
     \end{prooftree}
   \end{minipage}
-  \begin{minipage}{0.5\linewidth}
+
+  \begin{minipage}{0.50\linewidth}
     \begin{prooftree}
-      \AxiomC{$P, \texttt{Un}\ t \vdash \sigma\ \texttt{Un}$}\RightLabel{[\texttt{Un}-$\sigma$]}
+      \AxiomC{$P, \texttt{Un}\ t \vdash \sigma\ \texttt{un}$}\RightLabel{[\texttt{Un}-$\sigma$]}
       \UnaryInfC{$P \vdash \forall t.\sigma\ \texttt{un}$}
     \end{prooftree}
-  \end{minipage}
-  \begin{minipage}{0.5\linewidth}
+  \end{minipage}%
+  \begin{minipage}{0.50\linewidth}
     \begin{prooftree}
-      \AxiomC{$\bigwedge_{x:\sigma \in \Gamma}P \vdash \rho\ \texttt{un}$}\RightLabel{[\texttt{Un}-$\Gamma$]}
+      \AxiomC{$\bigwedge_{x:\sigma \in \Gamma}P \vdash \sigma\ \texttt{un}$}\RightLabel{[\texttt{Un}-$\Gamma$]}
       \UnaryInfC{$P \vdash \Gamma\ \texttt{un}$}
     \end{prooftree}
   \end{minipage}
-  \begin{minipage}{0.5\linewidth}
+
+  \fbox{$P \vdash \cdot \geq \cdot$}
+  \begin{minipage}{0.50\linewidth}
     \begin{prooftree}
       \AxiomC{$P => \tau \geq \phi$}\RightLabel{[$\geq$-$\tau$]}
       \UnaryInfC{$P \vdash \tau \geq \phi$}
     \end{prooftree}
-  \end{minipage}
-  \begin{minipage}{0.5\linewidth}
+  \end{minipage}%
+  \begin{minipage}{0.50\linewidth}
     \begin{prooftree}
       \AxiomC{$P,\pi \vdash \rho \geq \phi$}\RightLabel{[$\geq$-$\rho$]}
       \UnaryInfC{$P \vdash (\pi => \rho) \geq \phi$}
     \end{prooftree}
   \end{minipage}
-  \begin{minipage}{0.5\linewidth}
+
+  \begin{minipage}{0.50\linewidth}
     \begin{prooftree}
       \AxiomC{$P, \texttt{Un}\ t \vdash \sigma \geq \phi$}\RightLabel{[$\geq$-$\sigma$]}
       \UnaryInfC{$P \vdash (\forall t.\sigma) \geq \phi$}
     \end{prooftree}
-  \end{minipage}
-  \begin{minipage}{0.5\linewidth}
+  \end{minipage}%
+  \begin{minipage}{0.50\linewidth}
     \begin{prooftree}
-      \AxiomC{$\bigwedge_{x:\sigma \in \Gamma}P \vdash \rho \geq \phi$}\RightLabel{[$\geq$-$\Gamma$]}
+      \AxiomC{$\bigwedge_{x:\sigma \in \Gamma}P \vdash \sigma \geq \phi$}\RightLabel{[$\geq$-$\Gamma$]}
       \UnaryInfC{$P \vdash \Gamma \geq \phi$}
     \end{prooftree}
   \end{minipage}
@@ -326,10 +332,9 @@ or which are not in sharing with the terms used.
     \begin{minipage}{1.0\textwidth}
       \begin{prooftree}
         \AxiomC{$Q \mid (\Gamma_x' \varoplus \Gamma_x'') \circledast \Delta \vdashs M: \upsilon\ \ \ \ \
-          P \vdash \Delta\ \texttt{un}$}
-        \noLine
-        \UnaryInfC{$P \mid (\Gamma_x \sqcup x:\sigma) \varoplus \Gamma_x'' \circledast \Delta \vdashs N:\tau\ \ \ \ \
-          \sigma = \texttt{Gen}(\{\Gamma' \varoplus \Gamma_x'' \circledast \Delta \}, Q => \upsilon)$}\RightLabel{[Let$^s$]}
+          P \vdash \Delta\ \texttt{un}$}\def\extraVskip{0pt}\noLine
+        \UnaryInfC{$P \mid (\Gamma_x \sqcup x^{\emptyset}:\sigma) \varoplus \Gamma_x'' \circledast \Delta \vdashs N:\tau\ \ \ \ \
+          \sigma = \texttt{Gen}(\{\Gamma' \varoplus \Gamma_x'' \circledast \Delta \}, Q => \upsilon)$}\def\extraVskip{2pt}\RightLabel{[Let$^s$]}
         \UnaryInfC{$P \mid (\Gamma \circledast \Gamma') \varoplus \Gamma'' \circledast \Delta \vdashs (\Let{x}{M}{N}) : \tau$}
       \end{prooftree}
     \end{minipage}
@@ -338,16 +343,16 @@ or which are not in sharing with the terms used.
     \begin{minipage}{0.5\textwidth}
       \begin{prooftree}
         \AxiomC{$P => \SeFun{\phi}$}
-        \AxiomC{$P \vdash \Gamma \geq \phi$}\noLine
-        \BinaryInfC{$\ \ \ \ \ \ \ P \mid \Gamma \circledast x^{\emptyset}:\tau \vdashs M: \upsilon\ \ \ \ \ \ \ $} \RightLabel{[$\sepimp$I$^s$]}
+        \AxiomC{$P \vdash \Gamma \geq \phi$}\def\extraVskip{0pt}\noLine
+        \BinaryInfC{$\ \ \ \ \ \ \ P \mid \Gamma \circledast x^{\emptyset}:\tau \vdashs M: \upsilon\ \ \ \ \ \ \ $}\def\extraVskip{2pt}\RightLabel{[$\sepimp$I$^s$]}
         \UnaryInfC{$P \mid \Gamma \vdashs \lambda^{\sepimp} x. M : \phi \tau \upsilon$}
       \end{prooftree}
     \end{minipage}%
     % -&>I^s
     \begin{minipage}{0.5\textwidth}
       \begin{prooftree}
-        \AxiomC{$P => \ShFun{\phi}\ \ \ \ \ P \vdash \Gamma \geq \phi$}\noLine
-        \UnaryInfC{$P \mid \Gamma^{[\emptyset \mapsto \{x\}]} \varoplus x^{\texttt{Vars}(\Gamma)}:\tau \vdashs M: \upsilon$}\RightLabel{[$\shimp$I$^s$]}
+        \AxiomC{$P => \ShFun{\phi}\ \ \ \ \ P \vdash \Gamma \geq \phi$}\def\extraVskip{0pt}\noLine
+        \UnaryInfC{$P \mid \Gamma^{[\emptyset \mapsto \{x\}]} \varoplus x^{\texttt{Vars}(\Gamma)}:\tau \vdashs M: \upsilon$}\def\extraVskip{2pt}\RightLabel{[$\shimp$I$^s$]}
         \UnaryInfC{$P \mid \Gamma \vdashs \lambda^{\shimp}x. M : \phi \tau \upsilon$}
       \end{prooftree}
     \end{minipage}
@@ -357,9 +362,9 @@ or which are not in sharing with the terms used.
       \begin{prooftree}
         \AxiomC{$P \mid \Gamma \circledast \Delta \vdashs M: \phi \upsilon \tau\ \ \ \ \
           P \mid  \Gamma' \circledast \Delta \vdashs N: \upsilon$}
-        \AxiomC{$P \vdash \Delta\ \texttt{un}$}\noLine
-        \BinaryInfC{$(\Gamma \varoplus \Gamma' \wedge (P => \ShFun{\phi}))
-          \vee (\Gamma \circledast \Gamma' \wedge (P => \SeFun{\phi}))$}\RightLabel{[App$^s$]}
+        \AxiomC{$P \vdash \Delta\ \texttt{un}$}\def\extraVskip{0pt}\noLine
+        \BinaryInfC{$(\Gamma \tightoverset{\thicksim}{\varoplus} \Gamma' \wedge (P => \ShFun{\phi}))
+          \vee (\Gamma \tightoverset{\thicksim}{\circledast} \Gamma' \wedge (P => \SeFun{\phi}))$}\def\extraVskip{2pt}\RightLabel{[App$^s$]}
         \UnaryInfC{$P \mid \Gamma \sqcup \Gamma' \circledast \Delta \vdashs M N: \tau$}
       \end{prooftree}
     \end{minipage}
@@ -378,7 +383,10 @@ whether $\Gamma$ and $\Gamma'$ are completely disjoint or empty. For the applica
 variables for $M$ and $\Gamma'$ for $N$. If they are completely separate, it would be a separating function application and $M$ would be
 assigned a type $\tau' \sepimp \tau$ else, they would have to be completely sharing and M would be assigned a type $\tau' \rightarrow \tau$.
 The conditions outlined for [App$^s$] do not clearly look as if they are syntax directed and in the cases where the type checker cannot directly infer if the
-resources used are separate or shared, the user would be expected to provide it using type annotations.%  {\color{red} meh.}.
+resources used are separate or shared, the user would be expected to provide it using type annotations. $\Gamma \tightoverset{\thicksim}{\circledast} \Delta$
+is an assertion that there exists a proof either possible to find by inspecting the type assignment, or provided by the user
+that $\Gamma \circledast \Delta$ is indeed true. Similarly, $\Gamma \tightoverset{\thicksim}{\varoplus} \Delta$ means that $\Gamma \varoplus \Delta$ is well
+defined.
 
 \begin{theorem}[Soundness of $\vdash^s$]
   If $P \mid \Gamma \vdash^s M:\tau$ then $P \mid \Gamma \vdash M : \tau$
@@ -560,40 +568,6 @@ In the polymorphic \texttt{let} case we first check for the type of the expressi
 ensure that the variable binding $x$ is not usd in it to avoid recursive definition which would
 lead to infinite types. We then generalize the type to $\sigma$ and then check the type of expression $N$
 by expanding the type assignment $\Gamma$ with the variable $x$ and type scheme $\sigma$.
-
-% \section{Implementing Algorithm $\M$}
-% The typing environment in standard Milner-Damas algorithm
-% is a pair of identifier and its type.
-% We need to modify the typing environment so that it describes sharing.
-% % There can be many different ways of doing it.
-% In the current implementation we have
-% extended the typing environment to hold 2 more entities along with the
-% type of the identifier, a list of identifiers --- that describes the sharing of variables and
-% a scope tag---that identifies if the variable is global in the complete module or local to the definition.
-% Global variables can be used anywhere in the file or other code file if it is imported
-% All function names will be defaulted to global scope.
-% Local variables can be used only after they have been bound in the typing environment.
-% The new typing environment can be realized as:
-% \begin{minted}{haskell}
-%   type Env = Map Id (TypeScheme, [Id], Scope)
-% \end{minted}
-
-% % how is the list of list of ids help in identifying sharing
-
-% % how do you define a closure
-
-% % What do you mean by having a break in the closure
-
-% % The used field in the type-checker state
-
-% \section{Modification to Typechecking Algorithm}
-
-% \section{Sharing}
-% What do we exactly mean by sharing?
-% There are 2 interpretations of sharing that i can think of
-% 1) We have a resource $\mathcal{R}$, and 2 pointers $\alpha$, $\beta$. we say $alpha$, $\beta$ share if both of them point to the same resource $\mathcal{R}$
-% $\mathcal{R}$ is never exposed to the user space and can be manipulated only by using $\alpha$, $\beta$.
-% 2) We have resource
 
 %%% Local Variables:
 %%% mode: latex
