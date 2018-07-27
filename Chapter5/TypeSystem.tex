@@ -178,6 +178,7 @@ on the type that is dropped or duplicated.
   \label{fig:typing-rules}
 \end{figure}
 
+The [LET] rule is used to enable implicit parametric polymorphism as usual.
 The rules of [$\shimp$I] and [$\sepimp$I] describes the abstraction over shared and
 separating resources respectively, while [$\shimp$E] and [$\sepimp$E] is the application
 rule for shared and separating resources respectively. [$=>$I] and [$=>$E] are the rules for
@@ -306,17 +307,17 @@ syntax direct typing rules as follows:
 %   $\sigma$ is an abbreviation of $(\emptyset \mid \sigma)$.
 % \end{defn}
 
-Similar to Quill typing system \citep{morris_best_2016} elimination of polymorphism [$\forall$E] and qualified
-types[$=>$E] is always done in the [Var$^s$], introduction of polymorphism [$\forall$I] and qualified types[$=>$I] is
-done at let bindings [Let$^s$]. This collapses the rules [$\forall$E], [$=>$E] and [ID] in one rule [VAR$^s$] where
-we use instantiation of type variables, and [$\forall$I], [$=>$I] and [Let] in one rule [Let$^s$] where we use generalization of type variables.
+The elimination of polymorphism [$\forall$E] and qualified types[$=>$E] is always done in the [Var$^s$],
+introduction of polymorphism [$\forall$I] and qualified types[$=>$I] is
+done at \texttt{let} bindings [Let$^s$]. This collapses the rules [$\forall$E], [$=>$E] and [ID] in one rule [VAR$^s$] where
+we use instantiation or specialization of type variables, and [$\forall$I], [$=>$I] and [Let] in one rule [Let$^s$] where we use generalization of type variables.
 [$\sepimp$I$^s$] is used in occurence of $\lambda^{\sepimp} $, and [$\shimp$I$^s$] is used in occurence of $\lambda^{\shimp}$.
 We would add the introduced abstraction variable, $x$, into the sharing context in case of [$\shimp$I$^s$].
-% The type variable $t$ in both [$\sepimp$I$^s$] and [$\shimp$I$^s$] are new.
 We collapse the application rules [$\sepimp$E] and [$\shimp$E] into one rule [App$^s$] where we check for sharing of the used variables in both
 the expressions and then assign a predicate of $\texttt{ShFun}$ or $\texttt{SeFun}$ depending on whether the variables
 are shared or not. The \texttt{un} predicates are added to the types of the terms that are not used directly in the expression
 or which are not in sharing with the terms used.
+
 \begin{figure}[h]
   \begin{framed}
     % VAR^s
@@ -385,19 +386,24 @@ assigned a type $\tau' \sepimp \tau$ else, they would have to be completely shar
 The conditions outlined for [App$^s$] do not clearly look as if they are syntax directed and in the cases where the type checker cannot directly infer if the
 resources used are separate or shared, the user would be expected to provide it using type annotations. $\Gamma \tightoverset{\thicksim}{\circledast} \Delta$
 is an assertion that there exists a proof either possible to find by inspecting the type assignment, or provided by the user
-that $\Gamma \circledast \Delta$ is indeed true. Similarly, $\Gamma \tightoverset{\thicksim}{\varoplus} \Delta$ means that $\Gamma \varoplus \Delta$ is well
+that $\Gamma \circledast \Delta$ is defined. Similarly, $\Gamma \tightoverset{\thicksim}{\varoplus} \Delta$ means that $\Gamma \varoplus \Delta$ is well
 defined.
+
+We now state two important theorems regarding the type system and the syntax directed type system. The proofs of both the
+theorems are given in \cref{chp:proofs}.
 
 \begin{theorem}[Soundness of $\vdash^s$]
   If $P \mid \Gamma \vdash^s M:\tau$ then $P \mid \Gamma \vdash M : \tau$
 \end{theorem}
 The soundness property captures the essence that derivations in the syntax directed type system follow the original type system.
-The proof is by induction on derivation of $P \mid \Gamma \vdash^s M:\tau$ and is detailed in \cref{prf:soundness-syntax-directed}.
 
-The syntax directed typing system is however not complete i.e. the syntax directed typing may not be able to derive the same
-typing judgement as the original system.
+\begin{theorem}[Completeness of $\vdashs$]\label{thm:completeness-syntax-directed}
+  If $P \mid \Gamma \vdash M:\sigma$ then
+  $\exists Q, \tau$ such that $Q \mid \Gamma \vdashs M:\tau$
+  and $(P \mid \sigma) \sqsubseteq \texttt{Gen}(\Gamma, Q => \tau)$
+\end{theorem}
 
-\TODO{What is the reason? How does this relate to future work? needs elaboration}
+The completeness theorem states that 
 
 \section{Type Inference and Algorithm $\M$}\label{sec:algorithm-m}
 We now describe the type inference algorithm based on the previously defined syntax directed
