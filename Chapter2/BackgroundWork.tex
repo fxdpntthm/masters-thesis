@@ -16,7 +16,7 @@ The algorithms also guarantee a most general typing scheme or principal types fo
                        t, u, \upsilon &\in \text{Type Variables}\\
     \text{Types}\ \ \  \tau           &::= t \mid \iota \mid \tau \rightarrow \tau \\
     \text{Typing Scheme}\ \ \  \sigma &::= \tau \mid \forall t. \tau\\
-         \text{Expressions}\ \ \ M, N &::= x: \sigma \mid \lambda x. M \mid M N \mid \Let{x}{M}{N}
+         \text{Expressions}\ \ \ M, N &::= x \mid \lambda x. M \mid M N \mid \Let{x}{M}{N}
   \end{flalign*}
 \end{framed}
 \caption{Hindley-Milner Type and Expression Language}
@@ -93,12 +93,12 @@ lambda terms and application respectively. We also include the rules for paramet
 of the type scheme by substituting free type variables. It is worthwhile to note that when we generalize over types using the rule
 [$\forall$I] we need to ensure that the new type variable introduced should not be free in the existing typing context,
 hence, the side condition of $t \notin \texttt{fvs}(\Gamma)$ where $\texttt{fvs}(\Gamma)$ denotes free type variables in $\Gamma$.
-The [LET] allows implicit parametric polymorphism. For example, the function, \HaskellF{g = \f -> (f True, f 1)} will raise a
-type error as the type inference algorithm will not be able to unify the types \HaskellF{f True : Bool -> |$\alpha$|}
-with \HaskellF{f 1 : Int -> |$\beta$|}. However there indeed exists a polymorphic function \HaskellF{f: |$\forall \alpha$|. |$\alpha$| -> |$\alpha$|}
-that can be used to type check the function \HaskellF{g}. The \texttt{let} construct comes handy in such cases. The function \HaskellF{g} can be redefined
-as \HaskellF{g = let f = \x -> x in (f True, f 1)}. The type of the function \HaskellF{f} is now computed
-as \HaskellF{f: |$\forall \alpha$|. |$\alpha$| -> |$\alpha$|} and the function \HaskellF{g} is assigned a type \HaskellF{(Bool, Int)}.
+The [LET] allows implicit parametric polymorphism. For example, the expression, \HaskellF{g = |$\lambda$|f. (f True, f 1)} will raise a
+type error as the type inference algorithm will not be able to unify the type of expression \HaskellF{f True : Bool |$\rightarrow \alpha$|}
+with \HaskellF{f 1 : Int |$ \rightarrow \beta$|}. However there indeed exists a polymorphic type for \HaskellF{|$\forall \alpha. \alpha \rightarrow \alpha$|}
+that can be used to type check expression \HaskellF{g}. The \texttt{let} construct comes handy in such cases. The expression \HaskellF{g} can be defined
+as \HaskellF{g = let f = |$\lambda$| x. x in (f True, f 1)}. The type of the expression \HaskellF{f} is now computed
+as \HaskellF{f: |$\forall \alpha$|. |$\alpha \rightarrow \alpha$|} and \HaskellF{g} is assigned a type \HaskellF{(Bool, Int)}.
 
 \begin{figure}[h]
   \centering
