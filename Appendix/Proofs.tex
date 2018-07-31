@@ -234,10 +234,13 @@ We go over a few intermediate results to prove the soundness result.
     Now by \cref{lemma:strengthen} and \cref{lemma:syntax-closed-under-sub} and the induction hypothesis we get
     $$R' Q' \mid R' \Gamma \circledast R' \Delta \vdashs M: R' (u_1 u_2 \tau)$$
     $$R' Q' \mid R' \Gamma \circledast R' \Delta \vdashs N: u_2$$
-    where $Q' = P \cup P' \cup Q \cup \{\Un{\Delta}\}$. we get the desired derivation using [APP$^s$].
+    where $Q' = P \cup P' \cup Q \cup \{\Un{\Delta}\}$. We can now build the desired derivation using [APP$^s$].
 
   \item{Case $\texttt{let}\ x = M\ \texttt{in}\ N$.}
-    
+    We have
+    $$P; R; \Sigma; \Psi' = \M(S, \Psi, \Gamma \vdash M:u_1)$$
+    $$P'; R'; \Sigma'; \Psi'' = \M(R, \Psi', \Gamma, x:\sigma \vdash N : \tau)$$
+    where $\sigma = \texttt{GenI}(R\Gamma; R(P \Rightarrow u_1))$
   \end{itemize}
 \end{proof}
 
