@@ -10,8 +10,8 @@ constructors. This generalization alleviates the burden of modifying the core la
 treating all types to be instances of type constructors. The idea was introduced by Barendregt \citeyearpar{barendregt_1991} and
 is used by Jones \citeyearpar{jones_system_1993} for qualified types. We will follow Jones' approach
 to add the language of type constructors and kinds in our system.
-The modified type system is shown in \cref{fig:qub-kind-extension}.
-All types have kind $\star$ and the kind of the type constructors depends on its arity.
+The complete type system is shown in \cref{fig:qub-kind-extension}. All types have kind $\star$ and the kind of the type constructors depends on its arity.
+
 \begin{figure}[h]
   \begin{framed}
     \begin{flalign*}
@@ -19,8 +19,8 @@ All types have kind $\star$ and the kind of the type constructors depends on its
       \text{Kinds}\ \ \               \kappa          &::= \kappa \mid \kappa' \rightarrow \kappa\\
       \text{Types}\ \ \             \tau^{\kappa}      &::= t^\kappa \mid T^{\kappa} \mid \tau^{\kappa' \rightarrow \kappa}\tau^{\kappa'}\\
       \text{Type Constructors}\ \ \   T^{\kappa}       &\in \mathcal{T}^{\kappa}\ 
-                         \text{where}\ \{\otimes, \with, \oplus, \overset{!}{\sepimp}, \sepimp, \xrightarrow{!}, \rightarrow \} \subseteq \mathcal{T}^{\star \rightarrow \star \rightarrow \star}\\
-      \text{Predicates}\ \ \          \pi             &::= \texttt{Un}\ \tau \mid \texttt{SeFun}\ \tau \mid \texttt{ShFun}\ \tau \mid \tau \geq \tau' \\
+                         \text{where}\ \{\otimes, \with, \oplus, \tightoverset{\scalebox{0.5}{!}}{\sepimp}, \sepimp, \tightoverset{\scalebox{0.5}{!}}{\shimp}, \shimp \} \subseteq \mathcal{T}^{\star \rightarrow \star \rightarrow \star}\\
+      \text{Predicates}\ \ \          \pi, \omega     &::= \tau \mid \Un{\tau} \mid \SeFun{\tau} \mid \ShFun{\tau} \mid \tau \geq \tau' \\
       \text{Qualified Types}\ \ \     \rho            &::= \tau \mid \pi => \rho \\
       \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma
     \end{flalign*}
@@ -106,7 +106,7 @@ can be unified which asserts that they have to have the same kind $\kappa' \righ
   \begin{framed}
     \begin{flalign*}
       \text{Term Variables}\ \ \  x, y, z  &\in \text{Var}\\
-      \text{Expressions}\ \ \     M, N     &::= x \mid \lambda^{*}x. M \mid \lambda^{\alpha}x. M \mid M N \mid \Let{x}{M}{N}\\
+      \text{Expressions}\ \ \     M, N     &::= x \mid \lambda^{\sepimp} x. M \mid \lambda^{\shimp}x. M \mid M N \mid \Let{x}{M}{N}\\
       &\mid \Pair{M,N} \mid \Let{\Pair{x,y}}{M}{N} \mid \Pair{M;N} \mid \Fst{M} \mid \Snd{M}\\
       &\mid \Case{M}{\{\texttt{inl}\ x \mapsto N ; \texttt{inr}\ y \mapsto N'\}}\mid \Inl{x} \mid \Inr{y}\\
     \end{flalign*}
@@ -114,8 +114,6 @@ can be unified which asserts that they have to have the same kind $\kappa' \righ
   \caption{Extended \qub{} Language Syntax}
   \label{fig:ext-qub-terms}
 \end{figure}
-
-\TODO{add more details of how this helps and proofs remain the same}
 
 \section{Pairs and Sums in  \qub{}}\label{sec:pairs-types}
 Introduction of two kinds of arrows in our type system leads to different flavors of pairs. This distinction cannot be made
@@ -138,7 +136,7 @@ not being unrestricted.
     \begin{flalign*}
       \otimes &\in \mathcal{T}^{\star \rightarrow \star \rightarrow \star}\\
       \tau \otimes \tau' &= \tau \sepimp \tau' \sepimp (\tau \sepimp \tau' \sepimp \upsilon) \sepimp \upsilon\\
-      (,) &= \lambda^{*} x. \lambda^{*} y. \lambda^{*} f. f x y
+      (,) &= \lambda^{\sepimp}  x. \lambda^{\sepimp}  y. \lambda^{\sepimp}  f. f x y
     \end{flalign*}
   \end{framed}
 \caption{Multiplicative Pair}
@@ -167,7 +165,7 @@ not being unrestricted.
 \end{figure}
 
 \subsection{Additive Pair Type}\label{subsec:add-pairs}
-The lambda encoding for additive pairs is given in \cref{fig:add-pairs}. The typing rules are given in \cref{fig:add-pair-rules}. We give
+The lambda encoding for additive pairs is given in \cref{fig:add-pair}. The typing rules are given in \cref{fig:add-pair-rules}. We give
 proof of derivations for the rules in \cref{subsec:add-pairs-deriv}. Additive pairs can be thought of as program
 entities that have sharing resources. We use \Fst{} and \Snd{} as projection functions on the additive pair to obtain the
 constituent objects. It is worthwhile to note that we do not provide these projection functions for multiplicative pairs
@@ -179,7 +177,7 @@ so as to restrict the programmer from implicitly discarding one of the component
     \begin{flalign*}
       \with &\in \mathcal{T}^{\star \rightarrow \star \rightarrow \star}\\
       \tau \with \tau' &= \tau \sepimp \tau' \rightarrow (\tau \sepimp \tau' \rightarrow \upsilon) \rightarrow \upsilon\\
-      (;) &= \lambda^{*} x. \lambda^{\alpha} by. \lambda^{\alpha} f. f x y
+      (;) &= \lambda^{\sepimp}  x. \lambda^{\shimp} by. \lambda^{\shimp} f. f x y
     \end{flalign*}
   \end{framed}
   \caption{Additive Pair}
@@ -226,9 +224,9 @@ helpful in defining data structures such as lists, trees and option types.
       \oplus &\in \mathcal{T}^{\star \rightarrow \star \rightarrow \star}\\
       \tau \oplus \tau' &= (\tau \rightarrow \upsilon) \rightarrow (\tau' \rightarrow \upsilon) \rightarrow \upsilon\\
       \Inl{} &: \tau \sepimp (\tau \oplus \tau')\\
-      \Inl{} &= \lambda^{*}x. \lambda^{\alpha} f. \lambda^{\alpha} g. f x\\
+      \Inl{} &= \lambda^{\sepimp} x. \lambda^{\shimp} f. \lambda^{\shimp} g. f x\\
       \Inr{} &: \tau' \sepimp (\tau \oplus \tau')\\
-      \Inr{} &= \lambda^{*}y. \lambda^{\alpha} f. \lambda^{\alpha} g. g y
+      \Inr{} &= \lambda^{\sepimp} y. \lambda^{\shimp} f. \lambda^{\shimp} g. g y
     \end{flalign*}
   \end{framed}
   \caption{Sum Type}
@@ -330,105 +328,19 @@ as on of the resources is being dropped and we would need the resource to be unr
 \begin{minted}{haskell}
 data Pair a b = SeP a b
 
-fst :: Pair' a b -> a
+fst :: Pair' a b -> a -- Does not type check
 fst (SeP x y) = x
 
-snd :: Pair' a b -> b
+snd :: Pair' a b -> b -- Does not type check
 snd (SeP x y) = y
+
+swap :: Pair a b -> Pair b a -- Type checks
+swap SeP x y = SeP y x
 \end{minted}
   \end{framed}
-
   \caption{Separating Pair}
   \label{fig:sep-pair}
 \end{figure}
-
-
-% Having two arrows indroduces two types of pairs. A sharing pair (\texttt{Pair$_{sh}$}) and a separating pair (\texttt{Pair$_{sep}$}) depending on
-% which arrow we use. The church encoding of both the pairs and their respective types are given in \ref{fig:bi-pairs-typing}.
-% Derivation proofs of both the pairs are given in \cref{sec:pairs}.
-
-
-% We can now introduce 2 types in our type language $\otimes$ and $\with$
-% which represent separating pair and sharing pair respectively as shown in \cref{fig:pair-typing-rules}.
-% We also have a sum type whose rules are shown in \cref{fig:bi-sum-types}.
-% Proof derivation and definitions for sum type is given in \cref{sec:sums}.
-
-
-% The datatypes are user defined types:
-% There are 2 main kinds of non-recursive datatypes
-
-% 1) data Choice a b = L a | R b
-
-% where the types a and b do not appear in both the constructors.
-% Choice here is a sum type a + b. How can we handle sum types in the current scenario?
-% 1 way is to have a and b both not share resources. in this case we will have
-% a and b to be both un restricted.
-
-% a and b cannot direclty share resources. As the meaning of a sum type is that
-% either a or b can exist and not both. So we will always have separating arrow
-% for the sum types
-
-% Write the elemination rules for Either
-
-% for functions the closure has to be equal.
-
-% 2) data Pair a b = P a b
-
-% The constructor uses both the resources a and b
-% Here we can have 2 subtypes:
-
-% a and b share resources or can be completely different.
-% We would want the programmer to specify whether the arguments are shared or separate.
-
-% For current purposes this syntactical specification is given via a modified syntax
-
-% data SeparatingPair a b = MkSeP a, b
-% data SharingPair a b = MkShP !! a b
-
-% We can of-course mix and match the sharing or separation.
-
-% data MixTuple a b c d e = MkMixTuple a,b;c,d
-
-% The question now that needs to be answered is how should the sharing be interpreted?
-% There are various options.
-
-% 1. interpreted right to left. i.e. MkMixTuple (a, (b; (c,d)))
-%    so the b is shared with separating pair (c,d) and a is separate than b
-
-% 2. interpreted left to right. i.e. MkMixTuple (((a, b);c),d)
-%    so the c is shared with separating pair (a,b) and d is separate from c
-
-% 3. Sharing ; has precedence over separating , i.e. MkMixTuple a,(b;c),d
-
-% 4. Separating , has lower precedence over ; i.e. MkMixTuple (a,b);(c,d)
-
-% This should be handled during the AST generating while parsing.
-% The type checking algorithm should be robust enough
-% to perform type checking either of these 4 types of sharing as they are
-% all perfectly valid scenarios.
-
-% Recursive datatypes have some kind of structural similarities within themselves
-
-% data Tree a = Leaf a | Node a (Tree a) (Tree a)
-
-% data Tree a b = Leaf b | Node a (Tree a b) (Tree a b)
-
-% Open questions:
-% How do we specify sharing of data between nodes?
-% eg. How can we say that all the leaves have shared data? and the data in nodes is sparating
-
-
-% What happens when lesser unrestrictedness with datatypes? Choice a b >:= f
-
-
-% \section{Examples}
-
-% \subsection{Pairs}
-
-% Our language has a notion of 2 kinds of pairs. The pairs representing resources that do not share
-% are denoted using separating pair $A \otimes B$. This means that when ever 
-
-
 
 %%% Local Variables:
 %%% mode: latex
