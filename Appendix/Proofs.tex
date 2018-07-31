@@ -153,27 +153,91 @@ We first go over few intermediate results and definitions that will help us prov
     $(P \mid \pi \Rightarrow \rho) \sqsubseteq \sigma$, As $(P \mid [\tau/t]\sigma) \sqsubseteq (P \mid \sigma)$,
     $(P \mid [\tau / t]\sigma) \sqsubseteq \sigma$ (becuase $\sigma = (\emptyset \mid \sigma)$.
   \item{Case [Let].}
-    {\color{red}
-      By induction hypothesis, we have $Q \mid \Gamma \circledast \Delta \vdashs M: \upsilon$ and $Q' \mid \Gamma' \circledast \Delta \sqcup \{x:\sigma\} \vdashs N:\tau$
-      such that, letting $\sigma = \texttt{Gen}(\Gamma, Q \Rightarrow \upsilon)$, $(P \mid \forall t. \sigma) \sqsubseteq \sigma'$. Thus we conclude that
-      $\Gamma, x:\sigma' \sqsubseteq \Gamma, x:\forall t. \sigma$. Now by applying \cref{lemma:let-helper}, the induction hypothesis, and \cref{lemma:impl-helper},
-      we have a derivation of $Q' \mid \Gamma, x:\sigma' \vdash N:\tau$. Now applying [LET$^s$] we get the required derivation.
-    } \qedhere
+    By induction hypothesis, we have $$Q \mid \Gamma \circledast \Delta \vdashs M: \upsilon$$ and
+    $$Q' \mid \Gamma' \circledast \Delta \sqcup \{x:\sigma\} \vdashs N:\tau$$
+    such that, letting $\sigma' = \texttt{Gen}(\Gamma, Q \Rightarrow \upsilon)$, $(P \mid \forall t. \sigma) \sqsubseteq \sigma'$. Thus we conclude that
+    $\Gamma \sqcup \{ x:\forall t. \sigma \} \sqsubseteq   \Gamma \sqcup \{ x:\sigma'\}$. Now by applying \cref{lemma:let-helper}, the induction hypothesis, and \cref{lemma:impl-helper},
+    we have a derivation of $Q' \mid \Gamma \sqcup \{ x:\sigma'\} \vdash N:\tau$. Finally applying [LET$^s$] we get the required derivation.
+      \qedhere
   \end{itemize}
 \end{proof}
 
 
 \begin{theorem}[Soundness of $\mathcal{M}$.]\label{thm:soundness-m}
-   If $\mathcal{M}(S, \Psi, \Gamma \vdash M : \tau) = P, S', \Sigma, \Psi'$ then $S' P \mid S' \Gamma \vdashs M : S' \tau$
-\end{theorem}
+   If $\mathcal{M}(S, \Psi, \Gamma \vdash M : \tau) = P, S', \Sigma, \Psi'$ then $S' P \mid S' \Gamma \vdash M : S' \tau$
+ \end{theorem}
+
+We go over a few intermediate results to prove the soundness result.
+
+\begin{lemma}\label{lemma:strengthen}
+  If $P \mid \Delta \vdashs M:\tau$ and $Q \Rightarrow P$, then $Q \mid \Delta \vdashs M: \tau$
+\end{lemma}
+
+\begin{lemma}\label{lemma:syntax-WKN-UN-helper}
+  If $P \mid \Gamma \vdashs M:\tau$, $\forall_{y \in \texttt{dom}(\Delta)} y$ is not free in $M$ and $P \vdashs \Delta\ \texttt{un}$
+  then $P \mid \Gamma \circledast \Delta \vdash M:\tau$.
+\end{lemma}
 \begin{proof}
+  We see that the syntax directed system is complete with respect to the original type system hence, due to \cref{lemma:WKN-UN-helper} and \cref{thm:completeness-syntax-directed}, we can prove the required result.
+\end{proof}
+
+\begin{lemma}\label{lemma:syntax-WKN-SH-helper}
+  If $P \mid \Gamma \vdashs M:\tau$, $\forall_{y \in \texttt{dom}(\Delta)} y$ is not free in $M$ then $P \mid \Gamma \varoplus \Delta \vdashs M:\tau$.
+\end{lemma}
+\begin{proof}
+  Proof is similar to \cref{lemma:syntax-WKN-UN-helper}. We see that the syntax directed system is complete with respect to the original type system hence,
+  due to \cref{lemma:WKN-SH-helper} and \cref{thm:completeness-syntax-directed}, we can prove the required result.
+\end{proof}
+
+\begin{lemma}\label{lemma:syntax-closed-under-sub}
+  If $P \mid \Gamma \vdashs M:\tau$ then $S P \mid S \Gamma \vdashs S \tau$.
+\end{lemma}
+\begin{proof}
+  Proof is by a simple induction on derivation of $P \mid \Gamma \vdashs M:\tau$
+\end{proof}
+
+\begin{proof}[Proof of \cref{thm:soundness-m}]
   Proof by induction on structure of $M$
   \begin{itemize}
-  \item Case 1. $x$
-  \item Case 2. $\lambda^{*} x. M$
-  \item Case 3. $\lambda ^{\alpha}x. M$
-  \item Case 4. $M\ N$
-  \item Case 5. $\texttt{let}\ x = M\ \texttt{in}\ N$
+  \item{Case $x$.}
+    We have $$(x^{\vec{y}}:\forall \vec{t}. P \Rightarrow \tau) \in \Gamma$$ where $\vec{y} \subseteq \texttt{dom}{\Gamma}$ and $\Sigma = \{ x \}$. We see that
+    $$([\vec{u}/\vec{t}]P \Rightarrow [\vec{u}/\vec{t}]\tau) \sqsubseteq (\forall \vec{t}. P \Rightarrow \tau)$$
+    So, we can apply [VAR$^s$] to construct a derivation of
+    $[\vec{u}/\vec{t}]P \mid \{x:\forall \vec{t}. P \Rightarrow \tau \} \vdashs x: [\vec{u}/\vec{t}]\tau$
+
+  \item{Case $\lambda^{\shimp} x. M$.}
+    We have $$P; S'; \Sigma; \Psi' = \M(\Unf(\tau, u_1 u_2 u_3) \circ S, \Psi, \Gamma, x:u_2 \vdash M: u_3)$$
+    and by induction hypothesis $$S' P \mid S' ((\Gamma \sqcup \{ x^{\texttt{dom}(\Gamma)} : u_2 \})|_{\Sigma}) \vdashs M : S' u_3$$
+    Let $Q = \{\ShFun{u_1}\} \cup \texttt{Leq}(u_1, \Gamma|_\Sigma) \cup \texttt{Weaken}(x, u_2, \Sigma) \cup P$
+    and let $\Sigma' = \Sigma \backslash \{x\}$. By \cref{lemma:strengthen} and \cref{lemma:syntax-WKN-UN-helper} we can consruct a
+    derivation of $$S' Q \mid S'  ((\Gamma \sqcup \{x:u_2\})|_{\Sigma'}) \vdashs M: S' u_3$$
+    Now, using [$\shimp$I$^s$] we get the required derivation
+
+  \item{Case $\lambda^{\sepimp} x. M$.}
+    We have $$P; S'; \Sigma; \Psi' = \M(\Unf(\tau, u_1 u_2 u_3) \circ S, \Psi, \Gamma, x:u_2 \vdash M: u_3)$$
+    and by induction hypothesis $$S' P \mid S' ((\Gamma \sqcup \{ x^\emptyset : u_2 \})|_{\Sigma}) \vdashs M : S' u_3$$
+    Let $Q = \{\SeFun{u_1}\} \cup \texttt{Leq}(u_1, \Gamma|_\Sigma) \cup \texttt{Weaken}(x, u_2, \Sigma) \cup P$
+    and let $\Sigma' = \Sigma \backslash \{x\}$. By \cref{lemma:strengthen} and \cref{lemma:syntax-WKN-UN-helper} we can consruct a
+    derivation of $$S' Q \mid S'  ((\Gamma \sqcup \{x:u_2\})|_{\Sigma'}) \vdashs M: S' u_3$$
+    Now, using [$\sepimp$I$^s$] we get the required derivation
+
+  \item{Case $M N$.}
+    We have that
+    \begin{flalign*}
+      P; R; \Sigma; \Psi' &= \M(S, \Psi, \Gamma \vdash M:  u_1 u_2 \tau)\\
+      P'; R'; \Sigma'; \Psi'' &= \M(S \circ R, \Psi', S \Gamma \vdash N: u_2)
+    \end{flalign*}
+    We have two sub-cases here depending on whether the application is shared or separating.
+    If we can prove $\mathcal{C}(S \Gamma, \Sigma, \Psi) \# \mathcal{C}(S \circ R \Gamma, \Sigma', \Psi')$ then we let $Q = P \cup P' \cup \SeFun{u_1}$
+    or if we can prove $\mathcal{C}(S \Gamma, \Sigma, \Psi) = \mathcal{C}((S \circ R) \Gamma, \Sigma', \Psi')$ then we let $Q = P \cup P' \cup \ShFun{u_1}$
+    (else the inference algorithm fails). Let $\Delta = \texttt{dom}(\Gamma)\backslash \mathcal{C}(\Gamma, \Sigma \cup \Sigma', \Psi \circ \Psi') $
+    Now by \cref{lemma:strengthen} and \cref{lemma:syntax-closed-under-sub} and the induction hypothesis we get
+    $$R' Q' \mid R' \Gamma \circledast R' \Delta \vdashs M: R' (u_1 u_2 \tau)$$
+    $$R' Q' \mid R' \Gamma \circledast R' \Delta \vdashs N: u_2$$
+    where $Q' = P \cup P' \cup Q \cup \{\Un{\Delta}\}$. we get the desired derivation using [APP$^s$].
+
+  \item{Case $\texttt{let}\ x = M\ \texttt{in}\ N$.}
+    
   \end{itemize}
 \end{proof}
 
@@ -186,7 +250,7 @@ We first go over few intermediate results and definitions that will help us prov
 \begin{proof}
   The algorithm $\M$ is incomplete as there would be cases where a term can be typed in two ways. $\M$ would compute only one of them and leave out the other one.
   Consider the type for $\lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x$.
-  This term can be typed in two ways
+  This term can be typed in two ways in \qub{} type system.
   \begin{itemize}
   \item $\texttt{Un}\ A \mid \emptyset \vdash \lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x: (A \sepimp A \sepimp B) \sepimp A \sepimp B$
   \item $\emptyset \mid \emptyset \vdash \vdash \lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x: (A \sepimp A \shimp B) \sepimp A \shimp B$.

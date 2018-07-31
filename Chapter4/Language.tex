@@ -70,16 +70,16 @@ to enable users to define custom types using type constructors. We describe this
       \end{prooftree}
     \end{minipage}
 
-    \begin{minipage}{0.20\linewidth}
+    \begin{minipage}{0.24\linewidth}
       \begin{prooftree}
-        \AxiomC{$\tau = \sepimp \vee \tau = \tightoverset{\scalebox{0.5}{!}}{\sepimp}$}
-        \UnaryInfC{$P => \SeFun{\tau}$}
+        \AxiomC{${\color{white}P => \tau \geq \phi t}$}
+        \UnaryInfC{$P => \tau \geq (v \sepimp v')$}
       \end{prooftree}
     \end{minipage}%
-    \begin{minipage}{0.20\linewidth}
+    \begin{minipage}{0.24\linewidth}
       \begin{prooftree}
-        \AxiomC{$\tau = \shimp \vee \tau = \tightoverset{\scalebox{0.5}{!}}{\shimp}$}
-        \UnaryInfC{$P => \ShFun{\tau}$}
+        \AxiomC{${\color{white}P => \tau \geq \phi t}$}
+        \UnaryInfC{$P => \tau \geq (v \shimp v')$}
       \end{prooftree}
     \end{minipage}%
     \begin{minipage}{0.24\linewidth}
@@ -95,16 +95,16 @@ to enable users to define custom types using type constructors. We describe this
       \end{prooftree}
     \end{minipage}
 
-    \begin{minipage}{0.30\linewidth}
+    \begin{minipage}{0.20\linewidth}
       \begin{prooftree}
-        \AxiomC{${\color{white}P => \tau \geq \phi t}$}
-        \UnaryInfC{$P => \tau \geq (v \sepimp v')$}
+        \AxiomC{$\tau = \sepimp \vee \tau = \tightoverset{\scalebox{0.5}{!}}{\sepimp}$}
+        \UnaryInfC{$P => \SeFun{\tau}$}
       \end{prooftree}
     \end{minipage}%
-    \begin{minipage}{0.30\linewidth}
+    \begin{minipage}{0.20\linewidth}
       \begin{prooftree}
-        \AxiomC{${\color{white}P => \tau \geq \phi t}$}
-        \UnaryInfC{$P => \tau \geq (v \shimp v')$}
+        \AxiomC{$\tau = \shimp \vee \tau = \tightoverset{\scalebox{0.5}{!}}{\shimp}$}
+        \UnaryInfC{$P => \ShFun{\tau}$}
       \end{prooftree}
     \end{minipage}%
     \begin{minipage}{0.30\linewidth}
@@ -276,17 +276,9 @@ the standard notion of set equality for checking sharing union.
 Our term language is similar to that of simply typed lambda calculus involving variables and application
 but we have two types of lambda expressions, the alpha lambda ($\lambda^{\shimp}$) denotes sharing
 of the argument term with the expression $M$ and the separating lambda term ($\lambda^{\sepimp} $) that implies
-the argument term has a separating context with the expression $M$. We also have polymorphic $\texttt{let}$
-expressions to be able to define expressions with a limited scope.  % The type constructors \texttt{inl} and \texttt{inr} build
-% a sum type while \texttt{case} expression match on the sum type to specify what should be done in for the two ways
-% in which the sum type was created.
-
-% The type constructors are added in order to allow programmers to define their own data types. They can be used to define sum and product types.
-% \texttt{case} expression can be used to pattern match on the expression to express it in terms
-% of individual sum types. Patterns are either term variables or constructor terms.
-
+the argument term has a separating context with the expression $M$. We also have $\texttt{let}$
+construct to enable implicit parametric polymorphism.
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../thesis-ku.tex"
 %%% End:
- 

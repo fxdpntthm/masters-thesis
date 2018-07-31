@@ -403,7 +403,8 @@ The soundness property captures the essence that derivations in the syntax direc
   and $(P \mid \sigma) \sqsubseteq \texttt{Gen}(\Gamma, Q => \tau)$
 \end{theorem}
 
-The completeness theorem states that 
+The completeness theorem states that we can always find predicates $Q$ and a suitable type $\tau$ for the term $M$ under the assumptions
+$\Gamma$ using syntax directed type system if the original type system asserts that the typing judgement indeed exists. 
 
 \section{Type Inference and Algorithm $\M$}\label{sec:algorithm-m}
 We now describe the type inference algorithm based on the previously defined syntax directed
@@ -425,8 +426,8 @@ $\texttt{Weaken}(x, \sigma, \Sigma)$ adds the unrestricted predicate to the type
 if $x$ does not belong to $\Sigma$. $\texttt{Un}(\Gamma)$ adds an unrestricted
 predicate to all the types of the variables that are in the domain of $\Gamma$.
 $\texttt{GenI}(\Gamma, P => \tau)$ generalizes the qualified type to a type scheme.
-$\mathcal{C}(\Gamma, \Psi, \Sigma)$ computes the sharing information
-restricted to the variables given in $\Sigma$.
+$\mathcal{C}(\Gamma, \Psi, \Sigma)$ computes the sharing information of variables in $\Gamma$
+restricted to the variables in $\Sigma$.
 
 \begin{figure}[h]
   \begin{framed}
@@ -451,14 +452,14 @@ restricted to the variables given in $\Sigma$.
     \end{minipage}
     \begin{minipage}{0.5\linewidth}
       \begin{flalign*}
-        \texttt{GenI}(\Gamma, P &=> \tau)  = \forall (ftv(S P, \tau)).S P => \tau \nonumber\\
-        \text{where}\ &S\ \text{improves}\ \texttt{ftv}(P) \backslash \texttt{ftv}(\Gamma, \tau)\ \text{in}\ P
+        \texttt{GenI}(\Gamma, P &=> \tau)  = \\
+        &\forall (\texttt{fvs}(P) \cup \texttt{fvs}(\tau) \backslash\texttt{fvs}(\Gamma))). P => \tau
       \end{flalign*}
     \end{minipage}
     \newline\newline
     \begin{minipage}{1\linewidth}
       \begin{flalign*}
-        \mathcal{C}(\Gamma, \Psi, \Sigma)  = \bigcup_{x \in \texttt{dom}(\Gamma)\ \text{and}\ x \in \Sigma} \Psi(x)
+        \mathcal{C}(\Gamma, \Psi, \Sigma)  = \bigcup_{x \in \texttt{dom}(\Gamma) \wedge x \in \Sigma} \Psi(x)
       \end{flalign*}
     \end{minipage}
   \end{framed}
@@ -466,72 +467,75 @@ restricted to the variables given in $\Sigma$.
   \label{fig:aux-defs}
 \end{figure}
 
-% Explain each case of algorithm M here.
 \begin{figure}[h]
   \begin{framed}
-    \begin{minipage}[ht]{1\linewidth}
-      \centering
-      \fbox{
-        $\M(S, \Psi, \Gamma \vdash M : \tau) = P, S', \Sigma, \Psi'$
-      }
-    \end{minipage}
-    % x var
-    \begin{minipage}{1\linewidth}
-      \begin{flalign*}
-        \M(S, \Psi, \Gamma \vdash x : \tau) &= ([\vec{u} / \vec{t}]P), S' \circ S, \{x\}, \Psi \\
-        \text{where}\ (x : \forall \vec{t}. P => \nu) &\in S \Gamma \\
-        S' &= \Unf([\vec{u} / \vec{t}]\nu, S \tau)
-      \end{flalign*}
-    \end{minipage}
+    {\small
+      \begin{minipage}[ht]{1\linewidth}
+        \centering
+        \fbox{
+          $\M(S, \Psi, \Gamma \vdash M : \tau) = P, S', \Sigma, \Psi'$
+        }
+      \end{minipage}
+      % x var
+      \begin{minipage}{1\linewidth}
+        \begin{flalign*}
+          \M(S, \Psi, \Gamma \vdash x : \tau) &= ([\vec{u} / \vec{t}]P), S' \circ S, \{x\}, \Psi \\
+          \text{where\qquad}\ (x : \forall \vec{t}. P => \upsilon) &\in S \Gamma \\
+          S' &= \Unf([\vec{u} / \vec{t}]\upsilon, S \tau)
+        \end{flalign*}
+      \end{minipage}
 
-    % \&x. M: t
-    \begin{minipage}{1\linewidth}
-      \begin{flalign*}
-        \M(S, \Psi, \Gamma \vdash \lambda ^{\alpha} x. M : \tau) &= \{P \cup Q \}, S', \Sigma \backslash x, \Psi''  \\
-        \text{where}\ P; S'; \Sigma; \Psi' &= \M(\Unf(\tau, u_1 u_2 u_3) \circ S, \Psi, \Gamma, x:u_2 \vdash M: u_3) \\
-        Q &= \{\ShFun{u_1}\} \cup \text{Leq}(u_1, \Gamma|_{\Sigma}) \cup \text{Weaken}(x, u_2, \Sigma)\\
-        \Psi'' &= \{\forall_{y \in \texttt{dom}(\Psi')}. \Psi'(y) + x\} \cup \{(x, \{ x \})\}
-      \end{flalign*}
-    \end{minipage}
+      % \&x. M: t
+      \begin{minipage}{1\linewidth}
+        \begin{flalign*}
+          \M(S, \Psi, \Gamma \vdash \lambda^{\shimp} x. M : \tau) &= \{P \cup Q \}, S', \Sigma \backslash x, \Psi''  \\
+          \text{where\qquad}\ P; S'; \Sigma; \Psi' &= \M(\Unf(\tau, u_1 u_2 u_3) \circ S, \Psi, \Gamma, x:u_2 \vdash M: u_3) \\
+          Q &= \{\ShFun{u_1}\} \cup \texttt{Leq}(u_1, \Gamma|_{\Sigma}) \cup \texttt{Weaken}(x, u_2, \Sigma)\\
+          \Psi'' &= \{\forall_{y \in \texttt{dom}(\Psi')}. \Psi'(y) + x\} \cup \{(x, \{ y \mid y \in \texttt{dom}(\Gamma) \})\}
+        \end{flalign*}
+      \end{minipage}
 
-    % \*x. M: t
-    \begin{minipage}{1\linewidth}
-      \begin{flalign*}
-        \M(S, \Psi, \Gamma \vdash \lambda ^{*} x. M : \tau) &= \{ P \cup Q \}, S', \Sigma \backslash x, \Psi''\\
-        \text{where}\ P; S'; \Sigma; \Psi' &= \M(\Unf(\tau, u_1 u_2 u_3) \circ S, X; \Gamma, x:u_2 \vdash M: u_3) \\
-        Q &= \{\SeFun{u_1}\} \cup \text{Leq}(u_1, \Gamma\mid_{\Sigma}) \cup \text{Weaken}(x, u_2, \Sigma)\\
-        \Psi'' &= \Psi' \cup \{(x, \{ x \})\}
-      \end{flalign*}
-    \end{minipage}
+      % \*x. M: t
+      \begin{minipage}{1\linewidth}
+        \begin{flalign*}
+          \M(S, \Psi, \Gamma \vdash \lambda^{\sepimp}  x. M : \tau) &= \{ P \cup Q \}, S', \Sigma \backslash x, \Psi''\\
+          \text{where\qquad}\ P; S'; \Sigma; \Psi' &= \M(\Unf(\tau, u_1 u_2 u_3) \circ S, X; \Gamma, x:u_2 \vdash M: u_3) \\
+          Q &= \{\SeFun{u_1}\} \cup \texttt{Leq}(u_1, \Gamma\mid_{\Sigma}) \cup \texttt{Weaken}(x, u_2, \Sigma)\\
+          \Psi'' &= \Psi' \cup \{(x, \{ x \})\}
+        \end{flalign*}
+      \end{minipage}
 
-    % M N: t
-    \begin{minipage}{1\linewidth}
-      \begin{flalign*}
-        \M(S, \Psi, \Gamma \vdash M N : \tau) &= \{ P \cup P' \cup Q \}, R', \Sigma \cup \Sigma', \Psi'' \\
-        \text{where}\ P; R; \Sigma; \Psi' &= \M(S, \Psi, \Gamma \vdash M:  u_1 u_2 \tau) \\
-        P'; R'; \Sigma'; \Psi'' &= \M(S R, \Psi', S \Gamma \vdash N: u_2)\\
-        \text{if}\ \mathcal{C}(\Gamma, \Psi'', \Sigma) &= \mathcal{C}(\Gamma, \Psi'', \Sigma')\\
-        \text{then}\ Q &= \{\ShFun{u_1}\} \\
-        \text{else}\ \text{if}\ &(\Sigma \# \mathcal{C}(R\Gamma, \Psi'', \Sigma')\ \text{and}\ \Sigma' \# \mathcal{C}(R\Gamma, \Psi'', \Sigma))\\
-        &\text{then}\ Q = \{\SeFun{u_1}\}\\
-        \text{else}\ Q &= \{\SeFun{u_1}\} \cup \text{Un}(\Gamma|_{\Sigma \cap \Sigma'})
-      \end{flalign*}
-    \end{minipage}
+      % M N: t
+      \begin{minipage}{1\linewidth}
+        \begin{flalign*}
+          \M(S, \Psi, \Gamma \vdash M N : \tau) &= \{ P \cup P' \cup Q \}, R', \Sigma \cup \Sigma', \Psi'' \\
+          \text{where\qquad}\ P; R; \Sigma; \Psi' &= \M(S, \Psi, \Gamma \vdash M:  u_1 u_2 \tau) \\
+          P'; R'; \Sigma'; \Psi'' &= \M(S R, \Psi', S \Gamma \vdash N: u_2)\\
+          \text{if}\ \mathcal{C}(\Gamma, \Psi'', \Sigma) &= \mathcal{C}(\Gamma, \Psi'', \Sigma')\\
+          \text{then}\ Q &= \{\ShFun{u_1}\} \\
+          \text{else}\ \text{if}\ &(\Sigma \# \mathcal{C}(R\Gamma, \Psi'', \Sigma')\ \text{and}\ \Sigma' \# \mathcal{C}(R\Gamma, \Psi'', \Sigma))\\
+          &\text{then}\ Q = \{\SeFun{u_1}\}
+          %\text{else}\ Q &= \{\SeFun{u_1}\} \cup \text{Un}(\Gamma|_{\Sigma \cap \Sigma'})
+        \end{flalign*}
+      \end{minipage}
 
-    % let x = M in N: t
-    \begin{minipage}{1\linewidth}
-      \begin{flalign*}
-        \M(S, \Psi, \Gamma \vdash \Let{x}{M}{N} : \tau) &= (P \cup Q), R', \Sigma \cup \{\Sigma' \backslash x \}, \Psi'' \\
-        \text{where}\ P; R; \Sigma; \Psi' &= \M(S, \Psi, \Gamma \vdash M:u_1)  \\
-        \sigma &= \text{GenI}(R\Gamma; R(P => u_1)) \\
-        P'; R'; \Sigma'; \Psi'' &= \M(R, \Psi', \Gamma, x:\sigma \vdash N : \tau) \\
-        Q &= \text{Un}(\Gamma|_{\Sigma \cap \Sigma'}) \cup \text{Weaken}(x, \sigma, \Sigma')
-      \end{flalign*}
-    \end{minipage}
+      % let x = M in N: t
+      \begin{minipage}{1\linewidth}
+        \begin{flalign*}
+          \M(S, \Psi, \Gamma \vdash \Let{x}{M}{N} : \tau) &= (P \cup Q), R', \Sigma \cup \{\Sigma' \backslash x \}, \Psi'' \\
+          \text{where\qquad}\ P; R; \Sigma; \Psi' &= \M(S, \Psi, \Gamma \vdash M:u_1)  \\
+          \sigma &= \texttt{GenI}(R\Gamma; R(P => u_1)) \\
+          P'; R'; \Sigma'; \Psi'' &= \M(R, \Psi', \Gamma, x:\sigma \vdash N : \tau) \\
+          Q &= \texttt{Un}(\Gamma|_{\Sigma \cap \Sigma'}) \cup \texttt{Weaken}(x, \sigma, \Sigma')
+        \end{flalign*}
+      \end{minipage}
+    }
   \end{framed}
   \caption{Type Inference Algorithm $\mathcal{M}$}
   \label{fig:algorithm-m}
 \end{figure}
+
+% Explain each case of algorithm M here.
 
 % Var
 The first case in algorithm $\M$ in \cref{fig:algorithm-m} describes the variable case, where we are given the variable identifier and
@@ -572,8 +576,15 @@ restricted to the variables in $\Sigma$.
 % Let
 In the polymorphic \texttt{let} case we first check for the type of the expression $M$ and
 ensure that the variable binding $x$ is not usd in it to avoid recursive definition which would
-lead to infinite types. We then generalize the type to $\sigma$ and then check the type of expression $N$
+lead to infinite types. We then generalize the computed type to $\sigma$ and then check the type of expression $N$
 by expanding the type assignment $\Gamma$ with the variable $x$ and type scheme $\sigma$.
+
+We now state the soundness theorem for the algorithm $\M$.
+\begin{theorem}[Soundness of $\M$]
+  if $\M(S, \Psi, \Gamma \vdash M : \tau) = P, S', \Sigma, \Psi'$ then $S' P \mid S' (\Gamma |_\Sigma ) \vdash M : S' \tau$
+\end{theorem}
+The soundness theorem for algorithm $\M$ ensures that the original type system rules are obeyed by the type inference algorithm.
+The proof is given in \cref{chp:proofs}.
 
 %%% Local Variables:
 %%% mode: latex

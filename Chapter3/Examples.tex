@@ -1,10 +1,12 @@
 \chapter{Programming in \qub{}}\label{chp:qub-programming}
+
 In this chapter, we illustrate using examples how \qub{} is different
 from other functional languages and how a powerful type system based on logic of \BI
 would be used to track resources. The examples show how the resources use
 can be tracked at compile time and resource leaks can be avoided.
 
 \section{File Handles}\label{sec:file-handle-example}
+
 In modern programming languages resources such as files are treated as normal variables.
 It is the programmer's responsibility to check that that files are not closed twice
 and that there are no files that remain open when the program exits. This seemingly trivial
@@ -122,7 +124,7 @@ is shown in \cref{fig:file-read-close-2times-desugared} and the desugared versio
     \begin{minted}[escapeinside=||,mathescape=true, linenos]{haskell}
 (>>=|$_1$|) (openFile "sample.txt") (\f ->
             (>>=|$_2$|) (readFile f) (\(s, f) ->
-                        (>>=|$_3$|) (close f) (\_ -> closeFile f)))
+                        (>>=|$_3$|) (closeFile f) (\_ -> closeFile f)))
     \end{minted}
   \end{framed}
   \caption{Reading from a File in Haskell and Closing Twice}
@@ -246,19 +248,21 @@ do f <- openFile "sample.txt"
 
 We enforce resource cleanup in a systematic way in \qub{}. For a concrete example, see \cref{fig:qub-file-exceptions}.
 We will assume that \HaskellF{readLine} can throw an exception during runtime, where
-it might fail to read a line due to the file mode being used has incorrect permissions.
+it might fail to read a line due to the filehandle being stale and the file no longer exists.
 For the sake of simplicity we will assume \HaskellF{closeFile}
-does not throw exceptions. \HaskellF{openFile} throwing an exception would not be a problem as there would be
-no resource leak in that case. We have two kinds of IO operations, \HaskellF{IO} that does not fail or throw exceptions and is safe,
-and \HaskellF{IOF} that can fail and throw exceptions. \HaskellF{onExcept} can potentially convert a code that can fail, to a code
-that does not fail by using \HaskellF{catch} function, or it may re-throw the exception after
-cleaning up the resources. The sharing arrow between the two arguments of \HaskellF{onExcept} enforces
-that the file handle is indeed closed by performing the error handing actions in the second argument.
+does not throw exceptions. \HaskellF{openFile} throwing an exception would not cause a resource leak hence will not be a problem.
+We have two kinds of IO operations, \HaskellF{IO} that does not fail or throw exceptions and is safe,
+and \HaskellF{IOF} that can fail and throw exceptions. \HaskellF{throw} function can be used by a function to start
+the processing of the exception. \HaskellF{catch} function can potentially convert a code that can fail, to a code
+that does not fail. The \HaskellF{onExcept} function gives a way to clean up resources after the code throws an exception. It may re-throw the
+exception after cleaning up the resources or a \HaskellF{catch} function can be used to handle the failure case.
+The sharing arrow between the two arguments of \HaskellF{onExcept} enables the clean up block of code to be executed on the same resources
+that were used its first argument.
 
 \begin{figure}[h]
   \begin{framed}
     \begin{minted}[linenos]{haskell}
-openFile :: FilePath -*> Mode -*> IO FileHandle
+openFile :: FilePath -*> IO FileHandle
 closeFile :: FileHandle -*> IO ()
 readFile :: FileHandle -*> IOF (String, FileHandle)
 writeFile :: String -*> FileHandle -*> IOF ((), FileHandle)
@@ -271,10 +275,10 @@ m `onExcept` n = m `catch` (\e -> n >> throw e)
 
 readFromFile :: FilePath -*> IO (Either String String)
 readFromFile fpath =
-do fh  <- openFile fpath ReadMode
+do fh  <- openFile fpath
    ((s, fh)  <- readLine fh
    let l = caps s
-   () <- close fh
+   () <- closeFile fh
    return $ Right l) `onExcept` (do () <- closeFile fh)
                      `catch` (\e ->
                                  return $ Left "Could not read file")
