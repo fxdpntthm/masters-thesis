@@ -167,7 +167,7 @@ We first go over few intermediate results and definitions that will help us prov
    If $\mathcal{M}(S, \Psi, \Gamma \vdash M : \tau) = P, S', \Sigma, \Psi'$ then $S' P \mid S' \Gamma \vdash M : S' \tau$
  \end{theorem}
 
-We go over a few intermediate results to prove the soundness result.
+We go over a few intermediate results and definitions to prove the soundness result.
 
 \begin{lemma}\label{lemma:strengthen}
   If $P \mid \Delta \vdashs M:\tau$ and $Q \Rightarrow P$, then $Q \mid \Delta \vdashs M: \tau$
@@ -196,13 +196,50 @@ We go over a few intermediate results to prove the soundness result.
   Proof is by a simple induction on derivation of $P \mid \Gamma \vdashs M:\tau$
 \end{proof}
 
+\begin{defn}[Simple Constraint]
+  A simple constraint in $t$ is of the form $\Un{t}$, $\ShFun{t}$, $\SeFun{t}$ or $\tau \geq t$ where t is a type variable.
+\end{defn}
+
+\begin{lemma}[Constraint Simplification]
+  Supppose there is a non-trivial entailment $P \Rightarrow Q$.  $$\exists Q' \text{\ such that\ } P \Rightarrow Q' \Rightarrow Q$$ and $Q'$ is simple and
+  $Q'$ is called simplification of $Q$.
+\end{lemma}
+\begin{proof}
+  Proof is by induction on derivation on $P \Rightarrow Q$.
+\end{proof}
+
+\begin{defn}[Non-trivial Entailment]
+  The entailment $P \Rightarrow Q$ is non-trivial if only uses of the assumption rule are for simple constraints.
+\end{defn}
+
+\begin{defn}[Improving Substitution]
+  Suppose $P$ is simple, and $X$ is a set of type variables.
+  A substitution S is called improving substituion for $X$ in $P$ if:
+  \begin{itemize}
+  \item If $\Un{t} \in P \wedge \ShFun{t} \in P$ then $S t = \tightoverset{\scalebox{0.5}{!}}{\shimp}$
+  \item If $\Un{t} \in P \wedge \SeFun{t} \in P$ then $S t = \tightoverset{\scalebox{0.5}{!}}{\sepimp}$
+  \item If $\Un{t} \notin P \wedge \ShFun{t} \in P$ then $S t = \shimp$
+  \item If $\Un{t} \notin P \wedge \SeFun{t} \in P$ then $S t = \sepimp$
+  \end{itemize}
+\end{defn}
+
+\begin{lemma}\label{lemma:improving-sub}
+  If $P \mid \Gamma \vdashs M:\tau$ and $X = \texttt{fvs}(P) \backslash (\texttt{fvs}(\Gamma) \cup \texttt{fvs}(\tau))$,
+  $P' \Rightarrow P$ and $S$ is an improving substitution for $X \in P'$, then $S P \mid \Gamma \vdashs M :\tau$
+\end{lemma}
+\begin{proof}
+  Proof by induction on derivation of $P \mid \Gamma \vdashs M:\tau$.
+  The improving substitution will be bound to a type variable $\phi$ if the rules used are [$\shimp$I$^s$], [$\sepimp$I$^s$] or [APP$^s$], the
+  substitution $S \phi$ is a suitable type for further use.
+\end{proof}
+
 \begin{proof}[Proof of \cref{thm:soundness-m}]
   Proof by induction on structure of $M$
   \begin{itemize}
   \item{Case $x$.}
-    We have $$(x^{\vec{y}}:\forall \vec{t}. P \Rightarrow \tau) \in \Gamma$$ where $\vec{y} \subseteq \texttt{dom}{\Gamma}$ and $\Sigma = \{ x \}$. We see that
+    We have $$(x^{\vec{y}}:\forall \vec{t}. P \Rightarrow \tau) \in \Gamma$$ where $\vec{y} \subseteq \texttt{dom}(\Gamma)$ and $\Sigma = \{ x \}$. We see that
     $$([\vec{u}/\vec{t}]P \Rightarrow [\vec{u}/\vec{t}]\tau) \sqsubseteq (\forall \vec{t}. P \Rightarrow \tau)$$
-    So, we can apply [VAR$^s$] to construct a derivation of
+    So, we can apply [VAR$^s$] to construct
     $[\vec{u}/\vec{t}]P \mid \{x:\forall \vec{t}. P \Rightarrow \tau \} \vdashs x: [\vec{u}/\vec{t}]\tau$
 
   \item{Case $\lambda^{\shimp} x. M$.}
@@ -211,7 +248,7 @@ We go over a few intermediate results to prove the soundness result.
     Let $Q = \{\ShFun{u_1}\} \cup \texttt{Leq}(u_1, \Gamma|_\Sigma) \cup \texttt{Weaken}(x, u_2, \Sigma) \cup P$
     and let $\Sigma' = \Sigma \backslash \{x\}$. By \cref{lemma:strengthen} and \cref{lemma:syntax-WKN-UN-helper} we can consruct a
     derivation of $$S' Q \mid S'  ((\Gamma \sqcup \{x:u_2\})|_{\Sigma'}) \vdashs M: S' u_3$$
-    Now, using [$\shimp$I$^s$] we get the required derivation
+    Now, using [$\shimp$I$^s$] we get the required result.
 
   \item{Case $\lambda^{\sepimp} x. M$.}
     We have $$P; S'; \Sigma; \Psi' = \M(\Unf(\tau, u_1 u_2 u_3) \circ S, \Psi, \Gamma, x:u_2 \vdash M: u_3)$$
@@ -219,7 +256,7 @@ We go over a few intermediate results to prove the soundness result.
     Let $Q = \{\SeFun{u_1}\} \cup \texttt{Leq}(u_1, \Gamma|_\Sigma) \cup \texttt{Weaken}(x, u_2, \Sigma) \cup P$
     and let $\Sigma' = \Sigma \backslash \{x\}$. By \cref{lemma:strengthen} and \cref{lemma:syntax-WKN-UN-helper} we can consruct a
     derivation of $$S' Q \mid S'  ((\Gamma \sqcup \{x:u_2\})|_{\Sigma'}) \vdashs M: S' u_3$$
-    Now, using [$\sepimp$I$^s$] we get the required derivation
+    Now, using [$\sepimp$I$^s$] we get the required result.
 
   \item{Case $M N$.}
     We have that
@@ -234,48 +271,20 @@ We go over a few intermediate results to prove the soundness result.
     Now by \cref{lemma:strengthen} and \cref{lemma:syntax-closed-under-sub} and the induction hypothesis we get
     $$R' Q' \mid R' \Gamma \circledast R' \Delta \vdashs M: R' (u_1 u_2 \tau)$$
     $$R' Q' \mid R' \Gamma \circledast R' \Delta \vdashs N: u_2$$
-    where $Q' = P \cup P' \cup Q \cup \{\Un{\Delta}\}$. We can now build the desired derivation using [APP$^s$].
+    where $Q' = P \cup P' \cup Q \cup \{\Un{\Delta}\}$. We can now build the desired result using [APP$^s$].
 
-  \item{Case $\texttt{let}\ x = M\ \texttt{in}\ N$.}
+  \item{Case $\Let{x}{M}{N}$.}
     We have
     $$P; R; \Sigma; \Psi' = \M(S, \Psi, \Gamma \vdash M:u_1)$$
     $$P'; R'; \Sigma'; \Psi'' = \M(R, \Psi', \Gamma, x:\sigma \vdash N : \tau)$$
-    where $\sigma = \texttt{GenI}(R\Gamma; R(P \Rightarrow u_1))$
+    where $\sigma = \texttt{GenI}(R\Gamma; R(P \Rightarrow u_1))$. Let $T$ improve $\texttt{fvs}(P) \ (\texttt{fvs}(\Gamma) \cup \texttt{fvs}(R \tau))$ in $P$,
+    then there is a partition of $\Gamma$ into $\Gamma_M$, $\Gamma_N$ and $\Delta$ such that, by \cref{lemma:improving-sub}, \cref{lemma:syntax-closed-under-sub} and
+    induction hypothesis we have
+    $$(T \circ R')P \mid R' (\Gamma_M \circledast \Delta) \vdashs M: R u_1)$$
+    $$R' P \mid R' (\Gamma_N \circledast \Delta \sqcup \{ x: \sigma \}) \vdashs N : R' \tau)$$
+    now, using $R' P \vdash \Delta\ \texttt{un}$ and [LET$^s$] we get the desired result.
   \end{itemize}
 \end{proof}
-
-
-\begin{theorem}[Incompleteness of $\M$.]
-  % If $S$ is a substitution ans X is a set of type variables such that
-  % $P \mid S\Gamma \vdashs M: S\tau$, and $S|_X = id$ then $\M(id, X; \Gamma \vdash M:\tau) = Q, S', \Sigma$, such that
-  % $P => S\tau \sqsubset \texttt{GenI}(S'\Gamma, S' Q => S' \tau)$
-\end{theorem}
-\begin{proof}
-  The algorithm $\M$ is incomplete as there would be cases where a term can be typed in two ways. $\M$ would compute only one of them and leave out the other one.
-  Consider the type for $\lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x$.
-  This term can be typed in two ways in \qub{} type system.
-  \begin{itemize}
-  \item $\texttt{Un}\ A \mid \emptyset \vdash \lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x: (A \sepimp A \sepimp B) \sepimp A \sepimp B$
-  \item $\emptyset \mid \emptyset \vdash \vdash \lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x: (A \sepimp A \shimp B) \sepimp A \shimp B$.
-\end{itemize}
-
-  Hence Algorithm $\M$ is incomplete.
-\end{proof}
-
-% {\color{red}  \begin{theorem}[Progress.]
-%     If $M:\tau$ then either  $M \leadsto M'$ or $M$ is a value.
-%   \end{theorem}
-% \begin{proof}
-%   we have to define $\beta \eta$ rules.
-% \end{proof}
-
-% \begin{theorem}[Preservation.]
-%   If $M:\tau$ and $M \leadsto M'$ then $M':\tau$
-% \end{theorem}
-% \begin{proof}
-% \end{proof}
-% }
-
 
 %%% Local Variables:
 %%% mode: latex

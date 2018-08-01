@@ -586,6 +586,15 @@ We now state the soundness theorem for the algorithm $\M$.
 The soundness theorem for algorithm $\M$ ensures that the original type system rules are obeyed by the type inference algorithm.
 The proof is given in \cref{chp:proofs}.
 
+This type inference algorithm is however not complete. There would be cases where a term can be typed in two ways.
+Algorithm $\M$ would compute only one of them and leave out the other one. Consider the type for $\lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x$.
+This term can be inferred to have two types by using algorithm $\M$.
+\begin{itemize}
+  \item $\texttt{Un}\ A \mid \emptyset \vdash \lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x: (A \sepimp A \sepimp B) \sepimp A \sepimp B$
+  \item $\emptyset \mid \emptyset \vdash \vdash \lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x: (A \sepimp A \shimp B) \sepimp A \shimp B$.
+\end{itemize}
+
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../thesis-ku"
