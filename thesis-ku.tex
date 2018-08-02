@@ -146,10 +146,10 @@
   In this thesis, we tackle the resource management problem by making resources
   first class citizens in the language, and concentrating on sharing or separation of resources.
 
-  We design and implement \qub{} a Curry-Howard interpretation of the logic
-  based on the logic of bunched implications (\BI) \citep{ohearn_bunched_2003}. We introduce two kinds of program objects
-  ---restricted and unrestricted---and two kinds of functions---sharing and separating.
-  The restricted objects model resources and the unrestricted values model program objects that do not contain any resources.
+  We design and implement \qub{}, a Curry-Howard interpretation of the logic
+  based on the logic of bunched implications (\BI) \citep{ohearn_bunched_2003}. We introduce two kinds of program objects---restricted
+  and unrestricted---and two kinds of function implications---sharing and separating.
+  The restricted objects model resources while the unrestricted objects model program objects that do not contain any resources.
   Sharing functions---denoted by $\shimp$ connective---imply that functions share resources with its arguments,
   while separating arrow---denoted by $\sepimp$ connective---imply that functions do not share resources with its arguments.
   We show how the use of monads with sharing and separating functions help in statically detecting resource errors while modeling
