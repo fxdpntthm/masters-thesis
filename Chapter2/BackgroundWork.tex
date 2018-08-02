@@ -105,7 +105,7 @@ as \HaskellF{f: |$\forall \alpha$|. |$\alpha \rightarrow \alpha$|}, using [$\for
   \centering
   \begin{framed}
   \begin{flalign*}
-    A, B, C ::= X \mid A \subset B \mid A \times B \mid A \plus B
+    \Gamma, \Delta, \Phi ::= x \mid \Gamma \supset \Delta \mid \forall x. \Phi
   \end{flalign*}
 \end{framed}
 \caption{Grammar for Intuitionistic Logic}
@@ -117,7 +117,7 @@ as \HaskellF{f: |$\forall \alpha$|. |$\alpha \rightarrow \alpha$|}, using [$\for
     % ID
     \begin{minipage}{0.20\linewidth}
       \begin{prooftree}
-        \AxiomC{${\color{white}\Phi\Gamma\Psi}$}\RightLabel{[Ax]}
+        \AxiomC{${\color{white}\Phi\Gamma\Phi}$}\RightLabel{[Ax]}
         \UnaryInfC{$\Phi \vdash \Phi $}
       \end{prooftree}
     \end{minipage}%
@@ -139,34 +139,34 @@ as \HaskellF{f: |$\forall \alpha$|. |$\alpha \rightarrow \alpha$|}, using [$\for
     % \forall I
     \begin{minipage}{0.33\linewidth}
       \begin{prooftree}
-        \AxiomC{$\Psi$}
-        \AxiomC{$x \notin \Psi$}\RightLabel{[$\forall$I]}
-        \BinaryInfC{$\forall x. \Psi$}
+        \AxiomC{$\Phi$}
+        \AxiomC{$x \notin \Phi$}\RightLabel{[$\forall$I]}
+        \BinaryInfC{$\forall x. \Phi$}
       \end{prooftree}
     \end{minipage}%
     % \forall E
     \begin{minipage}{0.33\linewidth}
       \begin{prooftree}
-        \AxiomC{$\forall x. \Psi$}
+        \AxiomC{$\forall x. \Phi$}
         \AxiomC{$\Gamma$}\RightLabel{[$\forall$E]}
-        \BinaryInfC{$\Psi[x/\Gamma]$}
+        \BinaryInfC{$\Phi[x/\Gamma]$}
       \end{prooftree}
     \end{minipage}
 
     % -> I
     \begin{minipage}{0.33\linewidth}
       \begin{prooftree}
-        \AxiomC{$\Gamma \vdash \Phi$}
-        \AxiomC{$\Phi \vdash \Psi $}\RightLabel{[$\supset$I]}
-        \BinaryInfC{$\Gamma \vdash \Phi \supset \Psi$}
+        \AxiomC{$\Gamma \vdash \Delta$}
+        \AxiomC{$\Delta \vdash \Phi $}\RightLabel{[$\supset$I]}
+        \BinaryInfC{$\Gamma \vdash \Delta \supset \Phi$}
       \end{prooftree}
     \end{minipage}%
     % -> E
     \begin{minipage}{0.33\linewidth}
       \begin{prooftree}
-        \AxiomC{$\Gamma \vdash \Phi \supset \Psi$}
-        \AxiomC{$\Gamma \vdash \Phi$}\RightLabel{[$\supset$E]}
-        \BinaryInfC{$\Gamma \vdash \Psi $}
+        \AxiomC{$\Gamma \vdash \Delta \supset \Phi$}
+        \AxiomC{$\Gamma \vdash \Delta$}\RightLabel{[$\supset$E]}
+        \BinaryInfC{$\Gamma \vdash \Phi $}
       \end{prooftree}
     \end{minipage}
   \end{framed}
@@ -176,10 +176,10 @@ as \HaskellF{f: |$\forall \alpha$|. |$\alpha \rightarrow \alpha$|}, using [$\for
 
 The Curry-Howard correspondence of \textbf{HM} type system
 corresponds to the second order implication fragment of intuitionistic propositional logic.
-The grammar of intuitionistic logic is shown in \cref{fig:intu-logic-grammar} where $A \subset B$ denotes implication.
+The grammar of intuitionistic logic is shown in \cref{fig:intu-logic-grammar} where $\Gamma \supset \Delta$ denotes implication.
 % $A \times B$ denotes conjunction and $A \plus B$ denotes disjunction.
 The rules of the logic system are shown in \cref{fig:intuitionistic-logic} in Gentzen style natural deduction
-where $\Gamma$, $\Phi$ and $\Psi$ are propositions. The [Ax] rule corresponds to [ID] rule while [$\rightarrow$I] and [$\rightarrow$E] correspond
+where $\Gamma$, $\Phi$ and $\Phi$ are propositions. The [Ax] rule corresponds to [ID] rule while [$\rightarrow$I] and [$\rightarrow$E] correspond
 to [$\supset$I] and [$\supset$E] respectively. The structural rules of weakening [WKN] and contraction [CTR] are implicitly obeyed
 by \textbf{HM} type-system. The weakening rule states that we can add unrelated assumptions to derivations without
 affecting the proofs while contraction states that we can discard duplicate assumptions in our derivations and the
