@@ -583,8 +583,8 @@ We now state the soundness theorem for the algorithm $\M$.
 \begin{theorem}[Soundness of $\M$]
   if $\M(S, \Psi, \Gamma \vdash M : \tau) = P, S', \Sigma, \Psi'$ then $S' P \mid S' (\Gamma |_\Sigma ) \vdash M : S' \tau$
 \end{theorem}
-The soundness theorem for algorithm $\M$ ensures that the original type system rules are obeyed by the type inference algorithm.
-The proof is given in \cref{chp:proofs}.
+The soundness theorem for algorithm $\M$ ensures that the type inference algorithm inferes a type that the original type system would have
+produced. The proof is given in \cref{chp:proofs}.
 
 This type inference algorithm is however not complete. There would be cases where a term can be typed in two ways.
 Algorithm $\M$ would compute only one of them and leave out the other one. Consider the type for $\lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x$.
@@ -593,6 +593,15 @@ This term can be inferred to have two types by using algorithm $\M$.
   \item $\texttt{Un}\ A \mid \emptyset \vdash \lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x: (A \sepimp A \sepimp B) \sepimp A \sepimp B$
   \item $\emptyset \mid \emptyset \vdash \vdash \lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x: (A \sepimp A \shimp B) \sepimp A \shimp B$.
 \end{itemize}
+
+We summarize the proof results in \cref{fig:proof-summary}
+
+\begin{figure}[h]
+  \centering
+  \fbox{$\Gamma \vdash M:\tau$} \fbox{$\Gamma \vdashs M:\tau$} \fbox{$\M(\Gamma \vdash M:\tau)$}
+  \caption{Proof Summary}
+  \label{fig:proof-summary}
+\end{figure}
 
 
 %%% Local Variables:

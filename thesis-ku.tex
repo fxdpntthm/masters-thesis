@@ -143,20 +143,16 @@
 \begin{abstract}
   Modern programming languages treat resources as normal values.
   The static semantics of resources in such languages does not match with runtime semantics.
-  Type systems based on linear logic \citep{girard_linear_1987} provide a modus operandi to help resource management.
-  While these systems are more expressive than standard Hindley-Milner type system,
-  there are various practical issues that prohibit leveraging it to its fullest degree in programming languages.
   In this thesis, we tackle the resource management problem by making resources
   first class citizens in the language, and concentrating on sharing or separation of resources.
 
-  We design and implement \qub{} which is a Curry-Howard interpretation of the logic
+  We design and implement \qub{} a Curry-Howard interpretation of the logic
   based on the logic of bunched implications (\BI) \citep{ohearn_bunched_2003}. We introduce two kinds of program objects
   ---restricted and unrestricted---and two kinds of functions---sharing and separating.
   The restricted objects model resources and the unrestricted values model program objects that do not contain any resources.
   Sharing functions---denoted by $\shimp$ connective---imply that functions share resources with its arguments,
   while separating arrow---denoted by $\sepimp$ connective---imply that functions do not share resources with its arguments.
-  We extended our work based on Quill \citep{morris_best_2016}, a functional language with linear qualifed types. We show
-  how the use of monads with sharing and separating functions helps statically detecting resource errors while modeling
+  We show how the use of monads with sharing and separating functions help in statically detecting resource errors while modeling
   exceptions that is difficult to capture in linear languages.
 
 \begin{acknowledgementslong}
