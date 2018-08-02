@@ -14,8 +14,9 @@ The algorithms also guarantee a most general typing scheme or principal types fo
 \begin{framed}
   \begin{flalign*}
                        t, u, \upsilon &\in \text{Type Variables}\\
-    \text{Types}\ \ \  \tau           &::= t \mid \iota \mid \tau \rightarrow \tau \\
+    \text{Types}\ \ \  \tau           &::= t \mid \iota \mid \tau \rightarrow \tau\\
     \text{Typing Scheme}\ \ \  \sigma &::= \tau \mid \forall t. \tau\\
+    \text{Typing Context}\ \ \ \Gamma &::= \epsilon \mid \Gamma, x:\sigma\\
          \text{Expressions}\ \ \ M, N &::= x \mid \lambda x. M \mid M N \mid \Let{x}{M}{N}
   \end{flalign*}
 \end{framed}
@@ -24,7 +25,7 @@ The algorithms also guarantee a most general typing scheme or principal types fo
 \end{figure}
 
 Robinson's \citeyearpar{robinson_machine-oriented_1965} unification algorithm plays a key role
-in computation of well-formed types. Its purely syntactic approach in creating
+in computation of well-formed principal types. Its purely syntactic approach in creating
 substitutions to unify types keeps the complete process elegant.
 Algorithm $\mathcal{M}$ works in an interesting way where the types of all well-typed terms can be
 inferred automatically and if types are specified, the same algorithm can be used
@@ -179,17 +180,12 @@ corresponds to the second order implication fragment of intuitionistic propositi
 The grammar of intuitionistic logic is shown in \cref{fig:intu-logic-grammar} where $\Gamma \supset \Delta$ denotes implication.
 % $A \times B$ denotes conjunction and $A \plus B$ denotes disjunction.
 The rules of the logic system are shown in \cref{fig:intuitionistic-logic} in Gentzen style natural deduction
-where $\Gamma$, $\Phi$ and $\Phi$ are propositions. The [Ax] rule corresponds to [ID] rule while [$\rightarrow$I] and [$\rightarrow$E] correspond
+where $\Gamma$, $\Delta$ and $\Phi$ are propositions. The [Ax] rule corresponds to [ID] rule while [$\rightarrow$I] and [$\rightarrow$E] correspond
 to [$\supset$I] and [$\supset$E] respectively. The structural rules of weakening [WKN] and contraction [CTR] are implicitly obeyed
 by \textbf{HM} type-system. The weakening rule states that we can add unrelated assumptions to derivations without
 affecting the proofs while contraction states that we can discard duplicate assumptions in our derivations and the
 proof will still hold. The [$\forall$I] introduces the universal quantifier for a proposition and [$\forall$E] instantiates
 the proposition. Both the rules correspond to parametric polymorphism introduction [$\forall$I] and elimination [$\forall$E] rules in \cref{fig:hm-system}
-
-The algorithm $\M$ is given in figure \cref{fig:hm-algo-m}. $\mathcal{U}$ is the Robinson's unification
-algorithm that computes the most general unifier required to unify two types
-and $\text{Gen}(\Gamma,\tau)$ generalizes a type to type scheme. All the type variables denoted by $u$ are
-fresh and do not shadow the existing type variables in the context.
 
 \begin{figure}[h]
   \begin{framed}
@@ -207,53 +203,68 @@ fresh and do not shadow the existing type variables in the context.
       % \x. M
       \begin{minipage}{0.50\linewidth}
         \begin{flalign*}
-          \M(\Gamma \vdash &\lambda x. M:\tau) = S_1 \circ S_2\\
-            \text{where\qquad}\ S_1 &= \mathcal{U}(\tau, u_1 \rightarrow u_2)\\
-            S_2 &= \M(S_1\Gamma \cup \{ x: S_1 u_1\} \vdash M : S_1u_2)
+          \M(\Gamma \vdash &\lambda x. M:\tau) = S  \circ S' \\
+            \text{where\qquad}\ S  &= \mathcal{U}(\tau, u_1 \rightarrow u_2)\\
+            S'  &= \M(S \Gamma, x: S  u_1 \vdash M : S u_2)
           \end{flalign*}
       \end{minipage}
 
       % M N
       \begin{minipage}{0.45\linewidth}
         \begin{flalign*}
-          \M(\Gamma \vdash &M N:\tau)  = S_1 \circ S_2\\
-          \text{where\qquad}\ S_1 &= \M(\Gamma \vdash M: u \rightarrow \tau)\\
-          S_2 &= \M(S_1 \Gamma \vdash N: S_1u)
+          \M(\Gamma \vdash &M N:\tau)  = S  \circ S' \\
+          \text{where\qquad}\ S  &= \M(\Gamma \vdash M: u \rightarrow \tau)\\
+          S'  &= \M(S  \Gamma \vdash N: S u)
         \end{flalign*}
       \end{minipage}%
       % let x = M in N
       \begin{minipage}{0.50\linewidth}
         \begin{flalign*}
-          \M(\Gamma \vdash (&\Let{x}{M}{N}):\tau) = S_1 \circ S_2\\
-          \text{where\qquad}\ S_1 &= \M(\Gamma \vdash M: u)\\
-          S_2 &= \M(S_1\Gamma \cup \{x:\text{Gen}(S_1\Gamma, S_1u)\} \vdash N:\tau)\\
+          \M(\Gamma \vdash (&\Let{x}{M}{N}):\tau) = S  \circ S' \\
+          \text{where\qquad}\ S  &= \M(\Gamma \vdash M: u)\\
+                              \sigma &= \texttt{Gen}(S \Gamma, S u)\\
+                              S' &= \M(S \Gamma, x:\sigma \vdash N:\tau)\\
         \end{flalign*}
       \end{minipage}
 
-      \fbox{Auxiliary Definition}
+      \fbox{Auxiliary Definitions}
 
-      \begin{minipage}{1.0\linewidth}
+      \begin{minipage}{0.45\linewidth}
         \begin{flalign*}
           \texttt{Gen}(\Gamma, \tau) &= \forall \vec{t}. \tau\\
           \text{where\qquad}\ \vec{t} &= \texttt{fvs}(\tau)\backslash\texttt{fvs}(\Gamma)
         \end{flalign*}
+      \end{minipage}%
+      \begin{minipage}{0.45\linewidth}
+        \begin{flalign*}
+          \texttt{fvs}(t) &= \{t\}\\
+          \texttt{fvs}(\forall \vec{t}. \tau) &= \texttt{fvs}(\tau) \backslash \vec{t}\\
+          \texttt{fvs}(\Gamma) &= \bigcup_{\forall (x:\sigma) \in \Gamma} \texttt{fvs}(\sigma)
+        \end{flalign*}
       \end{minipage}
+
     }
   \end{framed}
   \caption{Algorithm $\M$ for \textbf{HM} type system}
   \label{fig:hm-algo-m}
 \end{figure}
 
+The algorithm $\M$ is given in figure \cref{fig:hm-algo-m}. $\mathcal{U}$ is the Robinson's unification
+algorithm that computes the most general unifier required to unify two types
+and $\texttt{Gen}(\Gamma,\tau)$ generalizes a type to type scheme. All the type variables denoted by $u$ are
+fresh and do not shadow the existing type variables in the context. $S$ denotes substitutions that are combined using $\circ$ operator
+can be applied on types or type schemes. When substitutions are applied to a context $\Gamma$, they are applied to each type scheme contained by $\Gamma$.
+$\vec{t}$ is shorthand for a set of type variables $\{t_1, t_2, \dots, t_n\}$ and $\vec{t} \backslash \vec{u}$ denotes the set difference.
 
 \section{Linear Logic}\label{sec:linear-logic}
 While propositional logic deals with truth of propositions and their connectives, linear logic \citep{girard_linear_1987} deals with availability of resources.
 Linear logic promises to help cope with the resource and resource control problem.
-The core idea is that propositions cannot be freely duplicated or discarded as allowed in intuitionistic logic.
+The core idea is that propositions cannot be freely duplicated or discarded which in contrast to intuitionistic logic.
 In formal terms, the contraction and weakening logical rules are restricted.
 This instigates a view of propositions that behave like resources. In real world software applications,
 resources may not be freely copied or dropped from a program context.
 While handling entities like database connections, file handles or even
-in memory shared state can introduce bugs in
+in-memory shared state can introduce bugs in
 industry grade software. Linear logic is proposed to be a remedy for
 these problems. If contraction and weakening is completely abandoned,
 the system gets overly restrictive. To work around, this modality operator $\oc$ is introduced which
