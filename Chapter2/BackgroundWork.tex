@@ -96,11 +96,11 @@ of the type scheme by substituting free type variables. It is worthwhile to note
 [$\forall$I] has a side condition that ensures the new type variable introduced should not be free in the existing typing context.
 The $\texttt{fvs}(\Gamma)$ denotes free type variables in $\Gamma$. The [LET] rules allows implicit parametric polymorphism.
 For example, the expression, \HaskellF{g = |$\lambda$|f. (f True, f 1)} is ill-typed as type unification for \HaskellF{f} with expressions
-\HaskellF{f True : Bool |$\rightarrow \alpha$|} and \HaskellF{f 1 : Int |$ \rightarrow \beta$|} is not possible.
-However, there indeed exists a polymorphic type \HaskellF{|$\forall \alpha. \alpha \rightarrow \alpha$|}
+\HaskellF{f True : Bool |$\rightarrow u_1$|} and \HaskellF{f 1 : Int |$ \rightarrow u_2$|} is not possible.
+However, there indeed exists a polymorphic type \HaskellF{|$\forall u_1. u_1 \rightarrow u_1$|}
 that types \HaskellF{f}. The \texttt{let} construct makes this possible. The expression \HaskellF{g} can be defined
 as \HaskellF{g = let f = |$\lambda$| x. x in (f True, f 1)}. The type of the expression \HaskellF{f} is now computed
-as \HaskellF{f: |$\forall \alpha$|. |$\alpha \rightarrow \alpha$|}, using [$\forall$I] rule and \HaskellF{g} is assigned a type \HaskellF{(Bool, Int)}.
+as \HaskellF{f: |$\forall u_1$|. |$u_1 \rightarrow u_1$|}, using [$\rightarrow$I] and [$\forall$I] rules and \HaskellF{g} is assigned a type \HaskellF{(Bool, Int)}.
 
 \begin{figure}[h]
   \centering
@@ -178,14 +178,14 @@ as \HaskellF{f: |$\forall \alpha$|. |$\alpha \rightarrow \alpha$|}, using [$\for
 The Curry-Howard correspondence of \textbf{HM} type system
 corresponds to the second order implication fragment of intuitionistic propositional logic.
 The grammar of intuitionistic logic is shown in \cref{fig:intu-logic-grammar} where $\Gamma \supset \Delta$ denotes implication.
-% $A \times B$ denotes conjunction and $A \plus B$ denotes disjunction.
 The rules of the logic system are shown in \cref{fig:intuitionistic-logic} in Gentzen style natural deduction
 where $\Gamma$, $\Delta$ and $\Phi$ are propositions. The [Ax] rule corresponds to [ID] rule while [$\rightarrow$I] and [$\rightarrow$E] correspond
 to [$\supset$I] and [$\supset$E] respectively. The structural rules of weakening [WKN] and contraction [CTR] are implicitly obeyed
 by \textbf{HM} type-system. The weakening rule states that we can add unrelated assumptions to derivations without
 affecting the proofs while contraction states that we can discard duplicate assumptions in our derivations and the
 proof will still hold. The [$\forall$I] introduces the universal quantifier for a proposition and [$\forall$E] instantiates
-the proposition. Both the rules correspond to parametric polymorphism introduction [$\forall$I] and elimination [$\forall$E] rules in \cref{fig:hm-system}
+the proposition by replacing the free variable with another proposition. The rules [$\forall$I] and [$\forall$E] correspond to parametric polymorphism
+introduction [$\forall$I] and elimination [$\forall$E] rules in \cref{fig:hm-system}
 
 \begin{figure}[h]
   \begin{framed}
@@ -259,7 +259,7 @@ $\vec{t}$ is shorthand for a set of type variables $\{t_1, t_2, \dots, t_n\}$ an
 \section{Linear Logic}\label{sec:linear-logic}
 While propositional logic deals with truth of propositions and their connectives, linear logic \citep{girard_linear_1987} deals with availability of resources.
 Linear logic promises to help cope with the resource and resource control problem.
-The core idea is that propositions cannot be freely duplicated or discarded which in contrast to intuitionistic logic.
+The core idea is that propositions cannot be freely duplicated or discarded in contrast to intuitionistic logic.
 In formal terms, the contraction and weakening logical rules are restricted.
 This instigates a view of propositions that behave like resources. In real world software applications,
 resources may not be freely copied or dropped from a program context.
