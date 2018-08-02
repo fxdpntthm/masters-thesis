@@ -86,25 +86,26 @@ computing equality over types.
 \end{figure}
 
 The rules for type inference for \textbf{HM} type system are shown in \cref{fig:hm-system}. $\Gamma$ is the
-collection of assumptions or context in which the expression is typed. The [VAR] rule is tautology or a simple
+collection of assumptions or context in which the expression is typed. It can be thought of as a collection--list or set--of
+an ordered pair of identifier and its type scheme. The [VAR] rule is tautology or a simple
 lookup of the term variable $x$ in the context $\Gamma$.  [$\rightarrow$I] and [$\rightarrow$E] are rules for typing
 lambda terms and application respectively. We also include the rules for parametric polymorphism where
 [$\forall$I] generalizes the type scheme by adding implicit universal quantifiers and [$\forall$E] generates an instance
-of the type scheme by substituting free type variables. It is worthwhile to note that when we generalize over types using the rule
-[$\forall$I] we need to ensure that the new type variable introduced should not be free in the existing typing context,
-hence, the side condition of $t \notin \texttt{fvs}(\Gamma)$ where $\texttt{fvs}(\Gamma)$ denotes free type variables in $\Gamma$.
-The [LET] allows implicit parametric polymorphism. For example, the expression, \HaskellF{g = |$\lambda$|f. (f True, f 1)} will raise a
-type error as the type inference algorithm will not be able to unify the type of expression \HaskellF{f True : Bool |$\rightarrow \alpha$|}
-with \HaskellF{f 1 : Int |$ \rightarrow \beta$|}. However there indeed exists a polymorphic type for \HaskellF{|$\forall \alpha. \alpha \rightarrow \alpha$|}
-that can be used to type check expression \HaskellF{g}. The \texttt{let} construct comes handy in such cases. The expression \HaskellF{g} can be defined
+of the type scheme by substituting free type variables. It is worthwhile to note that when we generalize over types the rule
+[$\forall$I] has a side condition that ensures the new type variable introduced should not be free in the existing typing context.
+The $\texttt{fvs}(\Gamma)$ denotes free type variables in $\Gamma$. The [LET] rules allows implicit parametric polymorphism.
+For example, the expression, \HaskellF{g = |$\lambda$|f. (f True, f 1)} is ill-typed as type unification for \HaskellF{f} with expressions
+\HaskellF{f True : Bool |$\rightarrow \alpha$|} and \HaskellF{f 1 : Int |$ \rightarrow \beta$|} is not possible.
+However, there indeed exists a polymorphic type \HaskellF{|$\forall \alpha. \alpha \rightarrow \alpha$|}
+that types \HaskellF{f}. The \texttt{let} construct makes this possible. The expression \HaskellF{g} can be defined
 as \HaskellF{g = let f = |$\lambda$| x. x in (f True, f 1)}. The type of the expression \HaskellF{f} is now computed
-as \HaskellF{f: |$\forall \alpha$|. |$\alpha \rightarrow \alpha$|} and \HaskellF{g} is assigned a type \HaskellF{(Bool, Int)}.
+as \HaskellF{f: |$\forall \alpha$|. |$\alpha \rightarrow \alpha$|}, using [$\forall$I] rule and \HaskellF{g} is assigned a type \HaskellF{(Bool, Int)}.
 
 \begin{figure}[h]
   \centering
   \begin{framed}
   \begin{flalign*}
-    A, B, C ::= X \mid A \rightarrow B \mid A \times B \mid A \plus B
+    A, B, C ::= X \mid A \subset B \mid A \times B \mid A \plus B
   \end{flalign*}
 \end{framed}
 \caption{Grammar for Intuitionistic Logic}
@@ -175,8 +176,8 @@ as \HaskellF{f: |$\forall \alpha$|. |$\alpha \rightarrow \alpha$|} and \HaskellF
 
 The Curry-Howard correspondence of \textbf{HM} type system
 corresponds to the second order implication fragment of intuitionistic propositional logic.
-The grammar of intuitionistic logic is shown in \cref{fig:intu-logic-grammar} where $A \rightarrow B$ denotes implication,
-$A \times B$ denotes conjunction and $A \plus B$ denotes disjunction.
+The grammar of intuitionistic logic is shown in \cref{fig:intu-logic-grammar} where $A \subset B$ denotes implication.
+% $A \times B$ denotes conjunction and $A \plus B$ denotes disjunction.
 The rules of the logic system are shown in \cref{fig:intuitionistic-logic} in Gentzen style natural deduction
 where $\Gamma$, $\Phi$ and $\Psi$ are propositions. The [Ax] rule corresponds to [ID] rule while [$\rightarrow$I] and [$\rightarrow$E] correspond
 to [$\supset$I] and [$\supset$E] respectively. The structural rules of weakening [WKN] and contraction [CTR] are implicitly obeyed
