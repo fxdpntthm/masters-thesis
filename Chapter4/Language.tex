@@ -1,5 +1,5 @@
 \chapter{Core Language Syntax and Types}\label{chp:qub-language}
-In this chapter we give the formal description of the language syntax and types. We explain what
+In this chapter we give the formal description of \qub{}'s syntax and types. We explain what
 it means for a type assignment to exist as binary trees. We then show how we generalize the tree
 into a sharing graph and represent it as a collection of three tuple sets in order to simplify our type inference algorithm.
 
@@ -8,8 +8,8 @@ into a sharing graph and represent it as a collection of three tuple sets in ord
     \begin{flalign*}
                          t, u, \upsilon, \phi         &\in \text{Type Variables}\\
                                       P, Q            &\in \text{Finite Predicate Set}\\
-      \text{Types}\ \ \               \tau            &::= t \mid \tau \rightarrow \tau\
-                                \text{where}\ \{\tightoverset{\scalebox{0.5}{!}}{\sepimp}, \sepimp, \tightoverset{\scalebox{0.5}{!}}{\shimp}, \shimp \} \subseteq \rightarrow \\
+      \text{Types}\ \ \               \tau            &::= t \mid \iota \mid \tau \rightarrow \tau\
+                                \qquad\text{where}\ \{\tightoverset{\scalebox{0.5}{!}}{\sepimp}, \sepimp, \tightoverset{\scalebox{0.5}{!}}{\shimp}, \shimp \} \subseteq \rightarrow \\
       \text{Predicates}\ \ \        \pi,\omega        &::= \texttt{Un}\ \tau \mid \texttt{SeFun}\ \tau \mid \texttt{ShFun}\ \tau \mid \tau \geq \tau' \\
       \text{Qualified Types}\ \ \     \rho            &::= \tau \mid \pi => \rho \\
       \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma 
@@ -19,7 +19,7 @@ into a sharing graph and represent it as a collection of three tuple sets in ord
   \label{fig:qub-types}
 \end{figure}
 % Describe types
-The type language consists of type variables and four binary type constructors the
+The type language consists of type variables ($t$, $u$, $\upsilon$), built-in types such as integers, booleans ($\iota$), and four binary type constructors the
 sharing arrow ($\shimp$) and the separating arrow ($\sepimp$) and unrestricted
 version of both the type constructors ($\tightoverset{\scalebox{0.5}{!}}{\sepimp}, \tightoverset{\scalebox{0.5}{!}}{\shimp}$). The sharing arrow
 would mean that the function shares resources with its argument and the separating
@@ -33,7 +33,7 @@ that the type $\tau$ is unrestricted. Unrestricted types are the ones that do no
 be duplicated or deleted easily. Built-in lightweight types such as \HaskellF{Int}, \HaskellF{Char} are considered unrestricted types.
 We write $\ShFun{\phi}$ to describe that type $\phi$ may share resources with its
 argument types and  $\SeFun{\phi}$ to describe that type $\phi$ does not share any resources from its argument types.
-Notice that function types can also be unrestricted i.e.e it does not have any resources. If a type $\tau$ is unrestricted i.e. it qualifies with predicate
+Notice that function types can also be unrestricted i.e. it does not have any resources. If a type $\tau$ is unrestricted i.e. it qualifies with predicate
 \texttt{Un} and it also qualifies one of the function predicates---\texttt{SeFun} or \texttt{ShFun}---we write
 them as $\tightoverset{\scalebox{0.5}{!}}{\sepimp}$ and $\tightoverset{\scalebox{0.5}{!}}{\shimp}$ respectively.
 We also define an ordering on types by using the predicate $\geq$. The predicate $\tau \geq \tau'$ holds if the type $\tau'$
@@ -73,25 +73,25 @@ to enable users to define custom types using type constructors. We describe this
     \begin{minipage}{0.24\linewidth}
       \begin{prooftree}
         \AxiomC{${\color{white}P => \tau \geq \phi t}$}
-        \UnaryInfC{$P => \tau \geq (v \sepimp v')$}
+        \UnaryInfC{$P => \tau \geq (\upsilon \sepimp \upsilon')$}
       \end{prooftree}
     \end{minipage}%
     \begin{minipage}{0.24\linewidth}
       \begin{prooftree}
         \AxiomC{${\color{white}P => \tau \geq \phi t}$}
-        \UnaryInfC{$P => \tau \geq (v \shimp v')$}
+        \UnaryInfC{$P => \tau \geq (\upsilon \shimp \upsilon')$}
       \end{prooftree}
     \end{minipage}%
     \begin{minipage}{0.24\linewidth}
       \begin{prooftree}
         \AxiomC{$P => \Un{\tau}$}
-        \UnaryInfC{$P => \tau \geq (v \tightoverset{\scalebox{0.5}{!}}{\sepimp} v')$}
+        \UnaryInfC{$P => \tau \geq (\upsilon \tightoverset{\scalebox{0.5}{!}}{\sepimp} \upsilon')$}
       \end{prooftree}
     \end{minipage}%
     \begin{minipage}{0.24\linewidth}
       \begin{prooftree}
         \AxiomC{$P => \Un{\tau}$}
-        \UnaryInfC{$P => \tau \geq (v \tightoverset{\scalebox{0.5}{!}}{\shimp} v')$}
+        \UnaryInfC{$P => \tau \geq (\upsilon \tightoverset{\scalebox{0.5}{!}}{\shimp} \upsilon')$}
       \end{prooftree}
     \end{minipage}
 
@@ -119,45 +119,57 @@ to enable users to define custom types using type constructors. We describe this
   \label{fig:entailment-rules}
 \end{figure}
 
-
-% \TODO{Need some more reading/writing about multienvironment}
-% Describe Type assignments
+% Describe Typing environment
 In normal type systems, the contexts are represented as sets or lists. In logic of \BI\ they are represented as binary trees and are called bunches.
 The leaf nodes contain the pair of term and its associated type. Internal nodes of the context tree are
 connectives which can either be a semicolon ($;$) or a comma ($,$).
-If a bunch $\Delta$ is a subtree of $\Gamma$, then we denote a subtree relation by $\Gamma(\Delta)$.
+If a bunch $\Delta$ is a subtree of $\Gamma$, the relation is denoted by $\Gamma(\Delta)$.
 Two bunches are equivalent ($\Gamma \equiv \Delta$) if they can be transformed into another by renaming identifiers.
-The bunches have a restriction that no identifier appears more than once. We restrict certain structural rules on the context
-depending on the connectives being used. If contexts are combined using a comma ($,$), contraction and weakening is not admissible,
-but if the contexts are combined using a semicolon ($;$) then it can undergo contraction and weakening. Exchange rule is admissible
-in both the connectives. This distinction enables us to have a special treatment for resources in our language.
-By associating a resource with a comma constructor, our type system will not disposed it off by using the contraction rule.
-While, non-resourceful objects (or normal propositions) can be combined using the semi-colon constructor.
-An example bunch is shown in \cref{fig:bunches-bi}. a and b have a shared context while c is separate from the bunch a and b.
-If $\Gamma$ represents the complete bunch of \cref{fig:bunches-bi}, $\Delta \equiv (a:A; b:B)$ and $\Delta' \equiv (c:C)$
+The bunches have a restriction that no identifier appears more than once. Certain structural rules are restricted on the context
+depending on the connectives used. If contexts are combined using a comma ($,$), contraction and weakening is not admissible,
+but if the contexts are combined using a semicolon ($;$), it can undergo contraction and weakening. Exchange rule is admissible
+in both the connectives. This distinction enables a special treatment for resources in within the language.
+By adding resources with a comma constructor in the typing envrionment, the type system will not dispose it off by using the contraction rule,
+while non-resourceful objects (or normal propositions) can be added using the semi-colon constructor.
+An example bunch is shown in \cref{fig:bunches-bi}. a and b are in sharing while, c is separate from the a and b.
+If $\Gamma$ represents the complete context of \cref{fig:bunches-bi}, $\Delta \equiv (a:A; b:B)$ and $\Delta' \equiv (c:C)$
 then $\Gamma \equiv \Delta,\Delta'$ and $\Gamma(\Delta)$.
 
 \begin{figure}[h]
-  \centering
   \begin{framed}
-  \tikzset{every tree node/.style={minimum width=2em},
-         blank/.style={draw=none},
-         edge from parent/.style=
-         {draw,edge from parent path={(\tikzparentnode) -- (\tikzchildnode)}},
-         level distance=1.5cm}
-\begin{tikzpicture}
-\Tree
-[.,
-    [.;
+  \begin{minipage}[c]{0.45\linewidth}
+  \centering
+      \tikzset{every tree node/.style={minimum width=2em},
+        blank/.style={draw=none},
+        edge from parent/.style=
+        {draw,edge from parent path={(\tikzparentnode) -- (\tikzchildnode)}},
+        level distance=1.5cm}
+      \begin{tikzpicture}
+        \Tree
+        [.,
+        [.;
         [.a:A ]
         [.b:B ]
-    ]
-    [.c:C ]
-    ]
-\end{tikzpicture}
+        ]
+        [.c:C ]
+        ]
+      \end{tikzpicture}
+    \caption{Bunch in \textbf{\em BI}}
+    \label{fig:bunches-bi}
+  \end{minipage}\hfill%
+  \begin{minipage}[c]{0.45\linewidth}
+  \centering
+      \begin{tikzpicture}
+        \node[shape=circle,draw=black] (A) at (0,0) {a:A};
+        \node[shape=circle,draw=black] (B) at (0,3) {b:B};
+        \node[shape=circle,draw=black] (C) at (1.5,1.5) {c:C};
+
+        \path [-] (A) edge node {} (B);
+      \end{tikzpicture}
+    \caption{Sharing Graph in \qub{}}
+    \label{fig:sharing-graph}
+  \end{minipage}
 \end{framed}
-\caption{Bunches in \textbf{\em BI}}
-\label{fig:bunches-bi}
 \end{figure}
 
 In our type system, we generalize the tree approach into a graph where each node represents variables or resources
@@ -165,20 +177,6 @@ and the edges between the nodes represent sharing between them. The example in \
 be represented as what we would call a sharing graph shown in \cref{fig:sharing-graph}. A graph structure, in general,
 can represent a binary tree structure and its associated operations. They represent more complex structures than
 trees, thus will provide more flexibility in accepting well typed terms in our language making it more expressive.
-
-\begin{figure}[h]
-  \begin{framed}\centering
-    \begin{tikzpicture}
-        \node[shape=circle,draw=black] (A) at (0,0) {a:A};
-        \node[shape=circle,draw=black] (B) at (0,3) {b:B};
-        \node[shape=circle,draw=black] (C) at (1.5,1.5) {c:C};
-
-        \path [-] (A) edge node {} (B);
-    \end{tikzpicture}
-  \end{framed}
-  \caption{Sharing Graph}
-\label{fig:sharing-graph}
-\end{figure}
 
 We define sharing relation ($\Psi$) between variables to the collection of variables it is in sharing with.
 The relation $\Psi(x, \{y_1, y_2, y_3\})$ holds if $x$ is in sharing with $\{y_1, y_2, y_3\}$.
@@ -230,8 +228,8 @@ it would mean adding edges between the nodes.
   \begin{minipage}[h]{0.45\linewidth}
     \begin{flalign*}
       (\Gamma, x^{\vec{y}}:\tau)^{[a \mapsto \vec{b}]} &= \begin{cases}
-        x \notin \vec{y}\ \ \ \ (\Gamma^{[a \mapsto \vec{b}]}, x^{\vec{y}}:\tau)\\
-        x \in \vec{y}\ \ \ \  (\Gamma^{[a \mapsto \vec{b}]}, x^{(\vec{y}\backslash a)\cup\vec{b}}:\tau)
+        a \notin \vec{y}\ \ \ \ (\Gamma^{[a \mapsto \vec{b}]}, x^{\vec{y}}:\tau)\\
+        a \in \vec{y}\ \ \ \  (\Gamma^{[a \mapsto \vec{b}]}, x^{(\vec{y}\backslash a)\cup\vec{b}}:\tau)
       \end{cases}\\
       \Gamma^{[\vec{a} \mapsto \vec{b}]} &= (\dots((\Gamma^{[a_1 \mapsto \vec{b}]})^{[a_2 \mapsto \vec{b}]})^{\dots})^{[a_n \mapsto \vec{b}]}
     \end{flalign*}
