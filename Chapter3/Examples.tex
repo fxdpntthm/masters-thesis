@@ -1,7 +1,7 @@
 \chapter{Programming in \qub{}}\label{chp:qub-programming}
 
 In this chapter, we illustrate using examples how \qub{} is different
-from other functional languages and how a powerful type system based on logic of \BI
+from other functional languages and how a powerful type system based on logic of \BI{}
 would be used to track resources. The examples show how the resources use
 can be tracked at compile time and resource leaks can be avoided.
 
@@ -20,7 +20,7 @@ a line from it and then closes the file handle using this flavor of file handlin
 
 \begin{figure}[h]
   \begin{framed}
-    \begin{minted}[linenos]{haskell}
+    \begin{minted}[escapeinside=||,mathescape=true,linenos]{haskell}
 openFile :: FilePath -> IO FileHandle
 closeFile :: FileHandle -> IO ()
 readLine :: FileHandle -> IO (String, FileHandle)
@@ -33,7 +33,7 @@ writeFile :: String -> FileHandle -> IO ((), FileHandle)
 
 \begin{figure}[h]
   \begin{framed}
-    \begin{minted}[linenos]{haskell}
+    \begin{minted}[escapeinside=||,mathescape=true,linenos]{haskell}
 do f  <- openFile "sample.txt"
    (s, f)  <- readLine f
    () <- closeFile f
@@ -50,7 +50,7 @@ When another thread tries to write on this closed file handle, it would throw an
 Haskell's type system would happily accept this program but it might generate a runtime exception.
 \begin{figure}[h]
   \begin{framed}
-    \begin{minted}[linenos]{haskell}
+    \begin{minted}[escapeinside=||,mathescape=true,linenos]{haskell}
 do f  <- openFile "sample.txt"
    (s, f)  <- readLine f
    () <- closeFile f
@@ -67,7 +67,7 @@ The cases in which the condition is false, the second \mintinline{C}{goto fail;}
 steps to be taken after the if-block. This made the system vulnerable to a man-in-middle attack.
 \begin{figure}[h]
   \begin{framed}
-\begin{minted}[linenos]{C}
+\begin{minted}[escapeinside=||,mathescape=true, linenos]{C}
 ...
 if ((err = SSLHashSHA1.update(&hashCtx, &serverRandom)) != 0)
     goto fail;
@@ -86,14 +86,15 @@ err = sslRawVerify(...);
 \end{figure}
 
 Another example of incorrect way of using file handle is by not closing the file handle after using it shown in \cref{fig:file-read-noclose}.
-In a short lived process, when the program exits, file handles that are not closed are freed by the operating system.
-But if it is a long running process it would run out of file handles and the whole process would crash with an error that
+In a short lived process the operating system closes the file handles that are not closed when the program exits.
+In a long running process the operating system would run out of space to allocate file handles. The whole process would crash with an error that
 it cannot open any more file handles. Abnormal exit from the process would interfere in the write process
 and the operating system would close the file handle without waiting for the buffer to be completely
-written on the file system.
+written on the file system causing loss of information.
+
 \begin{figure}[h]
   \begin{framed}
-    \begin{minted}[linenos]{haskell}
+    \begin{minted}[escapeinside=||,mathescape=true,linenos]{haskell}
 do f <- openFile "sample.txt"
    (s, f)  <- readLine f
    return s
@@ -110,12 +111,12 @@ is shown in \cref{fig:file-read-close-2times-desugared} and the desugared versio
 
 \begin{figure}[h]
 \begin{framed}
-\begin{minted}[linenos]{haskell}
+\begin{minted}[escapeinside=||,mathescape=true,linenos]{haskell}
 (>>=) (openFile "sample.txt" ReadMode) (\f ->
        >>= (closeFile f) (\(s, f) -> return s)
 \end{minted}
   \end{framed}
-  \caption{Reading from a File in Haskell and Not Closing It}
+  \caption{Reading from a File in Haskell and Not Closing It (Desugared)}
   \label{fig:file-read-noclose-desugared}
 \end{figure}
 
@@ -127,20 +128,18 @@ is shown in \cref{fig:file-read-close-2times-desugared} and the desugared versio
                         (>>=|$_3$|) (closeFile f) (\_ -> closeFile f)))
     \end{minted}
   \end{framed}
-  \caption{Reading from a File in Haskell and Closing Twice}
+  \caption{Reading from a File in Haskell and Closing Twice (Desugared)}
   \label{fig:file-read-close-2times-desugared}
 \end{figure}
 
 In both the cases described above, the well typed looking program should be red flagged by the compiler as it would
-cause problems at runtime. To solve this problem, we introduce the % concept of unrestricted type similar to Quill,
-% and
-concept of sharing and separation of resources from the logic of \BI{} in \qub. The type $\rightarrow$ now
+cause problems at runtime. To solve this problem, we introduce the % concept of unrestricted type similar to Quill, and
+concept of sharing and separation of resources from the logic of \BI{} in \qub{}. The type $\rightarrow$ now
 has to be specified as either shared ($\shimp$) or separated ($\sepimp$). In \qub{} program code, we will use
 \mintinline{haskell}{-*>} to mean $\sepimp$ and \mintinline{haskell}{-&>} to mean $\shimp$.
-The file handling functions would have slightly different type signatures in \qub{} as shown in \cref{fig:qub-file-handling-functions} to accommodate
+The file handling functions will have different type signatures in \qub{} as shown in \cref{fig:qub-file-handling-functions} to accommodate
 the new function implication flavors. Similarly, the bind operation will also be typed differently as shown below as the resources of the function are
-separate from its arguments. % The arrow \mintinline{haskell}{-!*>} means that the function itself is unrestricted, i.e. it does not contain
-% any resources, and it does not share resources with its argument.
+separate from its arguments.
 
 \begin{figure}[h]
   \begin{framed}
@@ -164,13 +163,13 @@ where each argument is separate from the the function. The file handing function
 return a new binding for the file resource \HaskellF{f}. However, we notice that the third bind operation
 \mintinline[escapeinside=||,mathescape=true]{haskell}{(>>=|$_3$|)} would have a problem. It  would be typed as
 \mintinline{haskell}{IO () -*> (() -*> IO ()) -&> IO ()}\\
-as both the arguments share the file variable \HaskellF{f} which would be a type error
+as both the arguments share the file variable \HaskellF{f}. This would be a type error
 as the bind operation should have a type signature of \mintinline{haskell}{IO () -*> (() -*> IO ()) -*> IO ()}.
 This mismatch in the types would be caught statically during the type checking phase of compilation.
 
 \begin{figure}[h]
 \begin{framed}
-\begin{minted}[escapeinside=||,mathescape=true, linenos]{haskell}
+\begin{minted}[escapeinside=||, mathescape=true, linenos]{haskell}
 (>>=|$_1$|) (openFile "sample.txt") (\f ->
             (>>=|$_2$|) (readFile f) (\(s, f) ->
                         (>>=|$_3$|) (close f) (\_ -> closeFile f)))
@@ -205,15 +204,14 @@ the program would not type check due to mismatch of the file handle type to be i
 \section{Exception handling}
 We expand on the file handling scenario and consider the code that can throw runtime exceptions.
 The motivation to do so lies in the fact that memory leaks are caused because of runtime
-exceptions where the part of code that is responsible to clean up resources or in this case
-closing the file is skipped due to an alternate execution path. In Haskell, error handing is done using \HaskellF{MonadError}.
+exceptions where the part of code that is responsible to clean up resources. In Haskell, error handing is done using \HaskellF{MonadError}.
 The type class definition is shown in \cref{fig:haskell-monaderror}. \HaskellF{throwError} is used inside a monadic context to initiate
-exception processing and \HaskellF{catchError} is used to handle a previously thrown error and return
+exception processing and \HaskellF{catchError} is used to handle or rethrow a previously thrown error and return
 to a normal execution.
 
 \begin{figure}[h]
   \begin{framed}
-\begin{minted}[linenos=true, mathescape=true]{haskell}
+\begin{minted}[linenos=true, mathescape=true, linenos]{haskell}
 class Monad m => MonadError e m | m -> e where
     throwError :: e -> m a
     catchError :: m a -> (e -> m a) -> m a
@@ -284,7 +282,7 @@ do fh  <- openFile fpath
                                  return $ Left "Could not read file")
     \end{minted}
   \end{framed}
-  \caption{Exception Handling in Files}
+  \caption{Exception Handling in \qub{}}
   \label{fig:qub-file-exceptions}
 \end{figure}
 
