@@ -1,25 +1,31 @@
 \chapter{Background Work}\label{chp:background-work}
 \section{Hindley-Milner Type System and Type Inference Algorithm}\label{hm-system}
 
-Hindley-Milner (\textbf{HM}) type system\citeyearpar{milner_theory_1978} for lambda calculus extended with parametric polymorphism or restricted version
-of System F\citep{girard_proofs_1989} forms the basis many modern functional programming languages such as Haskell, ML, etc.
-The type language contains type variables, primitive types (such as integers, floats), the type constructor ($\rightarrow$)---
-which constructs function types---and type scheme ($\sigma$) as shown in \cref{fig:hm-lang}.
-The expression language contains variables, lambda expressions and applications extended with a
+Hindley-Milner (\textbf{HM}) type system\citeyearpar{milner_theory_1978} for lambda calculus extended with parametric polymorphism (i.e restricted version
+of System F\citep{girard_proofs_1989}) forms the basis many modern functional programming languages such as Haskell and ML.
+\cref{fig:hm-lang} shows the type language contains type variables, primitive types (such as integers, floats),
+the type constructor ($\rightarrow$)---which constructs function types---and type scheme ($\sigma$).
+The expression language contains variables, function absstraction and applications and
 polymorphic \texttt{let} construct. Type inference algorithm $\mathcal{W}$\citep{damas_principal_1982} and its variant
 type checking algorithm $\mathcal{M}$\citep{lee_proofs_1998} is decidable in the sense, the algorithm always completes with a success or failure.
-The algorithms also guarantee a most general typing scheme or principal types for an expression.
+The algorithms compute a most general, or principal typing scheme for an expression.
 
 \begin{figure}[h]
-\begin{framed}
+  \begin{framed}
+    \begin{minipage}{0.35\linewidth}
+      \begin{flalign*}
+        t, u, \upsilon &\in \text{Type Variables}
+      \end{flalign*}
+    \end{minipage}%
+  \begin{minipage}{0.65\linewidth}
   \begin{flalign*}
-                       t, u, \upsilon &\in \text{Type Variables}\\
     \text{Types}\ \ \  \tau           &::= t \mid \iota \mid \tau \rightarrow \tau\\
     \text{Typing Scheme}\ \ \  \sigma &::= \tau \mid \forall t. \tau\\
     \text{Typing Context}\ \ \ \Gamma &::= \epsilon \mid \Gamma, x:\sigma\\
          \text{Expressions}\ \ \ M, N &::= x \mid \lambda x. M \mid M N \mid \Let{x}{M}{N}
-  \end{flalign*}
-\end{framed}
+       \end{flalign*}
+     \end{minipage}
+     \end{framed}
 \caption{Hindley-Milner Type and Expression Language}
 \label{fig:hm-lang}
 \end{figure}
@@ -27,9 +33,8 @@ The algorithms also guarantee a most general typing scheme or principal types fo
 Robinson's\citeyearpar{robinson_machine-oriented_1965} unification algorithm plays a key role
 in computation of well-formed principal types. Its purely syntactic approach in creating
 substitutions to unify types keeps the complete process elegant.
-Algorithm $\mathcal{M}$ works in an interesting way where the types of all well-typed terms can be
-inferred automatically and if types are specified, the same algorithm can be used
-to verify that the specified type of expression term matches the actual type. The same
+Algorithm $\mathcal{M}$ can either be used to either infer the types of all well-typed expressions it
+can be used to verify that the specified type of expression term matches the actual type. The same
 can be obtained using algorithm $\mathcal{W}$ with an additional machinery of
 computing equality over types.
 
@@ -86,88 +91,141 @@ computing equality over types.
   \label{fig:hm-system}
 \end{figure}
 
-The rules for type inference for \textbf{HM} type system are shown in \cref{fig:hm-system}. $\Gamma$ is the
-collection of assumptions or context in which the expression is typed. It can be thought of as a collection--list or set--of
-an ordered pair of identifier and its type scheme. The [VAR] rule is tautology or a simple
-lookup of the term variable $x$ in the context $\Gamma$.  [$\rightarrow$I] and [$\rightarrow$E] are rules for typing
-lambda terms and application respectively. We also include the rules for parametric polymorphism where
-[$\forall$I] generalizes the type scheme by adding implicit universal quantifiers and [$\forall$E] generates an instance
-of the type scheme by substituting free type variables. It is worthwhile to note that when we generalize over types the rule
-[$\forall$I] has a side condition that ensures the new type variable introduced should not be free in the existing typing context.
+The rules for \textbf{HM} type system are shown in \cref{fig:hm-system}. $\Gamma$ is the
+collection of assumptions, or context, in which the expression M is typed. It can be thought of as a collection--list or set--of
+an ordered pair of identifier and its type scheme. The [VAR] rule is the tautology; a simple
+lookup of variable $x$ in context $\Gamma$ for the type scheme.  [$\rightarrow$I] and [$\rightarrow$E] type
+lambda terms and application respectively. Rules for parametric polymorphism are implicit in expression language.
+[$\forall$I] rule generalizes the type scheme by adding universal quantifiers and [$\forall$E] generates an instance
+of the type scheme by substituting free type variables. While generalizing types, the rule
+[$\forall$I], has a side condition that ensures the new type variable introduced should not be free in the typing context.
 The $\texttt{fvs}(\Gamma)$ denotes free type variables in $\Gamma$. The [LET] rules allows implicit parametric polymorphism.
-For example, the expression, \HaskellF{g = |$\lambda$|f. (f True, f 1)} is ill-typed as type unification for \HaskellF{f} with expressions
-\HaskellF{f True : Bool |$\rightarrow u_1$|} and \HaskellF{f 1 : Int |$ \rightarrow u_2$|} is not possible.
-However, there indeed exists a polymorphic type \HaskellF{|$\forall u_1. u_1 \rightarrow u_1$|}
-that types \HaskellF{f}. The \texttt{let} construct makes this possible. The expression \HaskellF{g} can be defined
-as \HaskellF{g = let f = |$\lambda$| x. x in (f True, f 1)}. The type of the expression \HaskellF{f} is now computed
-as \HaskellF{f: |$\forall u_1$|. |$u_1 \rightarrow u_1$|}, using [$\rightarrow$I] and [$\forall$I] rules and \HaskellF{g} is assigned a type \HaskellF{(Bool, Int)}.
+For example, the expression, \texttt{g = $\lambda$f.(f True, f 1)} is ill-typed. The type unification will fail for \texttt{f} as
+the expression \texttt{f True} asserts \texttt{f:Bool$\rightarrow$u$_1$} while the expression \texttt{f 1} asserts \texttt{f:Int$\rightarrow$u$_2$}.
+However, there indeed exists a polymorphic type \texttt{$\forall$u$_1$.u$_1$ $\rightarrow$ u$_1$}
+that types \texttt{f}. The \texttt{let} construct makes this possible. The expression \texttt{g} can be defined
+as \texttt{g = let f = $\lambda$ x. x in (f True, f 1)}. The type of the expression \texttt{f} is now computed
+as \texttt{f : $\forall$u$_1$. u$_1\rightarrow$u$_1$}, using [$\rightarrow$I] and [$\forall$I] rules and \texttt{g} is assigned a type \texttt{(Bool, Int)}.
 
 \begin{figure}[h]
   \centering
   \begin{framed}
   \begin{flalign*}
-    \Gamma, \Delta, \Phi ::= x \mid \Gamma \supset \Delta \mid \forall x. \Phi
+    A, B, C &::= x \mid A \supset B \mid \forall x. B \mid A \wedge B \mid A \vee B\\
+    \Gamma,\Delta &::= \epsilon \mid \Gamma, A
   \end{flalign*}
 \end{framed}
 \caption{Grammar for Intuitionistic Logic}
 \label{fig:intu-logic-grammar}
 \end{figure}
 
+
+Using the Curry-Howard correspondence theorem, the \textbf{HM} type system
+corresponds to the second order implication fragment of intuitionistic propositional logic.
+The grammar of intuitionistic logic is shown in \cref{fig:intu-logic-grammar} where $\Gamma \supset \Delta$ denotes implication,
+$A \wedge B$ denotes conjunction and $A \vee B$ denotes disjunction.
+
 \begin{figure}[h]\centering
   \begin{framed}
     % ID
     \begin{minipage}{0.20\linewidth}
       \begin{prooftree}
-        \AxiomC{${\color{white}\Phi\Gamma\Phi}$}\RightLabel{[Ax]}
-        \UnaryInfC{$\Phi \vdash \Phi $}
+        \AxiomC{${\color{white}A \Gamma A}$}\RightLabel{[Ax]}
+        \UnaryInfC{$A \vdash A $}
       \end{prooftree}
     \end{minipage}%
     % WKN
     \begin{minipage}{0.33\linewidth}
       \begin{prooftree}
-        \AxiomC{$\Gamma \vdash \Phi$}\RightLabel{[WKN]}
-        \UnaryInfC{$\Gamma, \Delta \vdash \Phi$}
+        \AxiomC{$\Gamma \vdash B$}\RightLabel{[WKN]}
+        \UnaryInfC{$\Gamma, A \vdash B$}
       \end{prooftree}
     \end{minipage}%
     % CTR
     \begin{minipage}{0.33\linewidth}
       \begin{prooftree}
-        \AxiomC{$\Gamma, \Gamma \vdash \Phi $}\RightLabel{[CTR]}
-        \UnaryInfC{$\Gamma \vdash \Phi $}
+        \AxiomC{$\Gamma, A, A \vdash B$}\RightLabel{[CTR]}
+        \UnaryInfC{$\Gamma, A \vdash B $}
       \end{prooftree}
     \end{minipage}
 
     % \forall I
     \begin{minipage}{0.33\linewidth}
       \begin{prooftree}
-        \AxiomC{$\Phi$}
-        \AxiomC{$x \notin \Phi$}\RightLabel{[$\forall$I]}
-        \BinaryInfC{$\forall x. \Phi$}
+        \AxiomC{$\Gamma \vdash B$}
+        \AxiomC{$x \notin \Gamma$}\RightLabel{[$\forall$I]}
+        \BinaryInfC{$\forall x. B$}
       \end{prooftree}
     \end{minipage}%
     % \forall E
     \begin{minipage}{0.33\linewidth}
       \begin{prooftree}
-        \AxiomC{$\forall x. \Phi$}
-        \AxiomC{$\Gamma$}\RightLabel{[$\forall$E]}
-        \BinaryInfC{$\Phi[x/\Gamma]$}
+        \AxiomC{$\Gamma \vdash \forall x. B$}
+        \AxiomC{$\Gamma \vdash A$}\RightLabel{[$\forall$E]}
+        \BinaryInfC{$B[x/A]$}
       \end{prooftree}
     \end{minipage}
 
     % -> I
     \begin{minipage}{0.33\linewidth}
       \begin{prooftree}
-        \AxiomC{$\Gamma \vdash \Delta$}
-        \AxiomC{$\Delta \vdash \Phi $}\RightLabel{[$\supset$I]}
-        \BinaryInfC{$\Gamma \vdash \Delta \supset \Phi$}
+        \AxiomC{$\Gamma,A \vdash B$}\RightLabel{[$\supset$I]}
+        \UnaryInfC{$\Gamma \vdash A \supset B$}
       \end{prooftree}
     \end{minipage}%
     % -> E
     \begin{minipage}{0.33\linewidth}
       \begin{prooftree}
-        \AxiomC{$\Gamma \vdash \Delta \supset \Phi$}
-        \AxiomC{$\Gamma \vdash \Delta$}\RightLabel{[$\supset$E]}
-        \BinaryInfC{$\Gamma \vdash \Phi $}
+        \AxiomC{$\Gamma \vdash A \supset B$}
+        \AxiomC{$\Gamma \vdash A$}\RightLabel{[$\supset$E]}
+        \BinaryInfC{$\Gamma \vdash B $}
+      \end{prooftree}
+    \end{minipage}
+
+    % \Gamma and A
+    \begin{minipage}{0.33\linewidth}
+      \begin{prooftree}
+        \AxiomC{$\Gamma \vdash A$}
+        \AxiomC{$\Gamma \vdash B$}\RightLabel{[$\wedge$I]}
+        \BinaryInfC{$\Gamma \vdash A \wedge B$}
+      \end{prooftree}
+    \end{minipage}%
+    % \Gamma and delta E_1
+    \begin{minipage}{0.33\linewidth}
+      \begin{prooftree}
+        \AxiomC{$\Gamma \vdash A \wedge B$}\RightLabel{[$\wedge$E$_1$]}
+        \UnaryInfC{$\Gamma \vdash A $}
+      \end{prooftree}
+    \end{minipage}%
+    % \Gamma and delta E_2
+    \begin{minipage}{0.33\linewidth}
+      \begin{prooftree}
+        \AxiomC{$\Gamma \vdash A \wedge B$}\RightLabel{[$\wedge$E$_2$]}
+        \UnaryInfC{$\Gamma \vdash B$}
+      \end{prooftree}
+    \end{minipage}
+
+    % \Gamma or A I_1
+    \begin{minipage}{0.25\linewidth}
+      \begin{prooftree}
+        \AxiomC{$\Gamma \vdash A$}\RightLabel{[$\vee$I$_1$]}
+        \UnaryInfC{$\Gamma \vdash A \vee B$}
+      \end{prooftree}
+    \end{minipage}%
+    % \Gamma or delta I_2
+    \begin{minipage}{0.25\linewidth}
+      \begin{prooftree}
+        \AxiomC{$\Gamma \vdash B$}\RightLabel{[$\vee$I$_2$]}
+        \UnaryInfC{$\Gamma \vdash A \vee B$}
+      \end{prooftree}
+    \end{minipage}%
+    % \Gamma or delta E
+    \begin{minipage}{0.50\linewidth}
+      \begin{prooftree}
+        \AxiomC{$\Gamma \vdash A \supset C$}
+        \AxiomC{$\Gamma \vdash B \supset C$}
+        \AxiomC{$\Gamma \vdash A \vee B$}\RightLabel{[$\vee$E$$]}
+        \TrinaryInfC{$\Gamma \vdash C$}
       \end{prooftree}
     \end{minipage}
   \end{framed}
@@ -175,17 +233,18 @@ as \HaskellF{f: |$\forall u_1$|. |$u_1 \rightarrow u_1$|}, using [$\rightarrow$I
   \label{fig:intuitionistic-logic}
 \end{figure}
 
-The Curry-Howard correspondence of \textbf{HM} type system
-corresponds to the second order implication fragment of intuitionistic propositional logic.
-The grammar of intuitionistic logic is shown in \cref{fig:intu-logic-grammar} where $\Gamma \supset \Delta$ denotes implication.
 The rules of the logic system are shown in \cref{fig:intuitionistic-logic} in Gentzen style natural deduction
 where $\Gamma$, $\Delta$ and $\Phi$ are propositions. The [Ax] rule corresponds to [ID] rule while [$\rightarrow$I] and [$\rightarrow$E] correspond
-to [$\supset$I] and [$\supset$E] respectively. The structural rules of weakening [WKN] and contraction [CTR] are implicitly obeyed
-by \textbf{HM} type-system. The weakening rule states that we can add unrelated assumptions to derivations without
+to [$\supset$I] and [$\supset$E] respectively. The weakening [WKN] and contraction [CTR] rules are implicit in the term structue of \textbf{HM} type-system.
+The weakening rule states that we can add unrelated assumptions to derivations without
 affecting the proofs while contraction states that we can discard duplicate assumptions in our derivations and the
 proof will still hold. The [$\forall$I] introduces the universal quantifier for a proposition and [$\forall$E] instantiates
-the proposition by replacing the free variable with another proposition. The rules [$\forall$I] and [$\forall$E] correspond to parametric polymorphism
-introduction [$\forall$I] and elimination [$\forall$E] rules in \cref{fig:hm-system}
+the quantifier by replacing the variable with given proposition. The rules [$\forall$I] and [$\forall$E] correspond to parametric polymorphism
+introduction [$\forall$I] and elimination [$\forall$E] rules in \cref{fig:hm-system}. [$\wedge$I], [$\wedge$E$_2$] and [$\wedge$E$_2$] introduces and eleminates
+conjunction. Conjunction is equivalent to pairs or product types. [$\vee$I$_2$], [$\vee$I$_2$] and [$\vee$E] introduces and eleminates disjunction respectively.
+Disjunction is equivalent to sum types. While, \textbf{HM} type system does not treat disjunction and conjunction types as first class citizens,
+they can be church encoded using lambda expressions\citep{pierce_tapl_2005}.
+
 
 \begin{figure}[h]
   \begin{framed}
@@ -257,22 +316,21 @@ can be applied on types or type schemes. When substitutions are applied to a con
 $\vec{t}$ is shorthand for a set of type variables $\{t_1, t_2, \dots, t_n\}$ and $\vec{t} \backslash \vec{u}$ denotes the set difference.
 
 \section{Linear Logic}\label{sec:linear-logic}
-While propositional logic deals with truth of propositions and their connectives, linear logic\citep{girard_linear_1987} deals with availability of resources.
-Linear logic promises to help cope with the resource and resource control problem.
+While propositional logic deals with truth of propositions and their connectives, linear logic\citep{girard_linear_1987}
+deals with availability of resources.
+Linear logic addresses resource and resource control problem.
 The core idea is that propositions cannot be freely duplicated or discarded in contrast to intuitionistic logic.
-In formal terms, the contraction and weakening logical rules are restricted.
-This instigates a view of propositions that behave like resources. In real world software applications,
-resources may not be freely copied or dropped from a program context.
-Handling program entities like database connections, file handles or even
-in-memory shared state are susceptible to introduction of bugs in
-industry grade software. Linear logic is proposed to be a remedy for
-these problems. If contraction and weakening is completely abandoned,
-the system gets overly restrictive. To work around, this modality operator $\oc$ is introduced which
-allows intuitionistic rules in fragments. Wadler describes a refinement of
-linear logic based on Girard's Logic of Unity\citep{wadler_taste_1993, girard_unity_1993}.
-It can be considered as a disjoint union of linear logic and intuitionistic logic.
-$[A]$ would mean that it is an intuitionistic assumption and the rules of weakening and contraction are not restricted in this
-fragment, while $\Pair{A}$ means that it is a linear assumption where weakening and contraction is prohibited.
+In formal terms, the contraction and weakening rules are restricted.
+Propositions are modeled as resources. In real world software applications,
+if resources---such as database connections, file handles or even
+in-memory shared state---are freely copied or dropped from a program context, it can introduce bugs or crashes in
+industry grade software. If contraction and weakening are completely abandoned,
+the system gets overly restrictive. As a work around, the modality operator $\oc$ is introduced for controlled use
+of contraction and weakening. Wadler\citeyearpar{wadler_taste_1993} describes a refinement of
+linear logic based on Girard's Logic of Unity\citeyearpar{girard_unity_1993}.
+It is a disjoint union of linear logic and intuitionistic logic:
+$[A]$ means that $A$ is an intuitionistic assumption and the rules of weakening and contraction are admissible,
+while $\Pair{A}$ would mean that it is a linear assumption and weakening and contraction are prohibited.
 
 \begin{figure}[h]
   \centering
@@ -283,19 +341,19 @@ fragment, while $\Pair{A}$ means that it is a linear assumption where weakening 
     \end{flalign*}
   \end{framed}
   \caption{Grammar for Intuitionistic Linear Logic}
+  \label{fig:linear-logic-syntax}
 \end{figure}
 
-In a linear logic setting, the assumptions can not be used more than once. This instigates
-a new view of implication which is different from intuitionistic logic. The implication obtains a meaning of
-consume which is represented as $A \rightspoon B$ and read ``consume $A$ to produce $B$''. The assumption $A$ cannot be used again after
-it has been used to obtain $B$. Similarly, there are two fragments of connectives, multiplicative and additive that
-arise in this logic system. Multiplicative conjunction is represented as $A \otimes B$, and additive conjunction and disjunction ($A \with B$ and $A \oplus B$).
-The structural and connective logical rules for the complete system is given in \cref{fig:linear-logic-rules}.
+In a linear logic, the assumptions can not be used more than once. In the proposition $A \rightspoon B$, the assumption $A$ cannot be used again after
+it has been used to obtain $B$. This gives a new view of implication as consumption.
+Due to the absense of weakening and contraction rules in this system we obtain two fragments---multiplicative and additive---of connectives.
+Multiplicative conjunction is represented as $A \otimes B$, and additive conjunction and disjunction as $A \with B$ and $A \oplus B$ respectively.
+The syntax of linear logic is shown in \cref{fig:linear-logic-syntax}.
 
 \begin{figure}[h]
   \begin{framed}
-
-    \centering\fbox{    \centering
+    \centering
+    \centering\fbox{
       Structural Rules
     }
 
@@ -332,7 +390,7 @@ The structural and connective logical rules for the complete system is given in 
     \begin{minipage}{0.30\textwidth}
       \begin{prooftree}
         \AxiomC{$\Gamma \vdash B$} \RightLabel{[WKN]}
-        \UnaryInfC{$\Delta, [A] \vdash B$}
+        \UnaryInfC{$\Gamma, [A] \vdash B$}
       \end{prooftree}
     \end{minipage}
 
@@ -406,8 +464,8 @@ The structural and connective logical rules for the complete system is given in 
     \begin{minipage}{.6\textwidth}
       \begin{prooftree}
         \AxiomC{$\Gamma \vdash A \otimes B$} \RightLabel{$[\otimes E]$}
-        \AxiomC{$\Gamma, A, B \vdash C$}
-        \BinaryInfC{$\Gamma \vdash C$}
+        \AxiomC{$\Delta, A, B \vdash C$}
+        \BinaryInfC{$\Gamma,\Delta \vdash C$}
       \end{prooftree}
     \end{minipage}
 
@@ -439,17 +497,19 @@ The structural and connective logical rules for the complete system is given in 
   \label{fig:linear-logic-rules}
 \end{figure}
 
+The structural and connective logical rules for the complete system is given in \cref{fig:linear-logic-rules}.
 To relax linearity constraints, exponential modality $\oc$ is used, which signifies that an assumption can
 be duplicated or dropped without restriction. $\oc A$ can be thought of as {\em``as many A's as needed''}.
-The intuitionistic $A \supset B$ can be encoded in linear logic by using the modality operator as $\oc A \rightspoon B$.
-We clearly see that this is a much powerful system in comparison to intuitionistic logic because of its enhanced expressivity with
-resources and propositions to have different treatment. However, there is an awkward asymmetry between the multiplicative
-and additive constructs. The multiplicative connectives follow the intuitionistic logic implication connectives but there is no notion of
-implication for additive connectives. In other words, $\rightspoon$ is a right adjoint
-for multiplicative $\otimes$ but there is no such right adjoint counter part for additive $\with$.
+The intuitionistic implication $A \supset B$ can be encoded in linear logic by using the modality operator as $\oc A \rightspoon B$.
+% Similarly, $A \wedge B$ can be encoded as $\oc A \with \oc B$ and $A \vee B$ as $\oc A \otimes \oc B$\citep{wadler_taste_1993}.
+We clearly see that this is a much powerful system in comparison to intuitionistic logic because of its enhanced expressivity for handling
+resources. However, there is an awkward asymmetry between the connectives. The absense of structural rules enables conjuntion to have
+multiplicative and additive fragments but to express additive implication the use of modality is necessary.
 
-There have been research efforts in the past to build prototype languages that have type systems based on linear logic. L$^3$\citep{ahmed_l3_2007} is an intermediate
-language that is built on a linear type system and supports strong updates. Linear Haskell\citep{bernardy_linear_2017} is a surface level language
+There have been several prototype languages based on linear logic. L$^3$\citep{ahmed_l3_2007} is an intermediate
+language that is built on a linear type system and supports strong updates. Lolliproc\citep{mazurak_lolliproc_2010} explores the use of
+linear logic in concurrent functional programming while F$^{\circ}$\citep{mazurak_lightweight_2010} uses kinds to distinguish between
+linear and unrestricted types for general purpose programming. Linear Haskell\citep{bernardy_linear_2017} is a surface level language
 that overloads function arrows to incorporate linearity.
 
 \section{Qualified Types}\label{sec:qualified-types}
@@ -457,9 +517,9 @@ Jones\citeyearpar{jones_theory_1994} proposed a general framework of incorporati
 Predicates are used to build constraints on the domain of the type of a term in the language expression.
 It introduces additional layer between polymorphic and monomorphic typing of programs.
 A modification of Damas-Milner algorithm $\mathcal{W}$ to incorporate predicates ensures that type inference
-is sound and complete. The types that satisfy all the predicates are called qualified types for the term.
+is sound and complete. Qualified types are the types that satisfy all the predicates for the term.
 Qualified types are powerful enough to expresses type classes with functional dependencies\citep{mark_type_2000},
-record types, sub-typing\citep{jones_theory_1994} and first class polymorphism\citep{jones_first-class_1997}.
+record types\citep{gaster_polymorphic_1996}, sub-typing\citep{jones_theory_1994} and first class polymorphism\citep{jones_first-class_1997}.
 
 \begin{figure}[h]
   \centering
@@ -474,7 +534,7 @@ record types, sub-typing\citep{jones_theory_1994} and first class polymorphism\c
     \begin{minipage}{0.65\linewidth}
   \begin{flalign*}
     \text{Types}\ \ \ \tau              &::= t \mid \iota \mid \tau \rightarrow \tau\\
-    \text{Qualified Types}\ \ \ \rho    &::= \tau \mid \pi => \rho\\
+    \text{Qualified Types}\ \ \ \rho    &::= \tau \mid \pi \Rightarrow \rho\\
     \text{Type Scheme}\ \ \ \sigma      &::= \rho \mid \forall t. \sigma\\
     \text{Typing Context}\ \ \Gamma     &::= \epsilon \mid \Gamma, x : \sigma\\
     \text{Expressions}\ \ \ M, N &::= x: \sigma \mid \lambda x. M \mid M N \\
@@ -486,16 +546,15 @@ record types, sub-typing\citep{jones_theory_1994} and first class polymorphism\c
 \label{fig:qualifed-types}
 \end{figure}
 
-The type language is modified from \cref{fig:hm-lang} to incorporate
+The type language from \cref{fig:hm-lang} is modified to incorporate
 qualified types shown in \cref{fig:qualifed-types}. $\pi$ and $\omega$ range over predicates and  $P$ and $Q$ range over finite set of predicates.
-The types of the form $\pi => \sigma$ denote those instances of $\sigma$ that satisfy the predicate $\pi$, in general
-$P => \sigma$ would mean the instances of $\sigma$ that satisfy all the predicates $\pi \in P$. The predicate entailment
+Types of the form $\pi \Rightarrow \sigma$ denote those instances of $\sigma$ that satisfy the predicate $\pi$, in general
+$P \Rightarrow \sigma$ would mean the instances of $\sigma$ that satisfy all the predicates $\pi \in P$. The predicate entailment
 relation $P \Vdash \pi$ asserts that the predicate $\pi$ can be inferred from the predicates in $P$.
 The typing rules in \textbf{HM} type system are slightly modified and 2 new rules are added
-as shown in \cref{fig:qualified-types-rules}. [$=>$I] and [$=>$E] serve the purpose of for introduction and elimination of qualified types respectively.
+as shown in \cref{fig:qualified-types-rules}. [$\Rightarrow$I] and [$\Rightarrow$E] serve the purpose of for introduction and elimination of qualified types respectively.
 The new rules are \colorbox{blue!30}{highlighted}. The predicate set $P$ is threaded throughout the other rules
-but are not used anywhere except [$=>$I] and [$=>$E]. % The system not only remains sound and complete with respect to \textbf{HM} type system but
-% also makes it more flexible {\color{red} i need more words here flexible how? powerful how?}.
+but is not used anywhere except [$\Rightarrow$I] and [$\Rightarrow$E].
 
 \begin{figure}[h]
   \begin{framed}\centering
@@ -568,8 +627,8 @@ but are not used anywhere except [$=>$I] and [$=>$E]. % The system not only rema
   \label{fig:qualified-types-rules}
 \end{figure}
 
-\section{Linear logic with Qualified Types: Quill}\label{sec:quill}
-Quill\citep{morris_best_2016} implements a linear type system with a sound and complete type inference using qualified types.
+\section{Quill: Linear Logic with Qualified Types}\label{sec:quill}
+Quill\citep{morris_best_2016} uses the framework of qualified types to implement a linear type system with a sound and complete type inference.
 It uses a modified version of Algorithm $\M$ to compute principal types of the terms.
 % In practice, due to higher ordered kind system, it may not be possible to deduce the
 % type of the terms but a work around is to annotate some or all parts of
@@ -578,13 +637,12 @@ It uses a modified version of Algorithm $\M$ to compute principal types of the t
 The key idea of Morris is to introduce two predicates for types into the language: \Un and \texttt{Fun} with a predicate for ordering
 types depending on their admittance to structural rules. The predicate $\tau \geq \tau'$ will hold only if $\tau$ admits more
 structural rules than $\tau'$ or, in other words, if $\tau'$ is more restricting than $\tau$.
-The predicate \Un{$\tau$} implies that the type $\tau$ is unrestricted which means it does not
+The predicate \Un{$\tau$} implies that the type $\tau$ is unrestricted, which means it does not
 contain any resources or the resources that it captures can be easily duplicated and dropped.
-In traditional sense of type classes in Haskell, we can think of the \Un to be a type-class with methods supporting the operation
+In traditional sense of type classes in Haskell, \Un can be thought to be a type-class with methods supporting the operation
 of duplication and dropping shown in \cref{fig:un-typeclass}. In a proof theoretic setting, it would mean
-that it admits to weakening and contraction. The predicate \texttt{Fun $\tau$} implies that the type $\tau$ is of a function type. The function
-depending on its use, may or may not capture resources in its closure and the functions
-themselves can be of restricted or unrestricted type.
+that it admits weakening and contraction. The predicate \texttt{Fun $\tau$} implies that the type $\tau$ is of a function type. The function
+may or may not capture resources in its closure and the functions themselves can be of restricted or unrestricted type.
 \begin{figure}[h]
   \begin{framed}\centering
     \begin{minted}[escapeinside=||,mathescape=true,xleftmargin=\parindent,linenos]{haskell}
@@ -597,38 +655,38 @@ class Un where
   \label{fig:un-typeclass}
 \end{figure}
 
-Simple types such as integers and booleans are all of unrestricted type as
-they can be duplicated or dropped freely. While program resources such as file handles, database connections
-should be treated as restricted or linear types as we cannot freely duplicate
+Simple types such as integers and Booleans are all of unrestricted type, as
+they can be duplicated or dropped freely. Program resources such as file handles, database connections
+are treated as restricted or linear types as we cannot freely duplicate
 or drop them. Consider a lambda expression that represents function application $\lambda f. \lambda x. f x$ and it is applied to
 some function $\mathcal{F}$. The linearity of this function $\lambda x. \mathcal{F} x$
 would depend on the linearity of $\mathcal{F}$. To generalize, we can say that the linearity of the lambda expression depends
 on its closure. The type of $\lambda f. \lambda x. f x$ can be written as $(\tau \overset{f}{\rightarrow} \upsilon) \rightarrow \tau \overset{g}{\rightarrow}\upsilon$.
-This function would be well typed only if $f$ is more restricting i.e. admits more structural rules than $g$, so to say $f \geq g$.
+This function would be well typed only if $f$ is less restricting i.e. admits more structural rules than $g$, so to say $f \geq g$.
 
 \section{Logic of Bunched Implications and $\alpha\lambda$-Calculus}\label{sec:bi}
-In intuitionistic logic, the context is considered as a list or a set. In the theory of \BI,
+In intuitionistic logic, the context is considered as a list or a set. In the theory of \BI{},
 the context is treated as a tree. Contexts are called bunches and are syntactically
-combined using 2 connectives comma ($,$) or a semicolon ($;$). The logic of \BI glues together
-intuitionistic linear logic with intuitionistic logic by permitting contexts connected with
+combined using 2 connectives comma ($,$) or a semicolon ($;$). The logic of \BI{} combines
+substructural logic with intuitionistic logic by permitting contexts connected with
 semicolon to undergo contraction and weakening while the context connected with comma
 are prohibited to undergo contraction and weakening. Comma and semicolon do not distribute over each other.
-Thus $A,(B;C) \neq A, B ; A,C$ and $A;(B,C) \neq A;B,A;C$ where $A$, $B$ and $C$ are assumptions or propositions.
-There are two flavors of implication---additive and multiplicative---which is closely related to the idea of conjunction.
-\begin{framed}\centering
-\begin{minipage}{1.0\linewidth}
-  \begin{prooftree}
-    \AxiomC{$\Gamma, A \vdash B$}
-    \UnaryInfC{$\Gamma \vdash A \lozenge B$}
-  \end{prooftree}
-\end{minipage}
-\end{framed}
-In the logic of \BI the question then faced is choosing what kind of
-implication should be used in place of $\lozenge$---the additive kind or the multiplicative kind.
+Thus for propositions$A$, $B$ and $C$ : $A,(B;C) \neq A, B ; A,C$ and $A;(B,C) \neq A;B,A;C$.
+% There are two flavors of implication---additive and multiplicative---which is closely related to the idea of conjunction.
+% \begin{framed}\centering
+% \begin{minipage}{1.0\linewidth}
+%   \begin{prooftree}
+%     \AxiomC{$\Gamma, A \vdash B$}
+%     \UnaryInfC{$\Gamma \vdash A \lozenge B$}
+%   \end{prooftree}
+% \end{minipage}
+% \end{framed}
+% In the logic of \BI the question then faced is choosing what kind of
+% implication should be used in place of $\lozenge$---the additive kind or the multiplicative kind.
 \cite{ohearn_logic_1999} introduce 2 kinds of arrows
 and use them depending on the connectives used in the context. A multiplicative implication ($\sepimp$)
 is used when the context is connected with a comma and an additive implication ($\shimp$) is used when the
-context is connected using semicolon. This gives rise to two rules
+context is connected using semicolon. This gives rise to two introduction rules for implication:
 \begin{framed}
 \begin{minipage}{0.5\linewidth}
   \begin{prooftree}
@@ -773,7 +831,7 @@ as even tough the argument is separate from the function, it may be used twice. 
   \label{fig:multi-bi-example}
 \end{figure}
 
-The use of logic of \BI{} as a type inference system is currently an unexplored area of research in functional programming language implementation.
+The use of logic of \BI{} as a type inference system is an active area of research in functional programming language implementation.
 There has been research on building proof theoretic and semantic models of the logic system\citep{pym_semantics_2002}. The use of bunches instead of
 lists as typing environment makes it difficult to have a direct implementation of the type inference algorithm. \cite{atkey_lambda_sep_2004}
 designs $\lambda_{sep}$ calculus which is based on the affine variant of $\alpha\lambda$-calculus focusing on separation of resources used by objects.

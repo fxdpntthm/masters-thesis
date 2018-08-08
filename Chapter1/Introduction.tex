@@ -1,26 +1,27 @@
 \chapter{Introduction}\label{chp:intro}
 
 Resources are treated as normal values in Hindley-Milner based type systems. Statically typed modern programming languages such as
-Haskell, ML, etc. do little to track resource usage at compile time to detect errors. Runtime errors caused due to not closing an open file handle
+Haskell and ML  do little to track resource usage at compile time to detect errors. Runtime errors caused due to not closing an open file handle
 or closing the file handle more than once are difficult to track and debug in evolving production code.
 Substructural logic systems such as linear logic, restrict the use of structural rules---contraction and weakening---to view values as resources.
-There have been several attempts to create a practical linear type system for programming languages but they have not been
-included in main stream languages due to practical limitations. We develop a type system based on the logic of bunched implications
-and implement a type inference algorithm $\M$ for the language. We later extend the system with kinds that allows users to define
-their own datatypes that expresses sharing and separation between fields.
+There have been several attempts to create a practical linear type system for programming languages but they have achieved mainstream success due to practical
+limitations. We develop a type system based on the logic of bunched implications
+and implement a type inference algorithm for the language. We later extend to allow users to define
+their own datatypes, expressing sharing and separation between fields.
 
 This thesis is organized in the following manner: \cref{chp:background-work} details some necessary background work that is related to our work.
 \cref{chp:qub-programming} illustrates how programming in \qub{} is different than programming in other languages like Haskell by giving concrete examples.
-\cref{chp:qub-language} and \cref{chp:qub-type-system} describe the core language of type and terms and gives details about the type system,
+\cref{chp:qub-language} describes the core language of type and terms and and \cref{chp:qub-type-system} gives details about the type system,
 syntax directed type system with a type inference algorithm. \cref{chp:datatypes} extends the language with kinds that enables users to define
-custom datatypes similar to GADTs. Finally, \cref{chp:conclusion} gives a direction to future work and conclusion.
+custom datatypes. Finally, \cref{chp:conclusion} gives a direction to future work and conclusion.
 
 The contributions made in the thesis are as follows:
 \begin{itemize}
-\item \qub{}, A type system based on logic of \BI{} that treates resources as first class citizens in the programming language.
-  We introduce two kinds of program objects---restricted and unrestriced---and two kinds of functions---the ones that share resrouces with
+\item \qub{}, A type system based on logic of \BI{} that treats resources as first class citizens in the programming language.
+  We introduce two kinds of program objects---restricted and unrestricted---and two kinds of functions---the ones that share resources with
   their arguments and the other that do not.
+\item {\em \qub{} incorporates distributive laws admissible in \BI{} and internalizes the transformations on the context that are explicit in \BI{}.}
 \item Design a sound and complete syntax directed type system and implement a sound type inference algorithm based on modified Algorithm $\M$ with
   formal proofs.
-\item Examples illustrating how \qub{} is more expressive than standard Hindley-Milner type system for by tracking resources at compile time and to detect anomalies.
+\item Examples illustrating how \qub{} is more expressive than standard Hindley-Milner type system, tracking resources at compile time and to detect anomalies.
 \end{itemize}

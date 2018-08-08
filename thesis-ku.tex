@@ -142,16 +142,17 @@
 \maketitle
 \begin{abstract}
   Modern programming languages treat resources as normal values.
-  The static semantics of resources in such languages does not match with runtime semantics.
+  The static semantics of resources in such languages does not match their runtime semantics.
   In this thesis, we tackle the resource management problem by making resources
   first class citizens in the language, and concentrating on sharing or separation of resources.
 
-  We design and implement \qub{}, a Curry-Howard interpretation of the logic
-  based on the logic of bunched implications (\BI) \citep{ohearn_bunched_2003}. We introduce two kinds of program objects---restricted
+  We design and implement \qub{}, a Curry-Howard interpretation of logic
+  of bunched implications (\BI) \citep{ohearn_bunched_2003,pym_semantics_2002}.
+  We distinguish two kinds of values---restricted
   and unrestricted---and two kinds of function implications---sharing and separating.
-  The restricted objects model resources while the unrestricted objects model program objects that do not contain any resources.
-  Sharing functions---denoted by $\shimp$ connective---imply that functions share resources with its arguments,
-  while separating arrow---denoted by $\sepimp$ connective---imply that functions do not share resources with its arguments.
+  The restricted values model resources while the unrestricted values model program objects that do not contain any resources.
+  Sharing functions denote that functions share resources with its arguments,
+  while separating functions denote that functions do not share resources with its arguments.
   We show how the use of monads with sharing and separating functions help in statically detecting resource errors while modeling
   exceptions that is difficult to capture in linear languages.
 
@@ -168,7 +169,7 @@
 
 \listoffigures
 
-\listoftables
+%\listoftables
 
 \end{romanpages}
 
