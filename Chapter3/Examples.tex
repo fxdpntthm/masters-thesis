@@ -7,16 +7,17 @@ can be tracked at compile time and resource leaks can be avoided.
 
 \section{File Handles}\label{sec:file-handle-example}
 
-In modern programming languages resources such as files are treated as normal variables.
+In modern programming languages resources, such as files, are treated as normal variables.
 It is the programmer's responsibility to check that that files are not closed twice
-and that there are no files that remain open when the program exits. This seemingly trivial
-responsibility becomes tedious and error prone as soon as the programming logic gets complex.
-Modern functional languages such as Haskell enforces the file input and output to be wrapped in a IO Monad.
+and no files that remain open when they are no longer in use. This seemingly trivial
+responsibility becomes tedious and error prone as the program gets more complex.
+Modern functional, languages such as Haskell, enforces the file input and output to be wrapped in a IO Monad.
 This is more declarative than imperative languages, but the type system is not powerful enough
 to detect whether a file handle is closed twice or is not closed at all.
 Consider the type signatures for functions for file handling shown in \cref{fig:file-handling-function}. We explicitly
-return the file resource i.e. \mintinline{haskell}{f}. A simple program in Haskell that opens a file and reads
-a line from it and then closes the file handle using this flavor of file handling functions is shown in \cref{fig:file-read-close}.
+return the file resource i.e. \mintinline{haskell}{f}. The reason to do so is to keep an explicity track of the resource.
+A simple program in Haskell that opens a file and reads a line from it and then closes the file handle using this
+flavor of file handling functions is shown in \cref{fig:file-read-close}.
 
 \begin{figure}[h]
   \begin{framed}
@@ -198,13 +199,10 @@ It is declared but not used in its scope. This would force the file handle to be
 This is a violation of our assumption that resources cannot be of the unrestricted type. Thus
 the program would not type check due to mismatch of the file handle type to be inferred as unrestricted.
 
-% To summarize, \qub{} has two kinds of program objects---restricted and unrestricted---and two kinds of functions---sharing and separating.
-% Each type in \qub{} can be of these two kinds.
-
 \section{Exception handling}
 We expand on the file handling scenario and consider the code that can throw runtime exceptions.
 The motivation to do so lies in the fact that memory leaks are caused because of runtime
-exceptions where the part of code that is responsible to clean up resources. In Haskell, error handing is done using \HaskellF{MonadError}.
+exceptions where the part of code that is responsible to clean up resources. In Haskell, error handing is done using \HaskellF{MonadError}\citep{liang_monad_1995}.
 The type class definition is shown in \cref{fig:haskell-monaderror}. \HaskellF{throwError} is used inside a monadic context to initiate
 exception processing and \HaskellF{catchError} is used to handle or rethrow a previously thrown error and return
 to a normal execution.

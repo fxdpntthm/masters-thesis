@@ -5,15 +5,21 @@ into a sharing graph and represent it as a collection of three tuple sets in ord
 
 \begin{figure}[h]
   \begin{framed}
+    \begin{minipage}{0.35\linewidth}
     \begin{flalign*}
-                         t, u, \upsilon, \phi         &\in \text{Type Variables}\\
-                                      P, Q            &\in \text{Finite Predicate Set}\\
-      \text{Types}\ \ \               \tau            &::= t \mid \iota \mid \tau \rightarrow \tau\
-                                \qquad\text{where}\ \{\tightoverset{\scalebox{0.5}{!}}{\sepimp}, \sepimp, \tightoverset{\scalebox{0.5}{!}}{\shimp}, \shimp \} \subseteq \rightarrow \\
+      t, u, \upsilon, \phi         &\in \text{Type Variables}\\
+      P, Q            &\in \text{Finite Predicate Set}\\
+    \end{flalign*}
+  \end{minipage}
+  \begin{minipage}{0.65\linewidth}
+    \begin{flalign*}
+      \text{Types}\ \ \               \tau            &::= t \mid \iota \mid \tau \rightarrow \tau\\
+                   &\text{where}\qquad \rightarrow \in \{\tightoverset{\scalebox{0.5}{!}}{\sepimp}, \sepimp, \tightoverset{\scalebox{0.5}{!}}{\shimp}, \shimp \}\\
       \text{Predicates}\ \ \        \pi,\omega        &::= \texttt{Un}\ \tau \mid \texttt{SeFun}\ \tau \mid \texttt{ShFun}\ \tau \mid \tau \geq \tau' \\
       \text{Qualified Types}\ \ \     \rho            &::= \tau \mid \pi => \rho \\
       \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma 
     \end{flalign*}
+  \end{minipage}
   \end{framed}
   \caption{Types \qub{}}
   \label{fig:qub-types}
@@ -30,7 +36,7 @@ We would write both the arrows in an infix notation.
 The predicate system enhances the expressivity of the type system. Following the same route taken
 in Quill \citep{morris_best_2016} we use the predicate $\Un{\tau}$ to denote
 that the type $\tau$ is unrestricted. Unrestricted types are the ones that do not have any resources or whose resources can
-be duplicated or deleted easily. Built-in lightweight types such as \HaskellF{Int}, \HaskellF{Char} are considered unrestricted types.
+be duplicated or deleted easily. Built-in types such as \HaskellF{Int}, \HaskellF{Char} are considered unrestricted types.
 We write $\ShFun{\phi}$ to describe that type $\phi$ may share resources with its
 argument types and  $\SeFun{\phi}$ to describe that type $\phi$ does not share any resources from its argument types.
 Notice that function types can also be unrestricted i.e. it does not have any resources. If a type $\tau$ is unrestricted i.e. it qualifies with predicate
@@ -66,7 +72,7 @@ to enable users to define custom types using type constructors. We describe this
     \begin{minipage}{0.24\linewidth}
       \begin{prooftree}
         \AxiomC{${\color{white}\bigwedge_{\pi \in Q}}$}
-        \UnaryInfC{$P => \Un{(\tau \tightoverset{\scalebox{0.5}{!}}{\sepimp} \tau')}$}
+        \UnaryInfC{$P => \Un{(\tau \tightoverset{\scalebox{0.5}{!}}{\shimp} \tau')}$}
       \end{prooftree}
     \end{minipage}
 
@@ -120,7 +126,7 @@ to enable users to define custom types using type constructors. We describe this
 \end{figure}
 
 % Describe Typing environment
-In normal type systems, the contexts are represented as sets or lists. In logic of \BI\ they are represented as binary trees and are called bunches.
+In normal type systems, the contexts are represented as sets or lists. In logic of \BI{} they are represented as binary trees and are called bunches.
 The leaf nodes contain the pair of term and its associated type. Internal nodes of the context tree are
 connectives which can either be a semicolon ($;$) or a comma ($,$).
 If a bunch $\Delta$ is a subtree of $\Gamma$, the relation is denoted by $\Gamma(\Delta)$.
@@ -248,9 +254,10 @@ the standard notion of set equality for checking sharing union.
 \begin{figure}[h]
   \begin{framed}
     \begin{flalign*}
-      \Gamma \circledast \Gamma' &= \Gamma \sqcup \Gamma' =>
-           \texttt{if}\ \texttt{Vars}(\Gamma) \# \texttt{Used}(\Gamma') \wedge \texttt{Vars}(\Gamma')\# \texttt{Used}(\Gamma) \\
-      \Gamma \varoplus \Gamma'   &= \Gamma \sqcup \Gamma' => \texttt{if}\ \texttt{Used}(\Gamma) = \texttt{Used}(\Gamma')
+      \Gamma \circledast \Gamma' &= \Gamma \sqcup \Gamma' \qquad
+           \texttt{if}\ \texttt{Vars}(\Gamma) \mathbin{\#} \texttt{Used}(\Gamma') \wedge \texttt{Vars}(\Gamma') \mathbin{\#} \texttt{Used}(\Gamma)\\
+      \Gamma \varoplus \Gamma'   &= \Gamma \sqcup \Gamma' \qquad
+           \texttt{if}\ \texttt{Used}(\Gamma) = \texttt{Used}(\Gamma')
     \end{flalign*}
   \end{framed}
   \caption{Type Assignment Operations}
@@ -275,7 +282,7 @@ Our term language is similar to that of simply typed lambda calculus involving v
 but we have two types of lambda expressions, the alpha lambda ($\lambda^{\shimp}$) denotes sharing
 of the argument term with the expression $M$ and the separating lambda term ($\lambda^{\sepimp} $) that implies
 the argument term has a separating context with the expression $M$. We also have $\texttt{let}$
-construct to enable implicit parametric polymorphism.
+construct to enable parametric polymorphism.
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../thesis-ku.tex"
