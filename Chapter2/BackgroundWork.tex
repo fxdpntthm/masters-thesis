@@ -5,7 +5,7 @@ Hindley-Milner (\textbf{HM}) type system\citeyearpar{milner_theory_1978} for lam
 of System F\citep{girard_proofs_1989}) forms the basis many modern functional programming languages such as Haskell and ML.
 \cref{fig:hm-lang} shows the type language contains type variables, primitive types (such as integers, floats),
 the type constructor ($\rightarrow$)---which constructs function types---and type scheme ($\sigma$).
-The expression language contains variables, function absstraction and applications and
+The expression language contains variables, function abstraction and applications and
 polymorphic \texttt{let} construct. Type inference algorithm $\mathcal{W}$\citep{damas_principal_1982} and its variant
 type checking algorithm $\mathcal{M}$\citep{lee_proofs_1998} is decidable in the sense, the algorithm always completes with a success or failure.
 The algorithms compute a most general, or principal typing scheme for an expression.
@@ -725,7 +725,7 @@ programmers fall back to the non-resource intuitionistic parts.
 
 \begin{figure}[h]
   \begin{framed}\centering
-    \fbox{Strucutral}
+    \fbox{Structural}
     %ID
     \begin{minipage}{0.33\linewidth}
       \begin{prooftree}
@@ -848,7 +848,7 @@ programmers fall back to the non-resource intuitionistic parts.
 
 The complete grammar for logic of \BI{} is shown in \cref{fig:grammar-bi}. The contexts $\{\}_m$ represents a multiplicative empty context
 while the $\{\}_a$ represents an additive empty context. The rules for the logic system are shown in \cref{fig:rules-bi}.
-$\Gamma(\Delta)$ means that $\Delta$ is a sub-tree within $\Gamma$.
+$\Gamma(\Delta)$ means that $\Delta$ is a sub-tree within $\Gamma$ (\cref{chp:qub-language} for more details).
 
 $\alpha\lambda$-calculus\citep{ohearn_resource_1999, pym_semantics_2002}
 is the Curry-Howard interpretation of the logic of \BI{}. It views implication in terms of sharing rather than
@@ -938,7 +938,7 @@ sake of simplicity.
 \end{figure}
 
 The logic of \BI{} patches up the awkward asymmetry experienced in linear logic. The multiplicative conjunction $\otimes$ has a right adjoint
-counter part as $\sepimp$ while additive conjunction $\with$ has a right adjoint counterpart of $\shimp$.
+counterpart as $\sepimp$ while additive conjunction $\with$ has a right adjoint counterpart $\shimp$.
 In other words, $A \otimes B \vdash C$ iff $A \vdash B \sepimp C$ and $A \with B \vdash C$ iff $A \vdash B \shimp C$.
 This relieves us from introducing modality into the system.
 
