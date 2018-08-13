@@ -15,7 +15,7 @@ Modern functional, languages such as Haskell, enforces the file input and output
 This is more declarative than imperative languages, but the type system is not powerful enough
 to detect whether a file handle is closed twice or is not closed at all.
 Consider the type signatures for functions for file handling shown in \cref{fig:file-handling-function}. We explicitly
-return the file resource i.e. \mintinline{haskell}{f}. The reason to do so is to keep an explicity track of the resource.
+return the file resource i.e. \mintinline{haskell}{f} to keep track of the resource.
 A simple program in Haskell that opens a file and reads a line from it and then closes the file handle using this
 flavor of file handling functions is shown in \cref{fig:file-read-close}.
 
@@ -133,8 +133,8 @@ is shown in \cref{fig:file-read-close-2times-desugared} and the desugared versio
   \label{fig:file-read-close-2times-desugared}
 \end{figure}
 
-In both the cases described above, the well typed looking program should be red flagged by the compiler as it would
-cause problems at runtime. To solve this problem, we introduce the % concept of unrestricted type similar to Quill, and
+In both the cases described above, the well typed looking program should be red flagged by the compiler as they would
+cause programs to crash at runtime. To solve this problem, we introduce the % concept of unrestricted type similar to Quill, and
 concept of sharing and separation of resources from the logic of \BI{} in \qub{}. The type $\rightarrow$ now
 has to be specified as either shared ($\shimp$) or separated ($\sepimp$). In \qub{} program code, we will use
 \mintinline{haskell}{-*>} to mean $\sepimp$ and \mintinline{haskell}{-&>} to mean $\shimp$.
@@ -242,18 +242,18 @@ do f <- openFile "sample.txt"
   \label{fig:haskell-error-handling}
 \end{figure}
 
-We enforce resource cleanup in a systematic way in \qub{}. For a concrete example, see \cref{fig:qub-file-exceptions}.
+We enforce resource clean-up in a systematic way in \qub{} with the help of the type system based on \BI{}.
+For a concrete example, see \cref{fig:qub-file-exceptions}.
 We will assume that \HaskellF{readLine} can throw an exception during runtime, where
 it might fail to read a line due to the filehandle being stale and the file no longer exists.
 For the sake of simplicity we will assume \HaskellF{closeFile}
 does not throw exceptions. \HaskellF{openFile} throwing an exception would not cause a resource leak hence will not be a problem.
 We have two kinds of IO operations, \HaskellF{IO} that does not fail or throw exceptions and is safe,
-and \HaskellF{IOF} that can fail and throw exceptions. \HaskellF{throw} function can be used by a function to start
-the processing of the exception. \HaskellF{catch} function can potentially convert a code that can fail, to a code
-that does not fail. The \HaskellF{onExcept} function gives a way to clean up resources after the code throws an exception. It may re-throw the
-exception after cleaning up the resources or a \HaskellF{catch} function can be used to handle the failure case.
-The sharing arrow between the two arguments of \HaskellF{onExcept} enables the clean up block of code to be executed on the same resources
-that were used its first argument.
+and \HaskellF{IOF} that can fail and throw exceptions. The function \HaskellF{throw} can be used by another function to start
+the processing of the exception. The function \HaskellF{catch} can convert a code that can fail, to a code
+that does not fail. It gives a way to clean up resources after the code throws an exception.
+The sharing arrow between the two arguments of \HaskellF{catch} enables the clean up block of code to be executed on the same resources
+that were used its first argument i.e. the same file handle will be shared between the arguments.
 
 \begin{figure}[h]
   \begin{framed}
@@ -264,10 +264,7 @@ readFile :: FileHandle -*> IOF (String, FileHandle)
 writeFile :: String -*> FileHandle -*> IOF ((), FileHandle)
 
 throw :: Exception -*> IO a
-catch :: IOF a -*> (Exception -> IO a) -&> IO a
-
-onExcept :: IOF a -*> IOF () -&> IOF a
-m `onExcept` n = m `catch` (\e -> n >> throw e)
+catch :: IOF a -*> (Exception -*> IO a) -&> IO a
 
 readFromFile :: FilePath -*> IO (Either String String)
 readFromFile fpath =
@@ -275,9 +272,8 @@ do fh  <- openFile fpath
    ((s, fh)  <- readLine fh
    let l = caps s
    () <- closeFile fh
-   return $ Right l) `onExcept` (do () <- closeFile fh)
-                     `catch` (\e ->
-                                 return $ Left "Could not read file")
+   return $ Right l) `catch` (\e -> do closeFile fh
+                                       return $ Left "Could not read file")
     \end{minted}
   \end{framed}
   \caption{Exception Handling in \qub{}}

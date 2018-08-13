@@ -2,33 +2,6 @@
 In this chapter we describe the type system using the types and terms defined in previous
 chapter. We describe in \qub{}'s type system \cref{sec:type-system} and then describe a
 syntax directed type system in \cref{sec:syntax-typing-rules} and give a type inference algorithm $\M$ in \cref{sec:algorithm-m}.
-To begin with, we give some conventions and notations with priliminary definitions that will be used throughout the sections that follow.
-
-\section{Conventions and Notations}
-The vector $\vec{t}$ is a shorthand for a finite set of variables $\{t_1, t_2, \dots, t_n\}$ and  $\forall \vec{t}. P => \tau$ abbreviates
-$\forall t_1 \dots \forall t_n. P_1 => \dots => P_m => \tau$.
-$\Gamma$ denotes the type assignment. It is a list of three-tuples containg the variable, its type scheme and its sharing information.
-$\Gamma_{x}$ denotes the type assignment excluding the type variable $x$.
-We write $\sigma = \Gamma(x)$ for the type scheme assigned to the term x in $\Gamma$.
-\texttt{dom}($\Gamma$) is the set of identifiers in the type assignment i.e.
-\texttt{dom}($\Gamma$) = $\{ x \mid (x^{\vec{y}}:\sigma) \in \Gamma\}$.
-$\Gamma \sqcup \Delta$ is a multiset union of two type assignments $\Gamma$ and $\Delta$.
-
-\begin{defn}[Free Type Variables]
-
-  $\texttt{fvs}(\tau)$ is the set of free type variables in the type $\tau$
-
-  \noindent$\texttt{fvs}(\sigma)$ is the set of free type variables in a typing scheme $\sigma = \forall \vec{t} Q. => \tau$.\\
-  $\texttt{fvs}(\sigma) = (\texttt{fvs}(\tau) \cup \texttt{fvs}(Q)) \backslash \vec{t})$
-
-  \noindent$\texttt{fvs}(\Gamma)$ is the set of free type variables in the type assignment $\Gamma$.\\
-  $\texttt{fvs}(\Gamma) = \bigcup_{x \in \texttt{dom}(\Gamma)} \{ \texttt{fvs}(\Gamma(x)) \}$
-\end{defn}
-
-\begin{defn}[Typing Judgment]
-The expression $P \mid \Gamma \vdash M : \sigma$ denotes the assertion that the term $M$ has a typing scheme $\sigma$
-when the predicates in $P$ are satisfied and the free type variables in $M$ are specified in type assignment $\Gamma$.
-\end{defn}
 
 \section{Type System}\label{sec:type-system}
 % Structural Rules

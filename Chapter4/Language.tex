@@ -17,7 +17,7 @@ into a sharing graph and represent it as a collection of three tuple sets in ord
                    &\text{where}\qquad \rightarrow \in \{\tightoverset{\scalebox{0.5}{!}}{\sepimp}, \sepimp, \tightoverset{\scalebox{0.5}{!}}{\shimp}, \shimp \}\\
       \text{Predicates}\ \ \        \pi,\omega        &::= \texttt{Un}\ \tau \mid \texttt{SeFun}\ \tau \mid \texttt{ShFun}\ \tau \mid \tau \geq \tau' \\
       \text{Qualified Types}\ \ \     \rho            &::= \tau \mid \pi => \rho \\
-      \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma 
+      \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma
     \end{flalign*}
   \end{minipage}
   \end{framed}
@@ -54,70 +54,70 @@ to enable users to define custom types using type constructors. We describe this
     \begin{minipage}{0.20\linewidth}
       \begin{prooftree}
         \AxiomC{$\pi \in P$}
-        \UnaryInfC{$P => \pi$}
+        \UnaryInfC{$P \Rightarrow \pi$}
       \end{prooftree}
     \end{minipage}%
     \begin{minipage}{0.20\linewidth}
       \begin{prooftree}
-        \AxiomC{$\bigwedge_{\pi \in Q} P => \pi$}
-        \UnaryInfC{$P => Q$}
+        \AxiomC{$\bigwedge_{\pi \in Q} P \Rightarrow \pi$}
+        \UnaryInfC{$P \Rightarrow Q$}
       \end{prooftree}
     \end{minipage}%
     \begin{minipage}{0.24\linewidth}
       \begin{prooftree}
         \AxiomC{${\color{white}\bigwedge_{\pi \in Q}}$}
-        \UnaryInfC{$P => \Un{(\tau \tightoverset{\scalebox{0.5}{!}}{\sepimp} \tau')}$}
+        \UnaryInfC{$P \Rightarrow \Un{(\tau \tightoverset{\scalebox{0.5}{!}}{\sepimp} \tau')}$}
       \end{prooftree}
     \end{minipage}
     \begin{minipage}{0.24\linewidth}
       \begin{prooftree}
         \AxiomC{${\color{white}\bigwedge_{\pi \in Q}}$}
-        \UnaryInfC{$P => \Un{(\tau \tightoverset{\scalebox{0.5}{!}}{\shimp} \tau')}$}
+        \UnaryInfC{$P \Rightarrow \Un{(\tau \tightoverset{\scalebox{0.5}{!}}{\shimp} \tau')}$}
       \end{prooftree}
     \end{minipage}
 
     \begin{minipage}{0.24\linewidth}
       \begin{prooftree}
-        \AxiomC{${\color{white}P => \tau \geq \phi t}$}
-        \UnaryInfC{$P => \tau \geq (\upsilon \sepimp \upsilon')$}
+        \AxiomC{${\color{white}P \Rightarrow \tau \geq \phi t}$}
+        \UnaryInfC{$P \Rightarrow \tau \geq (\upsilon \sepimp \upsilon')$}
       \end{prooftree}
     \end{minipage}%
     \begin{minipage}{0.24\linewidth}
       \begin{prooftree}
-        \AxiomC{${\color{white}P => \tau \geq \phi t}$}
-        \UnaryInfC{$P => \tau \geq (\upsilon \shimp \upsilon')$}
+        \AxiomC{${\color{white}P \Rightarrow \tau \geq \phi t}$}
+        \UnaryInfC{$P \Rightarrow \tau \geq (\upsilon \shimp \upsilon')$}
       \end{prooftree}
     \end{minipage}%
     \begin{minipage}{0.24\linewidth}
       \begin{prooftree}
-        \AxiomC{$P => \Un{\tau}$}
-        \UnaryInfC{$P => \tau \geq (\upsilon \tightoverset{\scalebox{0.5}{!}}{\sepimp} \upsilon')$}
+        \AxiomC{$P \Rightarrow \Un{\tau}$}
+        \UnaryInfC{$P \Rightarrow \tau \geq (\upsilon \tightoverset{\scalebox{0.5}{!}}{\sepimp} \upsilon')$}
       \end{prooftree}
     \end{minipage}%
     \begin{minipage}{0.24\linewidth}
       \begin{prooftree}
-        \AxiomC{$P => \Un{\tau}$}
-        \UnaryInfC{$P => \tau \geq (\upsilon \tightoverset{\scalebox{0.5}{!}}{\shimp} \upsilon')$}
+        \AxiomC{$P \Rightarrow \Un{\tau}$}
+        \UnaryInfC{$P \Rightarrow \tau \geq (\upsilon \tightoverset{\scalebox{0.5}{!}}{\shimp} \upsilon')$}
       \end{prooftree}
     \end{minipage}
 
     \begin{minipage}{0.20\linewidth}
       \begin{prooftree}
         \AxiomC{$\tau = \sepimp \vee \tau = \tightoverset{\scalebox{0.5}{!}}{\sepimp}$}
-        \UnaryInfC{$P => \SeFun{\tau}$}
+        \UnaryInfC{$P \Rightarrow \SeFun{\tau}$}
       \end{prooftree}
     \end{minipage}%
     \begin{minipage}{0.20\linewidth}
       \begin{prooftree}
         \AxiomC{$\tau = \shimp \vee \tau = \tightoverset{\scalebox{0.5}{!}}{\shimp}$}
-        \UnaryInfC{$P => \ShFun{\tau}$}
+        \UnaryInfC{$P \Rightarrow \ShFun{\tau}$}
       \end{prooftree}
     \end{minipage}%
     \begin{minipage}{0.30\linewidth}
       \begin{prooftree}
-        \AxiomC{$P => \tau \geq \phi t$}
+        \AxiomC{$P \Rightarrow \tau \geq \phi t$}
         \AxiomC{$t\ \text{fresh}$}
-        \BinaryInfC{$P => \tau \geq \phi$}
+        \BinaryInfC{$P \Rightarrow \tau \geq \phi$}
       \end{prooftree}
     \end{minipage}
   \end{framed}
@@ -283,6 +283,39 @@ but we have two types of lambda expressions, the alpha lambda ($\lambda^{\shimp}
 of the argument term with the expression $M$ and the separating lambda term ($\lambda^{\sepimp} $) that implies
 the argument term has a separating context with the expression $M$. We also have $\texttt{let}$
 construct to enable parametric polymorphism.
+
+
+
+\section{Conventions and Notations}
+We give some standard conventions and notations below that will be used throughout this thesis.
+
+The vector $\vec{t}$ is a shorthand for a finite set of variables $\{t_1, t_2, \dots, t_n\}$ and  $\forall \vec{t}. P => \tau$ abbreviates
+$\forall t_1 \dots \forall t_n. P_1 => \dots => P_m => \tau$.
+$\Gamma$ denotes the type assignment. It is a list of three-tuples containg the variable, its type scheme and its sharing information.
+$\Gamma_{x}$ denotes the type assignment excluding the type variable $x$.
+We write $\sigma = \Gamma(x)$ for the type scheme assigned to the term x in $\Gamma$.
+\texttt{dom}($\Gamma$) is the set of identifiers in the type assignment i.e.
+\texttt{dom}($\Gamma$) = $\{ x \mid (x^{\vec{y}}:\sigma) \in \Gamma\}$.
+$\Gamma \sqcup \Delta$ is a multiset union of two type assignments $\Gamma$ and $\Delta$.
+
+\begin{defn}[Free Type Variables]
+
+  $\texttt{fvs}(\tau)$ is the set of free type variables in the type $\tau$
+
+  \noindent$\texttt{fvs}(\sigma)$ is the set of free type variables in a typing scheme $\sigma = \forall \vec{t} Q. => \tau$.\\
+  $\texttt{fvs}(\sigma) = (\texttt{fvs}(\tau) \cup \texttt{fvs}(Q)) \backslash \vec{t})$
+
+  \noindent$\texttt{fvs}(\Gamma)$ is the set of free type variables in the type assignment $\Gamma$.\\
+  $\texttt{fvs}(\Gamma) = \bigcup_{x \in \texttt{dom}(\Gamma)} \{ \texttt{fvs}(\Gamma(x)) \}$
+\end{defn}
+
+\begin{defn}[Typing Judgment]
+The expression $P \mid \Gamma \vdash M : \sigma$ denotes the assertion that the term $M$ has a typing scheme $\sigma$
+when the predicates in $P$ are satisfied and the free type variables in $M$ are specified in type assignment $\Gamma$.
+\end{defn}
+
+
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../thesis-ku.tex"

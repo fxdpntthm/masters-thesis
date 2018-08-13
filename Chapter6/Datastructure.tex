@@ -19,7 +19,7 @@ The complete type system is shown in \cref{fig:qub-kind-extension}. All types ha
       \text{Kinds}\ \ \               \kappa          &::= \kappa \mid \kappa' \rightarrow \kappa\\
       \text{Types}\ \ \             \tau^{\kappa}      &::= t^\kappa \mid T^{\kappa} \mid \tau^{\kappa' \rightarrow \kappa}\tau^{\kappa'}\\
       \text{Type Constructors}\ \ \   T^{\kappa}       &\in \mathcal{T}^{\kappa}\ 
-                         \text{where}\ \{\otimes, \with, \oplus, \tightoverset{\scalebox{0.5}{!}}{\sepimp}, \sepimp, \tightoverset{\scalebox{0.5}{!}}{\shimp}, \shimp \} \subseteq \mathcal{T}^{\star \rightarrow \star \rightarrow \star}\\
+                         \text{where}\qquad\{\otimes, \with, \oplus, \tightoverset{\scalebox{0.5}{!}}{\sepimp}, \sepimp, \tightoverset{\scalebox{0.5}{!}}{\shimp}, \shimp \} \subseteq \mathcal{T}^{\star \rightarrow \star \rightarrow \star}\\
       \text{Predicates}\ \ \          \pi, \omega     &::= \tau \mid \Un{\tau} \mid \SeFun{\tau} \mid \ShFun{\tau} \mid \tau \geq \tau' \\
       \text{Qualified Types}\ \ \     \rho            &::= \tau \mid \pi => \rho \\
       \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma
