@@ -190,10 +190,13 @@ Domain of $\Psi$ will be defined as $\texttt{dom}(\Psi) = \{x \mid (x, \vec{y}) 
 is a shorthand for the denoting collection of variables shared with $x$. We can think of $\Psi$ to be similar to $\Gamma$,
 but it contains the sharing information instead of the type of the variable. Extending the sharing for a variable will be denoted by $\Psi(x) + y$,
 which would mean the variable $y$ is in sharing with $x$. We axiomatize the sharing operation to be reflexive,
-symmetric and non-transitive. So to say,
+symmetric and non-transitive. The sharing relation is non-transitive due to the natural notion of sharing. For example, given three variables,
+$x$, $y$, $z$: If $x$ is in sharing with $y$ and $y$ is in sharing with $z$ need not imply $x$ is in sharing with $z$.
+So to say,
 \begin{flalign*}
  &\forall_{x \in \texttt{dom}(\Psi)}\ x \in \Psi(x) \tag{reflexive}\\
- &\forall_{x,y \in \texttt{dom}(\Psi)}\ \text{if}\ y \in \Psi(x)\ \text{then}\ x \in \Psi(y) \tag{symmetric}
+ &\forall_{x,y \in \texttt{dom}(\Psi)}\ \text{if}\ y \in \Psi(x)\ \text{then}\ x \in \Psi(y) \tag{symmetric}\\
+ &\forall_{x,y,z \in \texttt{dom}(\Psi)}\ \text{if}\ y \in \Psi(x)\ \text{and}\ z \in \Psi(y)\ \nRightarrow z \in \Psi(x) \tag{non-transitive}
 \end{flalign*}
 
 Our final goal is to design a simple type inferencing algorithm for a term language.
@@ -207,7 +210,7 @@ We can now formally define the typing context or environment as shown in \cref{f
 \begin{figure}[h]
   \begin{framed}
     \begin{flalign*}
-      \text{Typing Context}\ \ \      \Gamma,\Delta     &::= \epsilon \mid x^{\bar{y}}:\sigma \mid \Gamma \varoplus \Delta \mid \Gamma \circledast \Delta
+      \text{Typing Context}\ \ \      \Gamma,\Delta     &::= \epsilon \mid \Gamma, x^{\bar{y}}:\sigma \mid \Gamma \sqcup \Delta
   \end{flalign*}
 \end{framed}
   \caption{Typing Context}
@@ -279,12 +282,10 @@ the standard notion of set equality for checking sharing union.
 
 % Describe terms and patterns
 Our term language is similar to that of simply typed lambda calculus involving variables and application
-but we have two types of lambda expressions, the alpha lambda ($\lambda^{\shimp}$) denotes sharing
+but we have two types of lambda expressions, the sharing lambda ($\lambda^{\shimp}$) denotes sharing
 of the argument term with the expression $M$ and the separating lambda term ($\lambda^{\sepimp} $) that implies
 the argument term has a separating context with the expression $M$. We also have $\texttt{let}$
 construct to enable parametric polymorphism.
-
-
 
 \section{Conventions and Notations}
 We give some standard conventions and notations below that will be used throughout this thesis.
