@@ -4,13 +4,17 @@ the type language powerful enough to accept user defined datatypes in \cref{sec:
 how we can encode sums and multiplicative and additive products in \cref{sec:pairs-types}.
 
 \section{Kind System}\label{sec:kind-system}
-In the original system, it would be tedious to extend the system with new types as we would have to introduce new syntax and associated typing rules for
-each of the new syntax in our core language. The kind system generalizes the concept of adding new types by abstracting them as type
-constructors. This generalization alleviates the burden of modifying the core language by
-treating all types to be instances of type constructors. The idea was introduced by Barendregt \citeyearpar{barendregt_1991} and
-is used by Jones \citeyearpar{jones_system_1993} for qualified types. We will follow Jones' approach
-to add the language of type constructors and kinds in our system.
-The complete type system is shown in \cref{fig:qub-kind-extension}. All types have kind $\star$ and the kind of the type constructors depends on its arity.
+In the original system, it would be tedious to extend the system with new types
+as we would have to introduce new syntax and associated typing rules for
+each of the new syntax in our core language. The kind system generalizes the
+concept of adding new types by abstracting them as type
+constructors. This generalization alleviates the burden of modifying the core
+language by treating all types to be instances of type constructors.
+The idea was introduced by Barendregt \citeyearpar{barendregt_1991} and
+is used by Jones \citeyearpar{jones_system_1993} for qualified types. We will
+follow Jones' approach to add the language of type constructors and kinds in our system.
+The complete type system is shown in \cref{fig:qub-kind-extension}. All types have kind
+$\star$ and the kind of the type constructors depends on its arity.
 
 \begin{figure}[h]
   \begin{framed}
@@ -29,13 +33,13 @@ The complete type system is shown in \cref{fig:qub-kind-extension}. All types ha
   \label{fig:qub-kind-extension}
 \end{figure}
 
-Addition of a kind system changes the treatement to the type inference algorithm in some detail.
+Addition of a kinds changes the type system in a great detail.
 All types and type constructors have to be annotated with their kind. $T^\kappa$ denotes type constructors
 and $\tau^{\kappa' \rightarrow \kappa}\tau^{\kappa'}$ denotes application of types.
 The type constructor application rule that computes kinds is given in \cref{fig:constructor-application} where
 $\tau$ is of kind $\kappa' \rightarrow \kappa$ and $\tau'$ is of kind $\kappa'$. The application
 of both the constructors would result in a kind $\kappa$.
-$\sepimp$, $\overset{!}{\sepimp}$, $\rightarrow$ and $\overset{!}{\rightarrow}$
+$\sepimp$, $\tightoverset{\scalebox{0.5}{!}}{\sepimp}$, $\shimp$ and $\tightoverset{\scalebox{0.5}{!}}{\shimp}$
 are now treated as type constructors with an arity of two and would have a kind $\star \rightarrow \star \rightarrow \star$, The
 type constructor for List will have a kind $\star \rightarrow \star$ while
 types like Int and Float will have a kind $\star$.
