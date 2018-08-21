@@ -6,7 +6,7 @@
   Proof by induction on the derivation of $P \mid \Gamma \vdashs M:\tau$.
   \begin{itemize}
   \item{Case [VAR$^s$].}
-    By induction hypothesis we have a derivation of $P \mid x:\sigma \vdash x:\sigma$ by [VAR] rule.
+    We have a derivation of $P \mid x:\sigma \vdash x:\sigma$ by [VAR] rule.
     We proceed by repeated application of [$\forall$E] as $(Q => \tau) \sqsubseteq \sigma$, and
     we construct a derivation of $P \mid x:\sigma \vdash x: Q => \tau$. Then as $P => Q$ we can
     repeatedly apply [$=>$E] to construct a derivation of $P \mid x:\sigma \vdash x:\tau$.
@@ -24,7 +24,7 @@
   \item{Case [App$^s$].}
     By induction hypothesis we have derivations of $P \mid \Gamma \circledast \Delta \vdash M: \phi \upsilon \tau$ and
     $P \mid \Gamma' \circledast \Delta \vdash N: \upsilon$ we check for $\texttt{Used}(\Gamma) = \texttt{Used}(\Gamma')$ and if it is true
-    and apply [$\shimp$E] or check for $\texttt{Used}(\Gamma)\#\texttt{Shared}(\Gamma') \wedge \texttt{Shared}(\Gamma')\#\texttt{Used}(\Gamma)$
+    and apply [$\shimp$E] or check for $\texttt{Used}(\Gamma) \mathbin{\#}\texttt{Shared}(\Gamma') \wedge \texttt{Shared}(\Gamma') \mathbin{\#}\texttt{Used}(\Gamma)$
     and if it is true we apply [$\sepimp$E] to reuse derivations of $\ShFun{\phi}$ or $\SeFun{\phi}$ respectively to construct the derivation
     of $P \mid (\Gamma \varoplus \Gamma') \circledast \Delta \vdash M N:\tau$ or $P \mid (\Gamma \circledast \Gamma') \circledast \Delta \vdash M N:\tau$.
   \item{Case [Let$^s$].}
@@ -52,7 +52,7 @@ We first go over few intermediate results and definitions that will help us prov
   By induction on derivation of $P \mid \Gamma \vdash M:\tau$,
   \begin{itemize}
   \item{Case [VAR].} $M$ is an expression $x$ and $y \notin \texttt{fvs}(x)$ also, $P \vdash \sigma\ \texttt{un}$ for $(y:\sigma)$, thus
-    using [VAR$^s$] we can obtain the required derivation.
+    using [VAR] and [WKN-UN] we can obtain the required derivation.
   \item{Case others.} [LET], [$\shimp$I], [$\shimp$E], [$\sepimp$I], [$\sepimp$E] are all straightforward.\qedhere
   \end{itemize}
 \end{proof}
@@ -64,7 +64,7 @@ We first go over few intermediate results and definitions that will help us prov
   By induction on derivation of $P \mid \Gamma \vdash M:\tau$,
   \begin{itemize}
   \item{Case [VAR].} $M$ is an expression $x$ and $y \notin \texttt{fvs}(x)$ also, $\Gamma \varoplus \{y:\sigma\}$ thus, by using
-    [WKN-SH] and [VAR$^s$] the required derivation is obtained.
+    [WKN-SH] and [VAR] the required derivation is obtained.
   \item{Case others.}  [LET], [$\shimp$I], [$\shimp$E], [$\sepimp$I], [$\sepimp$E] are all straightforward.\qedhere
   \end{itemize}
 \end{proof}
@@ -265,7 +265,7 @@ We go over a few intermediate results and definitions to prove the soundness res
       P'; R'; \Sigma'; \Psi'' &= \M(S \circ R, \Psi', S \Gamma \vdash N: u_2)
     \end{flalign*}
     We have two sub-cases here depending on whether the application is shared or separating.
-    If we can prove $\mathcal{C}(S \Gamma, \Sigma, \Psi) \# \mathcal{C}(S \circ R \Gamma, \Sigma', \Psi')$ then we let $Q = P \cup P' \cup \SeFun{u_1}$
+    If we can prove $\mathcal{C}(S \Gamma, \Sigma, \Psi) \mathbin{\#} \mathcal{C}(S \circ R \Gamma, \Sigma', \Psi')$ then we let $Q = P \cup P' \cup \SeFun{u_1}$
     or if we can prove $\mathcal{C}(S \Gamma, \Sigma, \Psi) = \mathcal{C}((S \circ R) \Gamma, \Sigma', \Psi')$ then we let $Q = P \cup P' \cup \ShFun{u_1}$
     (else the inference algorithm fails). Let $\Delta = \texttt{dom}(\Gamma)\backslash \mathcal{C}(\Gamma, \Sigma \cup \Sigma', \Psi \circ \Psi') $
     Now by \cref{lemma:strengthen} and \cref{lemma:syntax-closed-under-sub} and the induction hypothesis we get
