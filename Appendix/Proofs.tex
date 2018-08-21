@@ -124,7 +124,7 @@ We first go over few intermediate results and definitions that will help us prov
   \item{Case [WKN-SH].}
     This follows directly from \cref{lemma:WKN-SH-helper} and the induction hypothesis.
 
-    % connetive rules
+    % connective rules
   \item{Case [$\sepimp$I].}
     By induction hypothesis and \cref{lemma:impl-helper}, we have a derivation of $Q \mid \Gamma \vdashs M:\tau'$ also, $P \mid \Gamma \geq \phi$
     thus by [$\sepimp$I$^s$] we have the required derivation.
@@ -151,7 +151,7 @@ We first go over few intermediate results and definitions that will help us prov
   \item{Case [$\forall$E].}
     By the induction hypothesis we have $Q \mid \Gamma \vdashs M: \tau$ such that, letting $\sigma = \texttt{Gen}(\Gamma, Q \Rightarrow \tau)$,
     $(P \mid \pi \Rightarrow \rho) \sqsubseteq \sigma$, As $(P \mid [\tau/t]\sigma) \sqsubseteq (P \mid \sigma)$,
-    $(P \mid [\tau / t]\sigma) \sqsubseteq \sigma$ (becuase $\sigma = (\emptyset \mid \sigma)$.
+    $(P \mid [\tau / t]\sigma) \sqsubseteq \sigma$ (because $\sigma = (\emptyset \mid \sigma)$.
   \item{Case [Let].}
     By induction hypothesis, we have $$Q \mid \Gamma \circledast \Delta \vdashs M: \upsilon$$ and
     $$Q' \mid \Gamma' \circledast \Delta \sqcup \{x:\sigma\} \vdashs N:\tau$$
@@ -201,7 +201,7 @@ We go over a few intermediate results and definitions to prove the soundness res
 \end{defn}
 
 \begin{lemma}[Constraint Simplification]
-  Supppose there is a non-trivial entailment $P \Rightarrow Q$.  $$\exists Q' \text{\ such that\ } P \Rightarrow Q' \Rightarrow Q$$ and $Q'$ is simple and
+  Suppose there is a non-trivial entailment $P \Rightarrow Q$.  $$\exists Q' \text{\ such that\ } P \Rightarrow Q' \Rightarrow Q$$ and $Q'$ is simple and
   $Q'$ is called simplification of $Q$.
 \end{lemma}
 \begin{proof}
@@ -214,7 +214,7 @@ We go over a few intermediate results and definitions to prove the soundness res
 
 \begin{defn}[Improving Substitution]
   Suppose $P$ is simple, and $X$ is a set of type variables.
-  A substitution S is called improving substituion for $X$ in $P$ if:
+  A substitution S is called improving substitution for $X$ in $P$ if:
   \begin{itemize}
   \item If $\Un{t} \in P \wedge \ShFun{t} \in P$ then $S t = \tightoverset{\scalebox{0.5}{!}}{\shimp}$
   \item If $\Un{t} \in P \wedge \SeFun{t} \in P$ then $S t = \tightoverset{\scalebox{0.5}{!}}{\sepimp}$
@@ -246,7 +246,7 @@ We go over a few intermediate results and definitions to prove the soundness res
     We have $$P; S'; \Sigma; \Psi' = \M(\Unf(\tau, u_1 u_2 u_3) \circ S, \Psi, \Gamma, x:u_2 \vdash M: u_3)$$
     and by induction hypothesis $$S' P \mid S' ((\Gamma \sqcup \{ x^{\texttt{dom}(\Gamma)} : u_2 \})|_{\Sigma}) \vdashs M : S' u_3$$
     Let $Q = \{\ShFun{u_1}\} \cup \texttt{Leq}(u_1, \Gamma|_\Sigma) \cup \texttt{Weaken}(x, u_2, \Sigma) \cup P$
-    and let $\Sigma' = \Sigma \backslash \{x\}$. By \cref{lemma:strengthen} and \cref{lemma:syntax-WKN-UN-helper} we can consruct a
+    and let $\Sigma' = \Sigma \backslash \{x\}$. By \cref{lemma:strengthen} and \cref{lemma:syntax-WKN-UN-helper} we can construct a
     derivation of $$S' Q \mid S'  ((\Gamma \sqcup \{x:u_2\})|_{\Sigma'}) \vdashs M: S' u_3$$
     Now, using [$\shimp$I$^s$] we get the required result.
 
@@ -254,7 +254,7 @@ We go over a few intermediate results and definitions to prove the soundness res
     We have $$P; S'; \Sigma; \Psi' = \M(\Unf(\tau, u_1 u_2 u_3) \circ S, \Psi, \Gamma, x:u_2 \vdash M: u_3)$$
     and by induction hypothesis $$S' P \mid S' ((\Gamma \sqcup \{ x^\emptyset : u_2 \})|_{\Sigma}) \vdashs M : S' u_3$$
     Let $Q = \{\SeFun{u_1}\} \cup \texttt{Leq}(u_1, \Gamma|_\Sigma) \cup \texttt{Weaken}(x, u_2, \Sigma) \cup P$
-    and let $\Sigma' = \Sigma \backslash \{x\}$. By \cref{lemma:strengthen} and \cref{lemma:syntax-WKN-UN-helper} we can consruct a
+    and let $\Sigma' = \Sigma \backslash \{x\}$. By \cref{lemma:strengthen} and \cref{lemma:syntax-WKN-UN-helper} we can construct a
     derivation of $$S' Q \mid S'  ((\Gamma \sqcup \{x:u_2\})|_{\Sigma'}) \vdashs M: S' u_3$$
     Now, using [$\sepimp$I$^s$] we get the required result.
 
