@@ -15,18 +15,18 @@ Modern functional, languages such as Haskell, enforces the file input and output
 This is more declarative than imperative languages, but the type system is not powerful enough
 to detect whether a file handle is closed twice or is not closed at all.
 Consider the type signatures for functions for file handling shown in \cref{fig:file-handling-function}. We explicitly
-return the file resource i.e. \mintinline{haskell}{f} to keep track of the resource.
+return the file resource i.e. \HaskellF{f} to keep track of the resource.
 A simple program in Haskell that opens a file and reads a line from it and then closes the file handle using this
 flavor of file handling functions is shown in \cref{fig:file-read-close}.
 
 \begin{figure}[h]
   \begin{framed}
-    \begin{minted}[escapeinside=||,mathescape=true,linenos]{haskell}
+\begin{minted}[escapeinside=||,mathescape=true,linenos]{haskell}
 openFile :: FilePath -> IO FileHandle
 closeFile :: FileHandle -> IO ()
 readLine :: FileHandle -> IO (String, FileHandle)
 writeFile :: String -> FileHandle -> IO ((), FileHandle)
-    \end{minted}
+\end{minted}
   \end{framed}
   \caption{File Handling Functions}
   \label{fig:file-handling-function}
@@ -34,11 +34,11 @@ writeFile :: String -> FileHandle -> IO ((), FileHandle)
 
 \begin{figure}[h]
   \begin{framed}
-    \begin{minted}[escapeinside=||,mathescape=true,linenos]{haskell}
+\begin{minted}[escapeinside=||,mathescape=true,linenos]{haskell}
 do f  <- openFile "sample.txt"
-   (s, f)  <- readLine f
-   () <- closeFile f
-    \end{minted}
+(s, f)  <- readLine f
+() <- closeFile f
+\end{minted}
   \end{framed}
   \caption{Reading from a file in Haskell}
   \label{fig:file-read-close}
@@ -64,7 +64,7 @@ do f  <- openFile "sample.txt"
 
 Apple's goto fail bug that appeared in iOS 7.0 and caused a security vulnerability in 2012 is a similar example of closing the file twice.
 The code snippet that caused the SSL/TLS handshake to be completely skipped looked like in \cref{fig:goto-fail}.
-The cases in which the condition is false, the second \mintinline{C}{goto fail;} on line 6 would force the protocol to skip the
+The second \mintinline{C}{goto fail;} on line 6 would always force the protocol to skip the
 steps to be taken after the if-block. This made the system vulnerable to a man-in-middle attack.
 \begin{figure}[h]
   \begin{framed}
@@ -74,7 +74,7 @@ if ((err = SSLHashSHA1.update(&hashCtx, &serverRandom)) != 0)
     goto fail;
 if ((err = SSLHashSHA1.update(&hashCtx, &signedParams)) != 0)
     goto fail;
-    goto fail;
+    goto fail; // Cause of vulnerability
 if ((err = SSLHashSHA1.final(&hashCtx, &hashOut)) != 0)
     goto fail;
 
@@ -107,14 +107,14 @@ do f <- openFile "sample.txt"
 
 We take a deeper dive into this problem by inspecting the desugared version of the ``do'' notation.
 Both the programs would be translated into bind ($>>=$) operations . Recall that type signature of bind function is given as
-\mintinline{haskell}{(>>=) :: (Monad m) => m t -> (t -> m u) -> m u}. Desugared version of \cref{fig:file-read-close-2times}
+\HaskellF{(>>=) :: (Monad m) => m t -> (t -> m u) -> m u}. Desugared version of \cref{fig:file-read-close-2times}
 is shown in \cref{fig:file-read-close-2times-desugared} and the desugared version of \cref{fig:file-read-noclose} is shown in \cref{fig:file-read-noclose-desugared}.
 
 \begin{figure}[h]
 \begin{framed}
 \begin{minted}[escapeinside=||,mathescape=true,linenos]{haskell}
 (>>=) (openFile "sample.txt" ReadMode) (\f ->
-       >>= (closeFile f) (\(s, f) -> return s)
+       >>= (readFile f) (\(s, f) -> return s)
 \end{minted}
   \end{framed}
   \caption{Reading from a File in Haskell and Not Closing It (Desugared)}
@@ -133,11 +133,11 @@ is shown in \cref{fig:file-read-close-2times-desugared} and the desugared versio
   \label{fig:file-read-close-2times-desugared}
 \end{figure}
 
-In both the cases described above, the well typed looking program should be red flagged by the compiler as they would
+In both the cases described above, the well typed looking program should be red flagged by the compiler, as they would
 cause programs to crash at runtime. To solve this problem, we introduce the % concept of unrestricted type similar to Quill, and
 concept of sharing and separation of resources from the logic of \BI{} in \qub{}. The type $\rightarrow$ now
 has to be specified as either shared ($\shimp$) or separated ($\sepimp$). In \qub{} program code, we will use
-\mintinline{haskell}{-*>} to mean $\sepimp$ and \mintinline{haskell}{-&>} to mean $\shimp$.
+\HaskellF{-*>} to mean $\sepimp$ and \HaskellF{-&>} to mean $\shimp$.
 The file handling functions will have different type signatures in \qub{} as shown in \cref{fig:qub-file-handling-functions} to accommodate
 the new function implication flavors. Similarly, the bind operation will also be typed differently as shown below as the resources of the function are
 separate from its arguments.
@@ -158,14 +158,14 @@ writeFile :: String -*> FileHandle -*> IO ((), FileHandle)
 \end{figure}
 
 We now consider the types for the two faulty programs previously described with respect to \qub{}.
-In \cref{fig:qub-close-file-twice} we see that the first \mintinline[escapeinside=||,mathescape=true]{haskell}{(>>=|$_1$|)}
-and second bind \mintinline[escapeinside=||,mathescape=true]{haskell}{(>>=|$_2$|)} functions would have appropriate types
+In \cref{fig:qub-close-file-twice} we see that the first \HaskellF{(>>=|$_1$|)}
+and second bind \HaskellF{(>>=|$_2$|)} functions would have appropriate types
 where each argument is separate from the the function. The file handing functions
 return a new binding for the file resource \HaskellF{f}. However, we notice that the third bind operation
-\mintinline[escapeinside=||,mathescape=true]{haskell}{(>>=|$_3$|)} would have a problem. It  would be typed as
-\mintinline{haskell}{IO () -*> (() -*> IO ()) -&> IO ()}\\
+\HaskellF{(>>=|$_3$|)} would have a problem. It would be typed as
+\HaskellF{IO () -*> (() -*> IO ()) -&> IO ()}\\
 as both the arguments share the file variable \HaskellF{f}. This would be a type error
-as the bind operation should have a type signature of \mintinline{haskell}{IO () -*> (() -*> IO ()) -*> IO ()}.
+as the bind operation should have a type signature of \HaskellF{IO () -*> (() -*> IO ()) -*> IO ()}.
 This mismatch in the types would be caught statically during the type checking phase of compilation.
 
 \begin{figure}[h]
@@ -272,8 +272,9 @@ do fh  <- openFile fpath
    ((s, fh)  <- readLine fh
    let l = caps s
    () <- closeFile fh
-   return $ Right l) `catch` (\e -> do closeFile fh
-                                       return $ Left "Could not read file")
+   return $ Right l) `catch`
+           (\e -> do closeFile fh
+                     return $ Left "Could not read file")
     \end{minted}
   \end{framed}
   \caption{Exception Handling in \qub{}}
