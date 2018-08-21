@@ -183,6 +183,9 @@ and the edges between the nodes represent sharing between them. The example in \
 be represented as what we would call a sharing graph shown in \cref{fig:sharing-graph}. A graph structure, in general,
 can represent a binary tree structure and its associated operations. They represent more complex structures than
 trees, thus will provide more flexibility in accepting well typed terms in our language making it more expressive.
+They also internalize the transformations that are made explicit in the logic of \BI{}. For example, the context tree in \BI{}
+$(a:A, a:B), c:C$ is equivalent to $a:A, (b: B, c:C)$ while in \qub{} the sharing graphs of both the trees would be equal.
+
 
 We define sharing relation ($\Psi$) between variables to the collection of variables it is in sharing with.
 The relation $\Psi(x, \{y_1, y_2, y_3\})$ holds if $x$ is in sharing with $\{y_1, y_2, y_3\}$.
@@ -210,7 +213,7 @@ We can now formally define the typing context or environment as shown in \cref{f
 \begin{figure}[h]
   \begin{framed}
     \begin{flalign*}
-      \text{Typing Context}\ \ \      \Gamma,\Delta     &::= \epsilon \mid \Gamma, x^{\bar{y}}:\sigma \mid \Gamma \sqcup \Delta
+      \text{Typing Context}\ \ \      \Gamma,\Delta     &::= \epsilon \mid \Gamma, x^{\bar{y}}:\sigma
   \end{flalign*}
 \end{framed}
   \caption{Typing Context}
@@ -286,6 +289,9 @@ but we have two types of lambda expressions, the sharing lambda ($\lambda^{\shim
 of the argument term with the expression $M$ and the separating lambda term ($\lambda^{\sepimp} $) that implies
 the argument term has a separating context with the expression $M$. We also have $\texttt{let}$
 construct to enable parametric polymorphism.
+
+We work in a call-by-value semantics similar to Quill and F$^{\circ}$\cite{mazurak_lightweight_2010} as it is possible
+that functions may not be evaluated in call-by-name or call-by-need semantics that would break the linearity property.
 
 \section{Conventions and Notations}
 We give some standard conventions and notations below that will be used throughout this thesis.

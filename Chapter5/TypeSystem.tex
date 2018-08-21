@@ -378,7 +378,7 @@ defined.
 We now state two important theorems regarding the type system and the syntax directed type system. The proofs of both the
 theorems are given in \cref{chp:proofs}.
 
-\begin{theorem}[Soundness of $\vdash^s$]
+\begin{theorem}[Soundness of $\vdash^s$]\label{thm:soundness-syntax-directed}
   If $P \mid \Gamma \vdash^s M:\tau$ then $P \mid \Gamma \vdash M : \tau$
 \end{theorem}
 The soundness property captures the essence that derivations in the syntax directed type system follow the original type system.
@@ -388,9 +388,10 @@ The soundness property captures the essence that derivations in the syntax direc
   $\exists Q, \tau$ such that $Q \mid \Gamma \vdashs M:\tau$
   and $(P \mid \sigma) \sqsubseteq \texttt{Gen}(\Gamma, Q \Rightarrow \tau)$
 \end{theorem}
-
 The completeness theorem states that we can always find predicates $Q$ and a suitable type $\tau$ for the term $M$ under the assumptions
 $\Gamma$ using syntax directed type system if the original type system asserts that the typing judgement indeed exists.
+The theorems \cref{thm:soundness-syntax-directed} and \cref{thm:completeness-syntax-directed} together provide assurance of both the systems
+being equivalent.
 
 \section{Type Inference and Algorithm $\M$}\label{sec:algorithm-m}
 We now describe the type inference algorithm based on the previously defined syntax directed
@@ -476,8 +477,8 @@ restricted to the variables in $\Sigma$.
         \begin{flalign*}
           \M(S, \Psi, \Gamma \vdash \lambda^{\shimp} x. M : \tau) &= \{P \cup Q \}, S', \Sigma \backslash x, \Psi''  \\
           \text{where\qquad}\ P; S'; \Sigma; \Psi' &= \M(\Unf(\tau, u_1 u_2 u_3) \circ S, \Psi, \Gamma, x:u_2 \vdash M: u_3) \\
-          Q &= \{\ShFun{u_1}\} \cup \texttt{Leq}(u_1, \Gamma|_{\Sigma}) \cup \texttt{Weaken}(x, u_2, \Sigma)\\
-          \Psi'' &= \{\forall_{y \in \texttt{dom}(\Psi')}. \Psi'(y) + x\} \cup \{(x, \{ y \mid y \in \texttt{dom}(\Gamma) \})\}
+          \Psi'' &= \{\forall_{y \in \texttt{dom}(\Psi')}. \Psi'(y) + x\} \cup \{(x, \{ y \mid y \in \texttt{dom}(\Gamma) \})\}\\
+          Q &= \{\ShFun{u_1}\} \cup \texttt{Leq}(u_1, \Gamma|_{\Sigma}) \cup \texttt{Weaken}(x, u_2, \Sigma, \Psi'')
         \end{flalign*}
       \end{minipage}
 
@@ -486,8 +487,8 @@ restricted to the variables in $\Sigma$.
         \begin{flalign*}
           \M(S, \Psi, \Gamma \vdash \lambda^{\sepimp}  x. M : \tau) &= \{ P \cup Q \}, S', \Sigma \backslash x, \Psi''\\
           \text{where\qquad}\ P; S'; \Sigma; \Psi' &= \M(\Unf(\tau, u_1 u_2 u_3) \circ S, X; \Gamma, x:u_2 \vdash M: u_3) \\
-          Q &= \{\SeFun{u_1}\} \cup \texttt{Leq}(u_1, \Gamma\mid_{\Sigma}) \cup \texttt{Weaken}(x, u_2, \Sigma)\\
-          \Psi'' &= \Psi' \cup \{(x, \{ x \})\}
+          \Psi'' &= \Psi' \cup \{(x, \{ x \})\}\\
+          Q &= \{\SeFun{u_1}\} \cup \texttt{Leq}(u_1, \Gamma\mid_{\Sigma}) \cup \texttt{Weaken}(x, u_2, \Sigma, \Psi'')
         \end{flalign*}
       \end{minipage}
 
@@ -512,7 +513,7 @@ restricted to the variables in $\Sigma$.
           \text{where\qquad}\ P; R; \Sigma; \Psi' &= \M(S, \Psi, \Gamma \vdash M:u_1)  \\
           \sigma &= \texttt{GenI}(R\Gamma; R(P \Rightarrow u_1)) \\
           P'; R'; \Sigma'; \Psi'' &= \M(R, \Psi', \Gamma, x:\sigma \vdash N : \tau) \\
-          Q &= \texttt{Un}(\Gamma|_{\Sigma \cap \Sigma'}) \cup \texttt{Weaken}(x, \sigma, \Sigma')
+          Q &= \texttt{Un}(\Gamma|_{\Sigma \cap \Sigma'}) \cup \texttt{Weaken}(x, \sigma, \Sigma', \Psi'')
         \end{flalign*}
       \end{minipage}
     }
@@ -577,18 +578,8 @@ Algorithm $\M$ would compute only one of them and leave out the other one. Consi
 This term can be inferred to have two types by using algorithm $\M$.
 \begin{itemize}
   \item $\texttt{Un}\ A \mid \emptyset \vdash \lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x: (A \sepimp A \sepimp B) \sepimp A \sepimp B$
-  \item $\emptyset \mid \emptyset \vdash \vdash \lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x: (A \sepimp A \shimp B) \sepimp A \shimp B$.
+  \item $\emptyset \mid \emptyset \vdash \lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x: (A \sepimp A \shimp B) \sepimp A \shimp B$.
 \end{itemize}
-
-% We summarize the proof results in \cref{fig:proof-summary}
-
-% \begin{figure}[h]
-%   \centering
-%   \fbox{$\Gamma \vdash M:\tau$} \fbox{$\Gamma \vdashs M:\tau$} \fbox{$\M(\Gamma \vdash M:\tau)$}
-%   \caption{Proof Summary}
-%   \label{fig:proof-summary}
-% \end{figure}
-
 
 %%% Local Variables:
 %%% mode: latex

@@ -111,8 +111,8 @@
 %% to leave dates blank. If dates are included, then both dates
 %% must be included.
 \@printd@testrue
-\datedefended{July 21, 2018}
-\dateapproved{July 21, 2018}
+\datedefended{September 14, 2018}
+\dateapproved{September 14, 2018}
 
 %% These settings are now in the kuthesis.cls file, but users are free
 % to customize. listings has great documentation online
@@ -143,22 +143,24 @@
   first class citizens in the language, and concentrating on sharing or separation of resources.
 
   We design and implement \qub{}, a Curry-Howard interpretation of logic
-  of bunched implications (\BI) \citep{ohearn_bunched_2003,pym_semantics_2002}.
+  of bunched implications (\BI) \citep{ohearn_logic_1999}.
   We distinguish two kinds of values---restricted
   and unrestricted---and two kinds of function implications---sharing and separating.
   The restricted values model resources while the unrestricted values model program objects that do not contain any resources.
   Sharing functions denote that functions share resources with its arguments,
   while separating functions denote that functions do not share resources with its arguments.
-  We show how the use of monads with sharing and separating functions help in statically detecting resource errors while modeling
-  exceptions that is difficult to capture in linear languages.
+  We show how the use of monads with sharing and separating functions helps in modeling patterns that are difficult to express in linear languages, such as
+  exception handling.
 
 \begin{acknowledgementslong}
-%%if you want a "quote" environment for acknowledgements,
-%% use acknowledgements instead of acknowledgementslong
-  TODO TODO TODO DO DO DO DO.
-% I would like to thank all of the little people who made this thesis
-% possible. Sleepy, Dopey, Grumpy, you know who you are.
+  I am grateful to my parents and my brother. Their persistent support and encouragement has been a crucial part of my education and life.
 
+  I am thankful to my advisor, Dr. Garrett Morris. Without his immense patience, wholesome guidance, and
+  critical insights, it would have been impossible to have reached this landmark.
+
+  I am appreciative of my friends, who helped me stay sane by showing me the world outside work.
+
+  And of course, those countless cups of coffee that subsisted me in this writing task.
 \end{acknowledgementslong}
 \end{abstract}
 \tableofcontents{}

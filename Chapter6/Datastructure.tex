@@ -1,31 +1,30 @@
 \chapter{\qub{} Extention and Datatypes}\label{chp:datatypes}
-In this chapter we discuss how \qub{} can be extended to have a kind system which makes
-the type language powerful enough to accept user defined datatypes in \cref{sec:kind-system}. We also discuss
-how we can encode sums and multiplicative and additive products in \cref{sec:pairs-types}.
+In this chapter we describe an extension of original \qub{} type system to include kinds. \cref{sec:kind-system}
+gives an account of how this extension makes the type language generic enough to accept user defined types.
+We also discuss how we can encode sums and multiplicative and additive products in the extended system in \cref{sec:pairs-types} and
+how algebriac data types are more expressive due to sharing and separation in \cref{sec:type-constructors}
 
 \section{Kind System}\label{sec:kind-system}
-In the original system, it would be tedious to extend the system with new types
-as we would have to introduce new syntax and associated typing rules for
-each of the new syntax in our core language. The kind system generalizes the
+In the original system, it would be tedious to extend the system with new types.
+Introducing new types would mean having to introduce new syntax to represent the types
+and associated typing rules for each of the new syntax in our core language. The kind system generalizes the
 concept of adding new types by abstracting them as type
 constructors. This generalization alleviates the burden of modifying the core
 language by treating all types to be instances of type constructors.
-The idea was introduced by Barendregt \citeyearpar{barendregt_1991} and
-is used by Jones \citeyearpar{jones_system_1993} for qualified types. We will
+The idea was originally introduced by Barendregt\citeyearpar{barendregt_1991}.
+Jones\citeyearpar{jones_system_1993} adapted the idea for a system of qualified types. We
 follow Jones' approach to add the language of type constructors and kinds in our system.
-The complete type system is shown in \cref{fig:qub-kind-extension}. All types have kind
-$\star$ and the kind of the type constructors depends on its arity.
 
 \begin{figure}[h]
   \begin{framed}
     \begin{flalign*}
-      \text{Type Variables}\ \ t, u, \upsilon         &\in \text{Type Variables}  \\
-      \text{Kinds}\ \ \               \kappa          &::= \kappa \mid \kappa' \rightarrow \kappa\\
+      \text{Type Variables}\ \ t, u         &\in \text{Type Variables}  \\
+      \text{Kinds}\ \ \               \kappa          &::= \star \mid \kappa' \rightarrow \kappa\\
       \text{Types}\ \ \             \tau^{\kappa}      &::= t^\kappa \mid T^{\kappa} \mid \tau^{\kappa' \rightarrow \kappa}\tau^{\kappa'}\\
-      \text{Type Constructors}\ \ \   T^{\kappa}       &\in \mathcal{T}^{\kappa}\ 
+      \text{Type Constructors}\ \ \   T^{\kappa}       &\in \mathcal{T}^{\kappa}\
                          \text{where}\qquad\{\otimes, \with, \oplus, \tightoverset{\scalebox{0.5}{!}}{\sepimp}, \sepimp, \tightoverset{\scalebox{0.5}{!}}{\shimp}, \shimp \} \subseteq \mathcal{T}^{\star \rightarrow \star \rightarrow \star}\\
-      \text{Predicates}\ \ \          \pi, \omega     &::= \tau \mid \Un{\tau} \mid \SeFun{\tau} \mid \ShFun{\tau} \mid \tau \geq \tau' \\
-      \text{Qualified Types}\ \ \     \rho            &::= \tau \mid \pi => \rho \\
+      \text{Predicates}\ \ \          \pi, \omega     &::= \Un{\tau} \mid \SeFun{\tau} \mid \ShFun{\tau} \mid \tau \geq \tau' \\
+      \text{Qualified Types}\ \ \     \rho            &::= \tau^{\star} \mid \pi => \rho \\
       \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma
     \end{flalign*}
   \end{framed}
@@ -33,16 +32,15 @@ $\star$ and the kind of the type constructors depends on its arity.
   \label{fig:qub-kind-extension}
 \end{figure}
 
-Addition of a kinds changes the type system in a great detail.
-All types and type constructors have to be annotated with their kind. $T^\kappa$ denotes type constructors
-and $\tau^{\kappa' \rightarrow \kappa}\tau^{\kappa'}$ denotes application of types.
+The complete type system is shown in \cref{fig:qub-kind-extension}. We annotate each type with its kind
+in superscript.  $T^\kappa$ denotes type constructors and its kind $\kappa$ depends on its arity.
+$\tau^{\kappa' \rightarrow \kappa}\tau^{\kappa'}$ denotes application of types.
+$\sepimp$, $\tightoverset{\scalebox{0.5}{!}}{\sepimp}$, $\shimp$ and $\tightoverset{\scalebox{0.5}{!}}{\shimp}$
+are now treated as type constructors with an arity of two and would have a kind $\star \rightarrow \star \rightarrow \star$, The
+type constructor for List will have a kind $\star \rightarrow \star$ while types like Int and Float will have a kind $\star$.
 The type constructor application rule that computes kinds is given in \cref{fig:constructor-application} where
 $\tau$ is of kind $\kappa' \rightarrow \kappa$ and $\tau'$ is of kind $\kappa'$. The application
 of both the constructors would result in a kind $\kappa$.
-$\sepimp$, $\tightoverset{\scalebox{0.5}{!}}{\sepimp}$, $\shimp$ and $\tightoverset{\scalebox{0.5}{!}}{\shimp}$
-are now treated as type constructors with an arity of two and would have a kind $\star \rightarrow \star \rightarrow \star$, The
-type constructor for List will have a kind $\star \rightarrow \star$ while
-types like Int and Float will have a kind $\star$.
 
 \begin{figure}
   \begin{framed}
@@ -56,12 +54,12 @@ types like Int and Float will have a kind $\star$.
   \label{fig:constructor-application}
 \end{figure}
 
-The unification of types is now done via a modified version of Robinson's algorithm \citeyearpar{robinson_machine-oriented_1965}
+The unification of types has to be done using modified version of Robinson's algorithm\citeyearpar{robinson_machine-oriented_1965}
 is used in order to deduce the most general unifier for type constructors.
-Formally we define $S$ to be the {\it most general unifier} for type constructors $T$ and $T'$ if:
+Formally we define $S$ to be the kind preserving {\it most general unifier} for type constructors $T$ and $T'$ if:
 \begin{enumerate}
   \item $S$ is a unifier for $T$ and $T'$.
-  \item For every unifier $S'$ of $T$ and $T'$ we can write $T'$ in a form of
+  \item For every unifier $S'$ of $T$ and $T'$ we can write $S$ in a form of
     $R S$ where $R$ some kind preserving substitution.
 \end{enumerate}
 We write $T \overset{S}{\sim}_{\kappa} T'$ for assertion that $S$ is the unifier
@@ -106,13 +104,20 @@ can be unified which asserts that they have to have the same kind $\kappa' \righ
   \label{fig:unify-types}
 \end{figure}
 
+
+New terms are added in the expression language to support the new types. $\Pair{M,N}$ denotes a multipicative or separating pair with
+$\Let{\Pair{x,y}}{M}{N}$ as its deconstructor. The first component of the pair would be bound to $x$ while the second
+component will be bound to $y$. $\Pair{M;N}$ denotes an additive or sharing pair. $\Fst{M}$ and $\Snd{N}$ would denote the first
+and the second components of the pair respectively. The $\Case{M}{\texttt{inl}\ x \mapsto N ; \texttt{inr} y \mapsto N'}$ denotes pattern matching on
+the sum type, where $\Inl{x}$ and $\Inr{x}$ denotes the construction of the sum type.
+
 \begin{figure}[h]
   \begin{framed}
     \begin{flalign*}
       \text{Term Variables}\ \ \  x, y, z  &\in \text{Var}\\
       \text{Expressions}\ \ \     M, N     &::= x \mid \lambda^{\sepimp} x. M \mid \lambda^{\shimp}x. M \mid M N \mid \Let{x}{M}{N}\\
       &\mid \Pair{M,N} \mid \Let{\Pair{x,y}}{M}{N} \mid \Pair{M;N} \mid \Fst{M} \mid \Snd{M}\\
-      &\mid \Case{M}{\{\texttt{inl}\ x \mapsto N ; \texttt{inr}\ y \mapsto N'\}}\mid \Inl{x} \mid \Inr{y}\\
+      &\mid \Case{M}{\{\texttt{inl}\ x \mapsto N ; \texttt{inr}\ y \mapsto N'\}}\mid \Inl{x} \mid \Inr{x}\\
     \end{flalign*}
   \end{framed}
   \caption{Extended \qub{} Language Syntax}
@@ -120,21 +125,14 @@ can be unified which asserts that they have to have the same kind $\kappa' \righ
 \end{figure}
 
 \section{Pairs and Sums in  \qub{}}\label{sec:pairs-types}
-Introduction of two kinds of arrows in our type system leads to different flavors of pairs. This distinction cannot be made
-in intuitionistic logic as the structural rules allow re-use of propositions. But due to restrictions in weakening and
-contraction we obtain two kinds of pairs, additive and multiplicative. In this section we illustrate how the
+Introducing sharing and separating implication in our type system leads to two different flavors of pairs. This distinction cannot be made
+in intuitionistic logic as the structural rules allow re-use of propositions. Restrictions in weakening and
+contraction allows us to obtain two kinds of pairs, additive and multiplicative. In this section we illustrate how the
 extented \qub{} can be used to introduce new types. We introduce syntax and type constructors for multiplicative pairs in \cref{subsec:mul-pairs}
-and the same for additive pairs in \cref{subsec:add-pairs}. We then introduce the
-syntax and type constructors for sum types in \cref{subsec:sums} and illustrate that they indeed work as expected.
+and the same for additive pairs in \cref{subsec:add-pairs}. We then introduce the syntax and type constructors for sum types
+in \cref{subsec:sums} and illustrate that they indeed work as expected.
 
-\subsection{Multiplicative Pair Type}\label{subsec:mul-pairs}
-Lambda encoding of muliplicative pairs is given in \cref{fig:mul-pair}. The typing rules
-are given in \cref{fig:mul-pair-rules}. We give the proofs of the typing rules in \cref{subsec:mul-pairs-deriv}.
-The meaning of a multiplicative pair can be thought of as
-having separate resouce entities together in the program environment context and they would have to be
-explicitly disposed off. Failure to do so, would raise a type error regarding the resources
-not being unrestricted.
-
+\subsection{Multiplicative Pair}\label{subsec:mul-pairs}
 \begin{figure}[h]
   \begin{framed}
     \begin{flalign*}
@@ -167,20 +165,20 @@ not being unrestricted.
   \caption{Derivable Typing Rules for Multiplicative Pair}
   \label{fig:mul-pair-rules}
 \end{figure}
+Lambda encoding of muliplicative pairs is given in \cref{fig:mul-pair}. The typing rules
+are given in \cref{fig:mul-pair-rules}. We give the proofs of the typing rules in \cref{subsec:mul-pairs-deriv}.
+The meaning of a multiplicative pair can be thought of as
+having separate resouce entities together in the program environment context and they would have to be
+explicitly disposed off. Failure to refer both the components of the multiplicative pair, would raise a type error
+regarding the resources not being unrestricted.
 
-\subsection{Additive Pair Type}\label{subsec:add-pairs}
-The lambda encoding for additive pairs is given in \cref{fig:add-pair}. The typing rules are given in \cref{fig:add-pair-rules}. We give
-proof of derivations for the rules in \cref{subsec:add-pairs-deriv}. Additive pairs can be thought of as program
-entities that have sharing resources. We use \Fst{} and \Snd{} as projection functions on the additive pair to obtain the
-constituent objects. It is worthwhile to note that we do not provide these projection functions for multiplicative pairs
-so as to restrict the programmer from implicitly discarding one of the components of the multipicative pair.
-
+\subsection{Additive Pair}\label{subsec:add-pairs}
 \begin{figure}[h]
   \centering
   \begin{framed}
     \begin{flalign*}
       \with &\in \mathcal{T}^{\star \rightarrow \star \rightarrow \star}\\
-      \tau \with \tau' &= \tau \sepimp \tau' \rightarrow (\tau \sepimp \tau' \rightarrow \upsilon) \rightarrow \upsilon\\
+      \tau \with \tau' &= \tau \sepimp \tau' \shimp (\tau \sepimp \tau' \shimp \upsilon) \shimp \upsilon\\
       (;) &= \lambda^{\sepimp}  x. \lambda^{\shimp} by. \lambda^{\shimp} f. f x y
     \end{flalign*}
   \end{framed}
@@ -212,16 +210,14 @@ so as to restrict the programmer from implicitly discarding one of the component
   \caption{Derivable Typing Rules for Additive Pair}
   \label{fig:add-pair-rules}
 \end{figure}
+The lambda encoding for additive pairs is given in \cref{fig:add-pair}. The typing rules are given in \cref{fig:add-pair-rules}. We give
+proof of derivations for the rules in \cref{subsec:add-pairs-deriv}. Additive pairs can be thought of as program
+entities that have sharing resources. We use \Fst{} and \Snd{} as projection functions on the additive pair to obtain the
+constituent objects. It is worthwhile to note that we do not provide these projection functions for multiplicative pairs
+so as to restrict the programmer from implicitly discarding one of the components of the multipicative pair.
 
 
 \subsection{Sum Type}\label{subsec:sums}
-The lambda encoding of sum types is given in \cref{fig:sum-types} and the derivable typing rules are given in \cref{fig:bi-sum-types}.
-We give proof of derivations in \cref{sec:sums-deriv}. Sum types can be thought of as a choice between two types. At a given point of
-time only one of the two types would exist. We provide two functions to be used has handlers for both the types. The $\Case{M}{\{f;g\}}$ construct
-is the deconstructor that would decide which function to use $f$ or $g$ depending on the value evaluated for $M$. The return type
-of both the functions $f$ and $g$ would have to be the same for them to have correct typing. Encoding sum types within the language would be
-helpful in defining data structures such as lists, trees and option types.
-
 \begin{figure}[h]
   \begin{framed}\centering
     \begin{flalign*}
@@ -267,45 +263,29 @@ helpful in defining data structures such as lists, trees and option types.
 \label{fig:bi-sum-types}
 \end{figure}
 
+The lambda encoding of sum types is given in \cref{fig:sum-types} and the derivable typing rules are given in \cref{fig:bi-sum-types}.
+We give proof of derivations in \cref{sec:sums-deriv}. Sum types can be thought of as a choice between two types. At a given point of
+time only one of the two types would exist. We provide two functions to be used has handlers for both the types. The $\Case{M}{\{f;g\}}$ term
+is the deconstructor that would decide which function to use $f$ or $g$ depending on the type evaluated for $M$. The return type
+of both the functions $f$ and $g$ would have to be the same for them to have correct typing. Encoding sum types within the language would be
+helpful in defining data structures such as lists, trees and option types.
+
 
 \section{Generic Type Constructors}\label{sec:type-constructors}
-
-To leverage the full power of introducing the sharing concept in a programming language,
-we would want to have users be able to define datatypes with sharing and separation of its
-constituent resources.  We add two new typing rules as shown in \cref{fig:ud-datatypes}
-for handling generic datatypes using type constructors.
+To leverage the full power of sharing and separating in a programming language,
+we want to enable the users to explicitly define datatypes with sharing and separation between its
+constituent resources. The [APP$^s$] rule will ensure that the types are well-formed using the modified
+Robinson's unification algorithm for user defined type constructors.
 In the current implimentation, we only consider a specific case of type constructors where all the type variables
 involved are either all shared or all separate. % and give an insight of how this
 % can be generalized to have a mix of sharing and separation between the type parameters
 % for a type constructor.
 
-\TODO{How do we write about type constructors?}
-\begin{figure}[h]
-  \begin{framed}\centering
-    % sharing constructor
-    \begin{minipage}{0.45\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \varoplus x:\tau^{\kappa} \vdash C:\tau^{\kappa} \rightarrow T$}\RightLabel{$[\text{C-sh}]$}
-        \UnaryInfC{$P \mid \Gamma \vdash C x : T $}
-      \end{prooftree}
-    \end{minipage}
-    % Separating constructor
-    \begin{minipage}{0.45\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \circledast x:\tau^{\kappa} \vdash C:\tau^{\kappa} \sepimp T$}\RightLabel{$[\text{C-se}]$}
-        \UnaryInfC{$P \mid \Gamma \vdash C x : T $}
-      \end{prooftree}
-    \end{minipage}
-  \end{framed}
-  \caption{User Defined Datatypes}
-  \label{fig:ud-datatypes}
-\end{figure}
-
-We illustrate using examples how the type system works.
+We illustrate using examples how the type system works. The sharing pair is shown in \cref{fig:sharing-pair}.
+The keyword \HaskellF{data} introduces the type constructor in to the language. The (!!) denotes that \HaskellF{a} and \HaskellF{b} are in sharing.
 The sharing pair has shared resources and using \Fst{} and \Snd{} works
-to get both the individual constituents as shown in \cref{fig:sharing-pair}
-The (!!) denots that a and b are in sharing. The fstp and sndp functions
-typecheck as expected.
+to get the individual constituents as shown in \cref{fig:sharing-pair}
+The \HaskellF{fstp} and \HaskellF{sndp} functions typecheck as expected.
 
 \begin{figure}[h]
   \begin{framed}
@@ -324,8 +304,10 @@ sndp (ShP x y) = y
   \label{fig:sharing-pair}
 \end{figure}
 
-Separating pair is defined in \cref{fig:sep-pair}. The functions fst and snd do not type check
-as on of the resources is being dropped and we would need the resource to be unrestricted.
+Separating pair is defined in \cref{fig:sep-pair}. The functions \HaskellF{fst} and \HaskellF{snd} do not type check
+as one of the resources is being implicitly dropped. This would force the type inference algorithm to mark the resource to as unrestricted,
+but as both \HaskellF{a} or \HaskellF{b} are resources, a type mismatch error would be raised at compile time.
+The \HaskellF{swap} function would type check as expected as both \HaskellF{a} and \HaskellF{b} are used.
 
 \begin{figure}[h]
   \begin{framed}
