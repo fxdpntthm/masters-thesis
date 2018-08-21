@@ -93,8 +93,8 @@ computing equality over types.
 
 The rules for \textbf{HM} type system are shown in \cref{fig:hm-system}. $\Gamma$ is the
 collection of assumptions, or context, in which the expression M is typed. It can be thought of as a collection--list or set--of
-an ordered pair of identifier and its type scheme. The [VAR] rule is the tautology; a simple
-lookup of variable $x$ in context $\Gamma$ for the type scheme. [$\rightarrow$I] and [$\rightarrow$E] type
+an ordered pair of identifier and its type scheme. $\Gamma_{x}$ denotes the type assignment excluding the type variable $x$.
+The [VAR] rule is the tautology; a simple lookup of variable $x$ in context $\Gamma$ for the type scheme. [$\rightarrow$I] and [$\rightarrow$E] type
 lambda terms and application respectively. Rules for parametric polymorphism are implicit in expression language.
 [$\forall$I] rule generalizes the type scheme by adding universal quantifiers and [$\forall$E] generates an instance
 of the type scheme by substituting free type variables. $\sigma' \sqsubseteq \sigma$ means $\sigma'$ is an instance
@@ -547,7 +547,7 @@ The type language from \cref{fig:hm-lang} is modified to incorporate
 qualified types shown in \cref{fig:qualifed-types}. $\pi$ and $\omega$ range over predicates and  $P$ and $Q$ range over finite set of predicates.
 Types of the form $\pi \Rightarrow \sigma$ denote those instances of $\sigma$ that satisfy the predicate $\pi$, in general
 $P \Rightarrow \sigma$ would mean the instances of $\sigma$ that satisfy all the predicates $\pi \in P$. The predicate entailment
-relation $P \Vdash \pi$ asserts that the predicate $\pi$ can be inferred from the predicates in $P$.
+relation $P \Rightarrow \pi$ asserts that the predicate $\pi$ can be inferred from the predicates in $P$.
 The typing rules in \textbf{HM} type system are slightly modified and 2 new rules are added
 as shown in \cref{fig:qualified-types-rules}. [$\Rightarrow$I] and [$\Rightarrow$E] serve the purpose of for introduction and elimination of qualified types respectively.
 The new rules are \colorbox{blue!30}{highlighted}. The predicate set $P$ is threaded throughout the other rules
@@ -614,7 +614,7 @@ but is not used anywhere except [$\Rightarrow$I] and [$\Rightarrow$E].
     \begin{minipage}{0.45\textwidth}
       \begin{prooftree}
         \AxiomC{$P \mid \Gamma \vdash M : \pi => \rho$}
-        \AxiomC{$P \Vdash \pi$} \RightLabel{$[=> E]$}
+        \AxiomC{$P \Rightarrow \pi$} \RightLabel{$[=> E]$}
         \BinaryInfC{$P \mid \Gamma \vdash M: \rho$}
       \end{prooftree}
     \end{minipage}

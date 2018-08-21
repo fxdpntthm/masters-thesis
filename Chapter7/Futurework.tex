@@ -1,11 +1,14 @@
 \chapter{Conclusion and Future Work}\label{chp:conclusion}
 
+We have explored type system of \qub{}, based on sub-structural logic of \BI{}.
+It offers a nice conglomeration of \textbf{HM} type system and intuitionistic linear type system and is more
+expressive than existing type system in terms of statically tracking resources.
+
+
+For future work we have quite a few areas to explore and which need deeper understanding.
 The \qub{} type inference is incomplete with respect to the fact that terms can have two types depending
 on the predicates and the context of the function. We would want to have a clear way of solving
-the dilema and be able to encode it in the type inference algorithm.
-We have not given any sematic model for our language. The typing context can be thought
-of as to generate a sharing graph. It is similar to a separating graph in $\lambda_{sep}$ \citep{atkey_lambda_sep_2004}
-automoatic detection of  addtitive and multiplicative types using polymorphism
-we assume that polymorphism does not affect our case becuase the resources we use
-are monoic types. We may have to incorporate work on polymorphism \cite{collinson_bunched_2005} for
-more generalized setting.
+the dilemma and be able to detect it automatically in the type inference algorithm.
+We have not given any formal semantic models for our language to rigorously prove the soundness with respect to original
+system of logic of \BI{} and neither have we tried to analyze the system with respect to categorical models.
+It will be worth while to pursue them from a theoretical perspective.
