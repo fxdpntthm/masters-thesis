@@ -1,14 +1,14 @@
 \chapter{Conclusion and Future Work}\label{chp:conclusion}
 
-We have explored type system of \qub{}, based on sub-structural logic of \BI{}.
+We have designed and implemented a type system of \qub{}, based on logic of \BI{}.
 It offers a nice conglomeration of \textbf{HM} type system and intuitionistic linear type system and is more
-expressive than existing type system in terms of statically tracking resources.
+expressive than existing type systems by statically tracking resources.
+We have a prototype implementation of \qub{} is based on Habit\citep{apoorv_qub_2018}.
 
-
-For future work we have quite a few areas to explore and which need deeper understanding.
-The \qub{} type inference is incomplete with respect to the fact that terms can have two types depending
+Sub-structural type system are an active area of research.
+The \qub{} type inference is incomplete as terms can have two incomparable types depending
 on the predicates and the context of the function. We would want to have a clear way of solving
 the dilemma and be able to detect appropriate types automatically in the type inference algorithm.
-We have not given any formal semantic models for our language to rigorously prove the soundness with respect to original
+We have not given any formal semantic model for our language to rigorously prove soundness with respect to original
 system of logic of \BI{} and neither have we tried to analyze the system with respect to categorical models.
 It will be worth while to pursue them from a theoretical perspective.

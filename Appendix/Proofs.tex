@@ -245,7 +245,7 @@ We go over a few intermediate results and definitions to prove the soundness res
   \item{Case $\lambda^{\shimp} x. M$.}
     We have $$P; S'; \Sigma; \Psi' = \M(\Unf(\tau, u_1 u_2 u_3) \circ S, \Psi, \Gamma, x:u_2 \vdash M: u_3)$$
     and by induction hypothesis $$S' P \mid S' ((\Gamma \sqcup \{ x^{\texttt{dom}(\Gamma)} : u_2 \})|_{\Sigma}) \vdashs M : S' u_3$$
-    Let $Q = \{\ShFun{u_1}\} \cup \texttt{Leq}(u_1, \Gamma|_\Sigma) \cup \texttt{Weaken}(x, u_2, \Sigma) \cup P$
+    Let $Q = \{\ShFun{u_1}\} \cup \texttt{Leq}(u_1, \Gamma|_\Sigma) \cup \texttt{Weaken}(x, u_2, \Sigma, \Psi) \cup P$
     and let $\Sigma' = \Sigma \backslash \{x\}$. By \cref{lemma:strengthen} and \cref{lemma:syntax-WKN-UN-helper} we can construct a
     derivation of $$S' Q \mid S'  ((\Gamma \sqcup \{x:u_2\})|_{\Sigma'}) \vdashs M: S' u_3$$
     Now, using [$\shimp$I$^s$] we get the required result.
@@ -253,7 +253,7 @@ We go over a few intermediate results and definitions to prove the soundness res
   \item{Case $\lambda^{\sepimp} x. M$.}
     We have $$P; S'; \Sigma; \Psi' = \M(\Unf(\tau, u_1 u_2 u_3) \circ S, \Psi, \Gamma, x:u_2 \vdash M: u_3)$$
     and by induction hypothesis $$S' P \mid S' ((\Gamma \sqcup \{ x^\emptyset : u_2 \})|_{\Sigma}) \vdashs M : S' u_3$$
-    Let $Q = \{\SeFun{u_1}\} \cup \texttt{Leq}(u_1, \Gamma|_\Sigma) \cup \texttt{Weaken}(x, u_2, \Sigma) \cup P$
+    Let $Q = \{\SeFun{u_1}\} \cup \texttt{Leq}(u_1, \Gamma|_\Sigma) \cup \texttt{Weaken}(x, u_2, \Sigma, \Psi') \cup P$
     and let $\Sigma' = \Sigma \backslash \{x\}$. By \cref{lemma:strengthen} and \cref{lemma:syntax-WKN-UN-helper} we can construct a
     derivation of $$S' Q \mid S'  ((\Gamma \sqcup \{x:u_2\})|_{\Sigma'}) \vdashs M: S' u_3$$
     Now, using [$\sepimp$I$^s$] we get the required result.
