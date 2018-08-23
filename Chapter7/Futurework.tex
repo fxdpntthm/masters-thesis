@@ -1,14 +1,20 @@
 \chapter{Conclusion and Future Work}\label{chp:conclusion}
 
-We have designed and implemented a type system of \qub{}, based on logic of \BI{}.
-It offers a nice conglomeration of \textbf{HM} type system and intuitionistic linear type system and is more
-expressive than existing type systems by statically tracking resources.
-We have a prototype implementation of \qub{} is based on Habit\citep{apoorv_qub_2018}.
+We have designed and implemented \qub{}, a type system based on logic of \BI{}.
+It offers a conglomeration of \textbf{HM} type system and intuitionistic linear type system. We have shown
+using examples how it is more expressive than existing type systems by statically tracking resources.
+We have implemented a prototype of \qub{}\citep{apoorv_qub_2018} based on Habit\citep{diatchki_thesis_2007,morris_thesis_2013},
+a statically typed call-by-value Haskell-like functional programming language.
 
-Sub-structural type system are an active area of research.
-The \qub{} type inference is incomplete as terms can have two incomparable types depending
-on the predicates and the context of the function. We would want to have a clear way of solving
+Type systems based on sub-structural logics are an active area of research. For future work,
+we would like to solve the incompleteness problem for \qub{} type inference algorithm as terms can have two incomparable types depending
+on the predicates and its context. We would want to have a clear way of solving
 the dilemma and be able to detect appropriate types automatically in the type inference algorithm.
 We have not given any formal semantic model for our language to rigorously prove soundness with respect to original
 system of logic of \BI{} and neither have we tried to analyze the system with respect to categorical models.
-It will be worth while to pursue them from a theoretical perspective.
+We would want to pursue them from a theoretical perspective.
+
+Finally, static type systems provide two benefits, compile time guarantee of program correctness and identifying opportunities
+for code optimization. We hope to implement larger programs in \qub{} to be able push the limits of both the guarantees.
+We conjuncture that low-level programms that are sensitive to resource management will be a good fit to leverage the expressiveness of \qub{}
+and detect a larger subset of runtime errors at compile time.
