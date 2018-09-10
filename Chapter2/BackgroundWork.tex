@@ -1,25 +1,25 @@
 \chapter{Background Work}\label{chp:background-work}
 \section{Hindley-Milner Type System and Type Inference Algorithm}\label{hm-system}
 
-Hindley-Milner (\textbf{HM}) type system\citeyearpar{milner_theory_1978} for lambda calculus extended with parametric polymorphism (i.e restricted version
-of System F\citep{girard_proofs_1989}) forms the basis many modern functional programming languages such as Haskell and ML.
-\cref{fig:hm-lang} shows the type language contains type variables, primitive types (such as integers, floats),
+Hindley-Milner (\textbf{HM}) type system \citeyearpar{milner_theory_1978} for lambda calculus extended with parametric polymorphism (i.e restricted version
+of System F \citep{girard_proofs_1989}) forms the basis of many modern functional programming languages such as Haskell and ML.
+\cref{fig:hm-lang} shows the type language containing type variables, primitive types (such as integers, floats),
 the type constructor ($\rightarrow$)---which constructs function types---and type scheme ($\sigma$).
-The expression language contains variables, function abstraction and applications and
-polymorphic \texttt{let} construct. Type inference algorithm $\mathcal{W}$\citep{damas_principal_1982} and its variant
-type checking algorithm $\mathcal{M}$\citep{lee_proofs_1998} is decidable in the sense, the algorithm always completes with a success or failure.
-The algorithms compute a most general, or principal typing scheme for an expression.
+The expression language contains variables, function abstraction and applications, and the
+polymorphic \texttt{let} construct. Type inference algorithm $\mathcal{W}$ \citep{damas_principal_1982} and its variant
+type checking algorithm $\mathcal{M}$ \citep{lee_proofs_1998} is decidable in the sense, the algorithm always terminates
+with either a success or failure. Both the algorithms compute a most general, or principal typing scheme for an expression.
 
 \begin{figure}[h]
   \begin{framed}
     \begin{minipage}{0.35\linewidth}
       \begin{flalign*}
-        t, u, \upsilon &\in \text{Type Variables}
+        t, u &\in \text{Type Variables}
       \end{flalign*}
     \end{minipage}%
   \begin{minipage}{0.65\linewidth}
   \begin{flalign*}
-    \text{Types}\ \ \  \tau           &::= t \mid \iota \mid \tau \rightarrow \tau\\
+    \text{Types}\ \ \  \tau, \upsilon &::= t \mid \iota \mid \tau \rightarrow \tau\\
     \text{Typing Scheme}\ \ \  \sigma &::= \tau \mid \forall t. \tau\\
     \text{Typing Context}\ \ \ \Gamma &::= \epsilon \mid \Gamma, x:\sigma\\
          \text{Expressions}\ \ \ M, N &::= x \mid \lambda x. M \mid M N \mid \Let{x}{M}{N}
@@ -30,10 +30,10 @@ The algorithms compute a most general, or principal typing scheme for an express
 \label{fig:hm-lang}
 \end{figure}
 
-Robinson's\citeyearpar{robinson_machine-oriented_1965} unification algorithm plays a key role
+Robinson's \citeyearpar{robinson_machine-oriented_1965} unification algorithm plays a key role
 in computation of well-formed principal types. Its purely syntactic approach in creating
 substitutions to unify types keeps the complete process elegant.
-Algorithm $\mathcal{M}$ can either be used to either infer the types of all well-typed expressions it
+Algorithm $\mathcal{M}$ can either be used to infer the types of all well-typed expressions or it
 can be used to verify that the specified type of expression term matches the actual type. The same
 can be obtained using algorithm $\mathcal{W}$ with an additional machinery of
 computing equality over types.
@@ -94,18 +94,19 @@ computing equality over types.
 The rules for \textbf{HM} type system are shown in \cref{fig:hm-system}. $\Gamma$ is the
 collection of assumptions, or context, in which the expression M is typed. It can be thought of as a collection--list or set--of
 an ordered pair of identifier and its type scheme. $\Gamma_{x}$ denotes the type assignment excluding the type variable $x$.
-The [VAR] rule is the tautology; a simple lookup of variable $x$ in context $\Gamma$ for the type scheme. [$\rightarrow$I] and [$\rightarrow$E] type
+The [VAR] rule is tautology; a simple lookup of variable $x$ in context $\Gamma$ for the type scheme. [$\rightarrow$I] and [$\rightarrow$E] type
 lambda terms and application respectively. Rules for parametric polymorphism are implicit in expression language.
 [$\forall$I] rule generalizes the type scheme by adding universal quantifiers and [$\forall$E] generates an instance
-of the type scheme by substituting free type variables. $\sigma' \sqsubseteq \sigma$ means $\sigma'$ is an instance
+of the type scheme by substituting free type variables. We write $\sigma' \sqsubseteq \sigma$ to mean $\sigma'$ is an instance
 of $\sigma$. While generalizing types, the rule [$\forall$I], has a side condition that ensures the new type variable
 introduced should not be free in the typing context. The $\texttt{fvs}(\Gamma)$ denotes free type variables in $\Gamma$.
 The [LET] rules allows implicit parametric polymorphism. For example, the expression, \texttt{g = $\lambda$f.(f True, f 1)} is ill-typed.
-The type unification will fail for \texttt{f} as the expression \texttt{f True} asserts \texttt{f:Bool$\rightarrow$u$_1$} while the expression
+The type unification will fail for \texttt{f} as the expression \texttt{f True} asserts \texttt{f:Bool$\rightarrow$u$_1$}, while the expression
 \texttt{f 1} asserts \texttt{f:Int$\rightarrow$u$_2$}. However, there indeed exists a polymorphic type \texttt{$\forall$u$_1$.u$_1$ $\rightarrow$ u$_1$}
 that types \texttt{f}. The \texttt{let} construct makes this possible. The expression \texttt{g} can be defined
 as \texttt{g = let f = $\lambda$ x. x in (f True, f 1)}. The type of the expression \texttt{f} is now computed
-as \texttt{f : $\forall$u$_1$. u$_1\rightarrow$u$_1$}, using [$\rightarrow$I] and [$\forall$I] rules and \texttt{g} is assigned a type \texttt{(Bool, Int)}.
+as \texttt{f : $\forall$u$_1$. u$_1\rightarrow$u$_1$}, using [$\rightarrow$I] and [$\forall$I]
+rules and \texttt{g} is assigned a type \texttt{(Bool, Int)} as intended.
 
 \begin{figure}[h]
   \centering
@@ -233,11 +234,11 @@ $A \wedge B$ denotes conjunction and $A \vee B$ denotes disjunction.
 \end{figure}
 
 The rules of the logic system are shown in \cref{fig:intuitionistic-logic} in Gentzen style natural deduction
-where $\Gamma$, $\Delta$ are contexts that keep track of assumptions. The [Ax] rule corresponds to [ID] rule while [$\rightarrow$I] and [$\rightarrow$E] correspond
+where $\Gamma$, $\Delta$ are contexts that keep track of assumptions. The [Ax] rule corresponds to [VAR] rule while [$\rightarrow$I] and [$\rightarrow$E] correspond
 to [$\supset$I] and [$\supset$E] respectively. The weakening [WKN] and contraction [CTR] rules are implicit in the term structue of \textbf{HM} type-system.
-The weakening rule states that we can add unrelated assumptions to derivations without
-affecting the proofs while contraction states that we can discard duplicate assumptions in our derivations and the
-proof will still hold. The [$\forall$I] introduces the universal quantifier for a proposition and [$\forall$E] instantiates
+The weakening rule states that we can add unrelated assumptions to proof derivations without
+affecting them, while contraction states that we can discard duplicate assumptions from our proof derivations and the proof will still hold.
+The [$\forall$I] introduces the universal quantifier for a proposition and [$\forall$E] instantiates
 the quantifier by replacing the variable with given proposition. The rules [$\forall$I] and [$\forall$E] correspond to parametric polymorphism
 introduction [$\forall$I] and elimination [$\forall$E] rules in \cref{fig:hm-system}. [$\wedge$I], [$\wedge$E$_2$] and [$\wedge$E$_2$] introduces and eleminates
 conjunction. Conjunction is equivalent to pairs or product types. [$\vee$I$_2$], [$\vee$I$_2$] and [$\vee$E] introduces and eleminates disjunction respectively.
@@ -306,18 +307,19 @@ they can be Church encoded using lambda expressions\citep{pierce_tapl_2005}.
   \label{fig:hm-algo-m}
 \end{figure}
 
-The algorithm $\M$ is given in figure \cref{fig:hm-algo-m}. $\mathcal{U}$ is Robinson's unification
+The type inference algorithm $\M$ is given in figure \cref{fig:hm-algo-m}. $\mathcal{U}$ is Robinson's unification
 algorithm that computes the most general unifier required to unify two types
 and $\texttt{Gen}(\Gamma,\tau)$ generalizes a type to a principle type scheme. All the type variables denoted by $u$ are
-fresh, and hence do not shadow the existing type variables in the context. $S$ denotes substitutions that are combined using $\circ$ operator
-can be applied on types or type schemes. When substitutions are applied to a context $\Gamma$, they are applied to each type scheme contained by $\Gamma$.
-$\vec{t}$ is shorthand for a set of type variables $\{t_1, t_2, \dots, t_n\}$ and $\vec{t} \backslash \vec{u}$ denotes the set difference.
+fresh, and hence do not shadow the existing type variables in the context. Substitutions, denoted by $S$, can be applied
+on types or type schemes. They are combined using $\circ$ operator. When substitutions are applied to a context $\Gamma$,
+they are applied to each type scheme contained by $\Gamma$. $\vec{t}$ is shorthand for a set of type variables
+$\{t_1, t_2, \dots, t_n\}$ and $\vec{t} \backslash \vec{u}$ denotes the set difference.
 
 \section{Linear Logic}\label{sec:linear-logic}
 While propositional logic deals with truth of propositions and their connectives, linear logic\citep{girard_linear_1987}
 deals with availability of resources. Linear logic addresses resource and resource control problem.
 The core idea is that propositions cannot be freely duplicated or discarded in contrast to intuitionistic logic.
-In formal terms, the contraction and weakening rules are restricted. Propositions are modeled as resources.
+In terms of formal logic system, the contraction and weakening rules are restricted. Propositions are modeled as resources.
 In real world software applications,
 if resources---such as database connections, file handles or even
 in-memory shared state---are freely copied or dropped from a program context, it can introduce bugs or crashes.
@@ -341,7 +343,7 @@ while $\Pair{A}$ would mean that it is a linear assumption and weakening and con
   \label{fig:linear-logic-syntax}
 \end{figure}
 
-In a linear logic, the assumptions can not be used more than once. In the proposition $A \rightspoon B$, the assumption $A$ cannot be used again after
+In a linear logic, the assumptions can not be used more than once. In the proposition $A \rightspoon B$, the assumption $A$ cannot be reused after
 it has been used to obtain $B$. This gives a new view of implication as consumption.
 Due to the absense of weakening and contraction rules in this system we obtain two fragments---multiplicative and additive---of connectives.
 Multiplicative conjunction is represented as $A \otimes B$, and additive conjunction and disjunction as $A \with B$ and $A \oplus B$ respectively.
@@ -495,7 +497,7 @@ The syntax of linear logic is shown in \cref{fig:linear-logic-syntax}.
 \end{figure}
 
 The structural and connective logical rules for the complete system is given in \cref{fig:linear-logic-rules}.
-To relax linearity constraints, exponential modality $\oc$ is used, which signifies that an assumption can
+The exponential modality $\oc$ is used to relax linearity constratins. It signifies that an assumption can
 be duplicated or dropped without restriction. $\oc A$ can be thought of as {\em``as many A's as needed''}.
 The intuitionistic implication $A \supset B$ can be encoded in linear logic by using the modality operator as $\oc A \rightspoon B$.
 % Similarly, $A \wedge B$ can be encoded as $\oc A \with \oc B$ and $A \vee B$ as $\oc A \otimes \oc B$\citep{wadler_taste_1993}.
@@ -545,10 +547,10 @@ record types\citep{gaster_polymorphic_1996}, sub-typing\citep{jones_theory_1994}
 
 The type language from \cref{fig:hm-lang} is modified to incorporate
 qualified types shown in \cref{fig:qualifed-types}. $\pi$ and $\omega$ range over predicates and  $P$ and $Q$ range over finite set of predicates.
-Types of the form $\pi \Rightarrow \sigma$ denote those instances of $\sigma$ that satisfy the predicate $\pi$, in general
+Types of the form $\pi \Rightarrow \sigma$ denote those instances of $\sigma$ that satisfy the predicate $\pi$, in general,
 $P \Rightarrow \sigma$ would mean the instances of $\sigma$ that satisfy all the predicates $\pi \in P$. The predicate entailment
 relation $P \Rightarrow \pi$ asserts that the predicate $\pi$ can be inferred from the predicates in $P$.
-The typing rules in \textbf{HM} type system are slightly modified and 2 new rules are added
+The typing rules in \textbf{HM} type system are slightly modified and two new rules are added
 as shown in \cref{fig:qualified-types-rules}. [$\Rightarrow$I] and [$\Rightarrow$E] serve the purpose of for introduction and elimination of qualified types respectively.
 The new rules are \colorbox{blue!30}{highlighted}. The predicate set $P$ is threaded throughout the other rules
 but is not used anywhere except [$\Rightarrow$I] and [$\Rightarrow$E].
@@ -658,16 +660,16 @@ on its closure. The type of $\lambda f. \lambda x. f x$ can be written as $(\tau
 This function would be well typed only if $f$ is less restricting i.e. admits more structural rules than $g$, so to say
 $\forall f g \tau \upsilon. \{f \geq g\} \Rightarrow (\tau \overset{f}{\rightarrow} \upsilon) \rightarrow \tau \overset{g}{\rightarrow}\upsilon$.
 
-\section{Logic of Bunched Implications and $\alpha\lambda$-Calculus}\label{sec:bi}
+\section{Logic of Bunched Implications  (\BI) and $\alpha\lambda$-Calculus}\label{sec:bi}
 In intuitionistic logic, the context is considered as a list or a set. In the theory of \BI{},
 the context is treated as a tree. Contexts are called bunches and are syntactically
-combined using 2 connectives comma ($,$) or a semicolon ($;$). The logic of \BI{} combines
+combined using two connectives comma ($,$) or a semicolon ($;$). The logic of \BI{} combines
 substructural logic with intuitionistic logic by permitting contexts connected with
 semicolon to undergo contraction and weakening while the context connected with comma
 are prohibited to undergo contraction and weakening. Comma and semicolon do not distribute over each other.
 Thus for propositions $A$, $B$ and $C$: $A,(B;C) \neq A, B ; A,C$ and $A;(B,C) \neq A;B,A;C$.
 
-\cite{ohearn_logic_1999} introduce 2 kinds of arrows
+\cite{ohearn_logic_1999} introduce two kinds of arrows
 and use them depending on the connectives used in the context. A multiplicative implication ($\sepimp$)
 is used when the context is connected with a comma and an additive implication ($\shimp$) is used when the
 context is connected using semicolon. This gives rise to two introduction rules for implication:
@@ -686,8 +688,9 @@ context is connected using semicolon. This gives rise to two introduction rules 
 \end{minipage}
 \end{framed}
 
-$\Gamma, A$ cannot under go weakening or contraction to duplicate
-or get rid of either $A$ or $\Gamma$. This hints to a notion that multiplicative implication ($\sepimp$)
+The weakening rule is prohibited on $\Gamma, A$ so nither $A$ or $\Gamma$ can be dropped out of context.
+Similarly the contraction rule is prohibited that disallows formation of $\Gamma, A, A$ from $\Gamma, A$
+This hints to a notion that multiplicative implication ($\sepimp$)
 exhibits property of the linear implication ($\rightspoon$). The linear implication cannot however
 be directly converted to a multiplicative implication (or vice versa) as the latter does not exhibit properties of
 counting the number of uses of its arguments. Also, in contrast to linear logic, the multiplicative implication
@@ -832,14 +835,14 @@ programmers express the non-resource intuitionistic parts.
 
 The complete grammar for logic of \BI{} is shown in \cref{fig:grammar-bi}. The contexts $\{\}_m$ represents a multiplicative empty context
 while the $\{\}_a$ represents an additive empty context. The rules for the logic system are shown in \cref{fig:rules-bi}.
-$\Gamma(\Delta)$ means that $\Delta$ is a sub-tree within $\Gamma$ (\cref{chp:qub-language} for more details).
+$\Gamma(\Delta)$ means that $\Delta$ is a sub-tree within $\Gamma$. We give more details about sub-trees in \cref{chp:qub-language}.
 
 $\alpha\lambda$-calculus\citep{ohearn_resource_1999, pym_semantics_2002}
 is the Curry-Howard interpretation of the logic of \BI{}. It views implication in terms of sharing rather than
 the number of times it is used. It introduces 2 kinds of arrows by modifying the the syntax of lambda calculus:
 \begin{enumerate}
-\item $\sepimp$: Functions do not share resources with their arguments
-\item $\shimp$ : Functions share resources with their arguments
+\item $\sepimp$: Functions that do not share resources with their arguments
+\item $\shimp$ : Functions that share resources with their arguments
 \end{enumerate}
 
 The types and terms of $\alpha\lambda$-calculus are shown in \cref{fig:al-cal-types}.
@@ -927,10 +930,10 @@ In other words, $A \otimes B \vdash C$ iff $A \vdash B \sepimp C$ and $A \with B
 This relieves us from introducing modality into the system.
 
 Due to the rules of $\alpha\lambda$-calculus $f: \tau \sepimp \tau'; x:\tau \nvdash f x:\tau'$,
-as $f$ needs an argument that does not share any resources with its context.
+as $f$ needs an argument that does not share any resources with it-self.
 The term $\lambda x. \alpha f. f x x: \tau \sepimp (\tau \shimp \tau \shimp \tau') \shimp \tau'$ is a typable term in
 $\alpha\lambda$-calculus as shown in \cref{fig:multi-bi-example}. This illustrates the difference between logic of \BI{} and linear logic
-as even tough the argument is separate from the function, it may be used twice. In linear logic this expression will be ill-typed.
+as even when the argument is separate from the function, it may be used twice. In linear logic this expression will be ill-typed.
 
 \begin{figure}[h]
   \begin{framed}
