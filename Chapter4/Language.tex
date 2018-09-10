@@ -25,25 +25,24 @@ into a sharing graph and represent it as a collection of three tuple sets in ord
   \label{fig:qub-types}
 \end{figure}
 % Describe types
-The type language consists of type variables ($t$, $u$), built-in types such as integers, booleans ($\iota$), and four binary type constructors the
+The type language consists of type variables ($t$, $u$), built-in types such as integers, booleans ($\iota$), and four function types the
 sharing arrow ($\shimp$) and the separating arrow ($\sepimp$) and unrestricted
-version of both the type constructors ($\tightoverset{\scalebox{0.5}{!}}{\sepimp}, \tightoverset{\scalebox{0.5}{!}}{\shimp}$). The sharing arrow
-would mean that the function shares resources with its argument and the separating
+version of both the function types ($\tightoverset{\scalebox{0.5}{!}}{\shimp}, \tightoverset{\scalebox{0.5}{!}}{\sepimp}$ respectively).
+The sharing arrow would mean that the function shares resources with its argument and the separating
 arrow would mean that the function does not share resources with its arguments.
-We would write both the arrows in an infix notation.
 
 % Describe Predicates
 The predicate system enhances the expressivity of the type system. Following the same route taken
 in Quill \citep{morris_best_2016} we use the predicate $\Un{\tau}$ to denote
-that the type $\tau$ is unrestricted. Unrestricted types are the ones that do not have any resources or whose resources can
+that the type $\tau$ is unrestricted. Unrestricted types do not have any resources or whose resources can
 be duplicated or deleted easily. Built-in types such as \HaskellF{Int}, \HaskellF{Char} are considered unrestricted types.
-We write $\ShFun{\phi}$ to describe that type $\phi$ may share resources with its
+We write $\ShFun{\phi}$ to describe that type $\phi$ shares resources with its
 argument types and  $\SeFun{\phi}$ to describe that type $\phi$ does not share any resources from its argument types.
-Notice that function types can also be unrestricted i.e. it does not have any resources. If a type $\tau$ is unrestricted i.e. it qualifies with predicate
+Notice that function types can also be unrestricted i.e. they may not have any resources. If a type $\tau$ is unrestricted i.e. it qualifies with predicate
 \texttt{Un} and it also qualifies one of the function predicates---\texttt{SeFun} or \texttt{ShFun}---we write
 them as $\tightoverset{\scalebox{0.5}{!}}{\sepimp}$ and $\tightoverset{\scalebox{0.5}{!}}{\shimp}$ respectively.
 We also define an ordering on types by using the predicate $\geq$. The predicate $\tau \geq \tau'$ holds if the type $\tau'$
-is less restricting than $\tau$ or to say $\tau$ has admits more structural rules than $\tau'$ as previously explained in \cref{sec:quill}.
+is less restricting than $\tau$ or to say $\tau$ has admits more structural rules than $\tau'$ as explained in \cref{sec:quill}.
 The predicate entailment relations $P \Rightarrow Q$ are given in \cref{fig:entailment-rules}.
 
 To keep the current system simple we have not included kinds. They are added into this system as a language extension
@@ -132,15 +131,14 @@ connectives which can either be a semicolon ($;$) or a comma ($,$).
 If a bunch $\Delta$ is a subtree of $\Gamma$, the relation is denoted by $\Gamma(\Delta)$.
 The bunches have a restriction that no identifier appears more than once. Certain structural rules are restricted on the context
 depending on the connectives used. If contexts are combined using a comma ($,$), contraction and weakening is not admissible,
-but if the contexts are combined using a semicolon ($;$), it can undergo contraction and weakening. Exchange rule is admissible
+but if the contexts are combined using a semicolon ($;$), it may undergo contraction and weakening. Exchange rule is admissible
 in both the connectives. This distinction enables a special treatment for resources in within the language.
-By adding resources with a comma constructor in the typing envrionment, the type system will not dispose it off by using the contraction rule,
+By adding resources with a comma constructor in the typing envrionment, the type system will not dispose them off by using the contraction rule,
 while non-resourceful objects (or normal propositions) can be added using the semi-colon constructor.
 An example bunch is shown in \cref{fig:bunches-bi}. a and b are in sharing while, c is separate from the a and b.
 If $\Gamma$ represents the complete context of \cref{fig:bunches-bi}, $\Delta \equiv (a:A; b:B)$ and $\Delta' \equiv (c:C)$
-then $\Gamma \equiv \Delta,\Delta'$ and $\Gamma(\Delta)$. In general two bunches are equivalent ($\Gamma \equiv \Delta$)
+then $\Gamma \equiv \Delta,\Delta'$ and $\Gamma(\Delta)$. In general, two bunches are said to be equivalent ($\Gamma \equiv \Delta$)
 if they can be transformed into another by re-associativity.
-
 
 \begin{figure}[h]
   \begin{framed}
@@ -188,10 +186,10 @@ They also internalize the transformations that are made explicit in the logic of
 $(a:A, a:B), c:C$ is equivalent to $a:A, (b: B, c:C)$ while in \qub{} the sharing graphs of both the trees would be equal.
 The sharing graph also preserves the distributive law where $a:A;(b:B,c:D) \vdash (a:A;b:B),(a:A;c:C)$
 
-We define sharing relation ($\Psi$) between variables to the collection of variables it is in sharing with.
+We define sharing relation, $\Psi$, as a mapping between variables to the collection of variables it is in sharing with.
 The relation $\Psi(x, \{y_1, y_2, y_3\})$ holds if $x$ is in sharing with $\{y_1, y_2, y_3\}$.
 Domain of $\Psi$ will be defined as $\texttt{dom}(\Psi) = \{x \mid (x, \vec{y}) \in \Psi \}$, where $\vec{y}$
-is a shorthand for the denoting collection of variables shared with $x$. We can think of $\Psi$ to be similar to $\Gamma$,
+is a shorthand for the denoting collection of variables that are shared with $x$. We can think of $\Psi$ to be similar to $\Gamma$,
 but it contains the sharing information instead of the type of the variable. Extending the sharing for a variable will be denoted by $\Psi(x) + y$,
 which would mean the variable $y$ is in sharing with $x$. We axiomatize the sharing operation to be reflexive,
 symmetric and non-transitive. The sharing relation is non-transitive due to the natural notion of sharing. For example, given three variables,
@@ -210,7 +208,7 @@ variable identifier, its type and a collection of variables it shares with. Mani
 easier than manipulating graphs. For example, if a resource $x$ has type $\tau$ and it shares with variables $\{y_1, y_2, y_3\}$
 we would represent it as $x^{\{y_1, y_2, y_3\}}:\tau$ or just $x^{\bar{y}}:\tau$ for short.
 We would write $\Gamma, x^{\vec{y}}:\tau$ to mean $\Gamma \sqcup \{x^{\vec{y}}:\tau\}$.
-We can now formally define the typing context or environment as shown in \cref{fig:typing-context}.
+We can now formally define the typing context or environment for our system as shown in \cref{fig:typing-context}.
 \begin{figure}[h]
   \begin{framed}
     \begin{flalign*}
@@ -226,7 +224,7 @@ type assignments. \texttt{Vars}($\Gamma$) is the set of all the term variables i
 the set of all the term variables that are in sharing with each other. \texttt{Used}($\Gamma$) computes the
 union of all the term variables in the type assignment and the term variables shared by each of those.
 We define two partial operators on type assignments as shown in \cref{fig:type-assignment-operations}.
-The mapping function ($\Gamma^{[\vec{a} \mapsto \vec{b}]}$) extends the sharing relation between the terms. In the sharing graph perspective
+The mapping function ($\Gamma^{[\vec{a} \mapsto \vec{b}]}$) extends the sharing relation between the terms. With respect to sharing graphs
 it would mean adding edges between the nodes.
 \begin{figure}[h]
   \begin{framed}
@@ -253,8 +251,8 @@ it would mean adding edges between the nodes.
 \end{figure}
 
 Two type assignments are said to be in disjoint union ($\circledast$)
-if either of the type assignments used terms are not in common
-with other type assignment's shared term. If the type assignments have an exact overlapping of terms being used,
+if none of the terms used in the type assignments are common with shared terms of other type assignment.
+If the type assignments have an exact overlapping of terms being used,
 it is said to be in a sharing union ($\varoplus$). The ($\#$) in ($\circledast$) represents disjoint check and we use
 the standard notion of set equality for checking sharing union.
 
@@ -285,13 +283,13 @@ the standard notion of set equality for checking sharing union.
 % Describe the language here
 
 % Describe terms and patterns
-Our term language is similar to that of simply typed lambda calculus involving variables and application
+Our term language is similar to that of simply typed lambda calculus involving variables and term application
 but we have two types of lambda expressions, the sharing lambda ($\lambda^{\shimp}$) denotes sharing
 of the argument term with the expression $M$ and the separating lambda term ($\lambda^{\sepimp} $) that implies
 the argument term has a separating context with the expression $M$. We also have $\texttt{let}$
 construct to enable parametric polymorphism.
 
-We work in a call-by-value semantics similar to Quill and F$^{\circ}$\cite{mazurak_lightweight_2010} as it is possible
+We work in a call-by-value semantics similar to Quill\citep{morris_best_2016} and F$^{\circ}$\citep{mazurak_lightweight_2010} as it is possible
 that functions may not be evaluated in call-by-name or call-by-need semantics that would break the linearity property.
 
 

@@ -11,7 +11,7 @@ In modern programming languages resources, such as files, are treated as normal 
 It is the programmer's responsibility to check that that files are not closed twice
 and no files that remain open when they are no longer in use. This seemingly trivial
 responsibility becomes tedious and error prone as the program gets more complex.
-Modern functional, languages such as Haskell, enforces the file input and output to be wrapped in a IO Monad.
+Modern functional languages, such as Haskell, enforces the file input and output to be wrapped in a \HaskellF{IO} Monad.
 This is more declarative than imperative languages, but the type system is not powerful enough
 to detect whether a file handle is closed twice or is not closed at all.
 Consider the type signatures for functions for file handling shown in \cref{fig:file-handling-function}. We explicitly
@@ -48,7 +48,7 @@ Consider an incorrect version of a program where the file handle is closed twice
 It may not cause problems in a single threaded environment, but in a multi-threaded environment
 the second close may accidently close the file handle that may have been reused in the background by another thread.
 When another thread tries to write on this closed file handle, it would throw an exception.
-Haskell's type system would happily accept this program but it might generate a runtime exception.
+Haskell's type system would accept this program but it might generate a runtime exception.
 \begin{figure}[h]
   \begin{framed}
     \begin{minted}[escapeinside=||,mathescape=true,linenos]{haskell}
@@ -88,10 +88,10 @@ err = sslRawVerify(...);
 
 Another example of incorrect way of using file handle is by not closing the file handle after using it shown in \cref{fig:file-read-noclose}.
 In a short lived process the operating system closes the file handles that are not closed when the program exits.
-In a long running process the operating system would run out of space to allocate file handles. The whole process would crash with an error that
-it cannot open any more file handles. Abnormal exit from the process would interfere in the write process
-and the operating system would close the file handle without waiting for the buffer to be completely
-written on the file system causing loss of information.
+In a long running process the operating system would run out of space to allocate new file handles. The whole process would crash with an error that
+it cannot open any more file handles. Abnormal exit from the process may cause of loss of information as would interfere in the write process.
+The operating system would close the file handle without waiting for the buffer to be completely
+written on the file system.
 
 \begin{figure}[h]
   \begin{framed}
@@ -106,7 +106,7 @@ do f <- openFile "sample.txt"
 \end{figure}
 
 We take a deeper dive into this problem by inspecting the desugared version of the ``do'' notation.
-Both the programs would be translated into bind ($>>=$) operations . Recall that type signature of bind function is given as
+Both the programs might be translated into bind ($>>=$) operations . Recall that type signature of bind function is given as
 \HaskellF{(>>=) :: (Monad m) => m t -> (t -> m u) -> m u}. Desugared version of \cref{fig:file-read-close-2times}
 is shown in \cref{fig:file-read-close-2times-desugared} and the desugared version of \cref{fig:file-read-noclose} is shown in \cref{fig:file-read-noclose-desugared}.
 
@@ -165,7 +165,7 @@ return a new binding for the file resource \HaskellF{f}. However, we notice that
 \HaskellF{(>>=|$_3$|)} would have a problem. It would be typed as
 \HaskellF{IO () -*> (() -*> IO ()) -&> IO ()}\\
 as both the arguments share the file variable \HaskellF{f}. This would be a type error
-as the bind operation should have a type signature of \HaskellF{IO () -*> (() -*> IO ()) -*> IO ()}.
+as the bind operation should have a type of \HaskellF{IO () -*> (() -*> IO ()) -*> IO ()}.
 This mismatch in the types would be caught statically during the type checking phase of compilation.
 
 \begin{figure}[h]
@@ -196,7 +196,7 @@ We also have the concept of unrestricted types similar to Quill. A type that con
 copied or dropped in the program is tagged as an unrestriced type. In the second faulty program,
 shown in \cref{fig:file-read-noclose-desugared} the file handle \HaskellF{f} is not closed.
 It is declared but not used in its scope. This would force the file handle to be be tagged as an unrestricted type by the \qub{} type checker.
-This is a violation of our assumption that resources cannot be of the unrestricted type. Thus
+This is a violation of the assumption that resources cannot be of the unrestricted type. Thus
 the program would not type check due to mismatch of the file handle type to be inferred as unrestricted.
 
 \section{Exception handling}
