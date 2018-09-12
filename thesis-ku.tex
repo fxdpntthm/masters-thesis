@@ -34,27 +34,63 @@
 \usepackage{tikz-qtree}
 %\usetikzlibrary{arrows.meta}
 
-\renewcommand\qedsymbol{$\blacksquare$}
-
-\newtheorem{theorem}{Theorem}[chapter]
-\newtheorem{lemma}{Lemma}[chapter]
-
-\theoremstyle{definition}
-\newtheorem{defn}{Definition}
 
 \doublespacing
 \usepackage[unicode=true,
- bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,naturalnames=true
  breaklinks=true,pdfborder={0 0 0},pdfborderstyle={},backref=false,colorlinks=true]
  {hyperref}
 \hypersetup{pdftitle={QuB Resource Aware Functional Programming Language},
  pdfauthor={Apoorv Ingle},
  pdfsubject={Masters Thesis},
  urlcolor={blue},citecolor={blue},allcolors={blue}}
-\usepackage[capitalise]{cleveref}
+%\PassOptionsToPackage{unicode}{hyperref}
+%\PassOptionsToPackage{naturalnames}{hyperref}
+
+\usepackage[capitalise, nameinlink]{cleveref}
 \crefformat{section}{\S#2#1#3} % see manual of cleveref, section 8.2.1
 \crefformat{subsection}{\S#2#1#3}
 \crefformat{subsubsection}{\S#2#1#3}
+
+
+\renewcommand\qedsymbol{$\blacksquare$}
+
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+
+\newtheorem{innercustomgeneric}{\customgenericname}
+\providecommand{\customgenericname}{}
+
+\newcommand{\newcustomthm}[2]{%
+  \newenvironment{#1}[1]
+  {%
+   \renewcommand\customgenericname{#2}%
+   \renewcommand\theinnercustomgeneric{##1}%
+   \innercustomgeneric
+  }
+  {\endinnercustomgeneric}
+}
+
+\newcommand{\newcustomlem}[2]{%
+  \newenvironment{#1}[1]
+  {%
+   \renewcommand\customgenericname{#2}%
+   \renewcommand\theinnercustomgeneric{##1}%
+   \innercustomgeneric
+  }
+  {\endinnercustomgeneric}
+}
+
+\newcustomthm{ctmtheorem}{Theorem}
+\crefname{ctmtheorem}{Theorem}{Theorems}
+\Crefname{ctmtheorem}{Theorem}{Theorems}
+
+\newcustomlem{ctmlemma}{Lemma}
+\crefname{ctmlemma}{Lemma}{Lemmas}
+\Crefname{ctmlemma}{Lemma}{Lemmas}
+
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}
 
 \makeatletter
 
@@ -149,25 +185,24 @@
   The restricted values model resources while the unrestricted values model program objects that do not contain any resources.
   Sharing functions denote that functions share resources with its arguments,
   while separating functions denote that functions do not share resources with its arguments.
-  We show how the use of monads with sharing and separating functions helps in modeling patterns that are difficult to express in linear languages, such as
-  exception handling.
+  We show how the use of monads with sharing and separating functions helps in modeling patterns, such as exception handling,
+  that are difficult to express in linear languages.
 
-\begin{acknowledgementslong}
-  I am grateful to my parents and my brother. Their persistent support and encouragement has been a crucial part of my education and my life otherwise.
+  \begin{acknowledgementslong}
+    I am grateful to my parents and my brother. Their persistent support and encouragement has been a crucial part of my education and my life otherwise.
 
-  I am thankful to my advisor, Dr. Garrett Morris. Without his immense patience, wholesome guidance, and
-  critical insights, it would have been impossible to have reached this landmark.
+    I am thankful to my advisor, Dr. Garrett Morris. Without his immense patience, wholesome guidance, and
+    critical insights, it would have been impossible to reach this landmark.
 
-  I am appreciative of my friends, who helped me stay sane by showing me the world outside work.
+    I am appreciative of my friends, who helped me stay sane by showing me the world outside work.
 
-  And of course, those countless cups of coffee that subsisted my morale in the writing task.
-\end{acknowledgementslong}
+    And of course, those countless cups of coffee that subsisted my morale in the writing task.
+  \end{acknowledgementslong}
+
 \end{abstract}
 \tableofcontents{}
 
 \listoffigures
-
-%\listoftables
 
 \end{romanpages}
 

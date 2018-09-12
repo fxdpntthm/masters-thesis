@@ -1,7 +1,7 @@
 \chapter{Proofs}\label{chp:proofs}
-\begin{theorem}[Soundness of $\vdashs$]\label{thm:soundness-syntax-directed}
+\begin{ctmtheorem}{5.1}[Soundness of $\vdashs$]\label{thm:soundness-syntax-directed}
    If $P \mid \Gamma \vdashs M:\tau$ then $P \mid \Gamma \vdash M:\tau$
-\end{theorem}
+\end{ctmtheorem}
 \begin{proof}\label{prf:soundness-syntax-directed}
   Proof by induction on the derivation of $P \mid \Gamma \vdashs M:\tau$.
   \begin{itemize}
@@ -36,11 +36,11 @@
 \end{proof}
 
 
-\begin{theorem}[Completeness of $\vdashs$]\label{thm:completeness-syntax-directed}
+\begin{ctmtheorem}{5.2}[Completeness of $\vdashs$]\label{thm:completeness-syntax-directed}
   If $P \mid \Gamma \vdash M:\sigma$ then
   $\exists Q, \tau$ such that $Q \mid \Gamma \vdashs M:\tau$
   and $(P \mid \sigma) \sqsubseteq \texttt{Gen}(\Gamma, Q => \tau)$
-\end{theorem}
+\end{ctmtheorem}
 
 We first go over few intermediate results and definitions that will help us prove the final result.
 
@@ -163,9 +163,9 @@ We first go over few intermediate results and definitions that will help us prov
 \end{proof}
 
 
-\begin{theorem}[Soundness of $\mathcal{M}$.]\label{thm:soundness-m}
+\begin{ctmtheorem}{5.3}[Soundness of $\mathcal{M}$.]\label{thm:soundness-m}
    If $\mathcal{M}(S, \Psi, \Gamma \vdash M : \tau) = P, S', \Sigma, \Psi'$ then $S' P \mid S' \Gamma \vdash M : S' \tau$
- \end{theorem}
+ \end{ctmtheorem}
 
 We go over a few intermediate results and definitions to prove the soundness result.
 

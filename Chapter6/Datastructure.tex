@@ -1,7 +1,7 @@
 \chapter{\qub{} Extention and Datatypes}\label{chp:datatypes}
 In this chapter we describe an extension of original \qub{} type system to include kinds. \cref{sec:kind-system}
 gives an account of how this extension makes the type language generic enough to accept user defined types.
-We also discuss how we can encode sums and multiplicative and additive products in the extended system in \cref{sec:pairs-types} and
+We also discuss how we can encode sum types and multiplicative and additive product types in the extended system in \cref{sec:pairs-types} and
 how algebriac data types are more expressive due to sharing and separation in \cref{sec:type-constructors}
 
 \section{Kind System}\label{sec:kind-system}
@@ -56,16 +56,16 @@ of both the constructors would result in a kind $\kappa$.
 
 The unification of types has to be done using modified version of Robinson's algorithm\citeyearpar{robinson_machine-oriented_1965}
 is used in order to deduce the most general unifier for type constructors.
-Formally we define $S$ to be the kind preserving {\it most general unifier} for type constructors $T$ and $T'$ if:
+Formally, we define $S$ to be the kind preserving {\it most general unifier} for type constructors $T$ and $T'$ if:
 \begin{enumerate}
   \item $S$ is a unifier for $T$ and $T'$.
   \item For every unifier $S'$ of $T$ and $T'$ we can write $S$ in a form of
-    $R S$ where $R$ some kind preserving substitution.
+    $R \circ S$ where $R$ is some kind preserving substitution.
 \end{enumerate}
-We write $T \overset{S}{\sim}_{\kappa} T'$ for assertion that $S$ is the unifier
+We write $T \overset{\scalebox{0.5}{S}}{\sim}_{\scalebox{0.5}{$\kappa$}} T'$ for assertion that $S$ is the unifier
 of the constructor types $T, T' \in T^{\kappa}$. The rules in \cref{fig:unify-types}
 describe the unification algorithm for type constructors. [KVar] and [KVar'] contain
-and additional constraint of the type variable $t$ to not be free in the type constructor's $T$
+and additional constraint of the type variable $t$ to not be free in the type constructor $T$'s
 type variables to ensure the unification does not lead to infinite types. The [KApply] rule
 states that type constructors of the form $T T'$ can be unified with $H H'$ only if $T$ and $H$
 can be unified which asserts that they have to have the same kind $\kappa' \rightarrow \kappa$.
@@ -107,9 +107,10 @@ can be unified which asserts that they have to have the same kind $\kappa' \righ
 
 New terms are added in the expression language to support the new types. $\Pair{M,N}$ denotes a multipicative or separating pair with
 $\Let{\Pair{x,y}}{M}{N}$ as its deconstructor. The first component of the pair would be bound to $x$ while the second
-component will be bound to $y$. $\Pair{M;N}$ denotes an additive or sharing pair. $\Fst{M}$ and $\Snd{N}$ would denote the first
-and the second components of the pair respectively. The $\Case{M}{\texttt{inl}\ x \mapsto N ; \texttt{inr} y \mapsto N'}$ denotes pattern matching on
-the sum type, where $\Inl{x}$ and $\Inr{x}$ denotes the construction of the sum type.
+component will be bound to $y$. Both $x$ and $y$ would have to be used in the expression $N$ for the pair to be well typed.
+$\Pair{M;N}$ denotes an additive or sharing pair. $\Fst{M}$ and $\Snd{N}$ would denote the first
+and the second components of the pair respectively. The $\Case{M}{\{\Inl{x} \mapsto N ; \Inr{y} \mapsto N'\}}$ denotes pattern matching on
+the sum type, where $\Inl{x}$ and $\Inr{y}$ denotes the construction of the sum type.
 
 \begin{figure}[h]
   \begin{framed}
@@ -165,11 +166,11 @@ in \cref{subsec:sums} and illustrate that they indeed work as expected.
   \caption{Derivable Typing Rules for Multiplicative Pair}
   \label{fig:mul-pair-rules}
 \end{figure}
-Lambda encoding of muliplicative pairs is given in \cref{fig:mul-pair}. The typing rules
-are given in \cref{fig:mul-pair-rules}. We give the proofs of the typing rules in \cref{subsec:mul-pairs-deriv}.
+Lambda encoding of multiplicative pairs is given in \cref{fig:mul-pair}. The typing rules
+are given in \cref{fig:mul-pair-rules}. We give the proof of derivation of the typing rules in \cref{subsec:mul-pairs-deriv}.
 The meaning of a multiplicative pair can be thought of as
 having separate resouce entities together in the program environment context and they would have to be
-explicitly disposed off. Failure to refer both the components of the multiplicative pair, would raise a type error
+explicitly disposed off individually. Failure to refer both the components of the multiplicative pair, would raise a type error
 regarding the resources not being unrestricted.
 
 \subsection{Additive Pair}\label{subsec:add-pairs}
@@ -213,8 +214,8 @@ regarding the resources not being unrestricted.
 The lambda encoding for additive pairs is given in \cref{fig:add-pair}. The typing rules are given in \cref{fig:add-pair-rules}. We give
 proof of derivations for the rules in \cref{subsec:add-pairs-deriv}. Additive pairs can be thought of as program
 entities that have sharing resources. We use \Fst{} and \Snd{} as projection functions on the additive pair to obtain the
-constituent objects. It is worthwhile to note that we do not provide these projection functions for multiplicative pairs
-so as to restrict the programmer from implicitly discarding one of the components of the multipicative pair.
+constituent objects. Application of these projection functions on multiplicative pairs
+would result in implicitly discarding one of the components of the multipicative pair and would raise a type error.
 
 
 \subsection{Sum Type}\label{subsec:sums}

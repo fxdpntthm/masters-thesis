@@ -1,16 +1,17 @@
 \chapter{Type System and Type Inference}\label{chp:qub-type-system}
 In this chapter we describe the type system using the types and terms defined in previous
-chapter. We describe in \qub{}'s type system \cref{sec:type-system} and then describe a
+chapter. We describe \qub{}'s type system \cref{sec:type-system} and then describe a
 syntax directed type system in \cref{sec:syntax-typing-rules} and give a type inference algorithm $\M$ in \cref{sec:algorithm-m}.
-We begin this chapter with some conventions and notations that are followed throughout the thesis.
+We begin this chapter describing conventions and notations that are followed throughout the thesis.
 
 \section{Conventions and Notations}
 The vector $\vec{t}$ is a shorthand for a finite set of variables $\{t_1, t_2, \dots, t_n\}$ and  $\forall \vec{t}. P => \tau$ abbreviates
 $\forall t_1 \dots \forall t_n. P_1 => \dots => P_m => \tau$.
 $\Gamma$ denotes the type assignment. It is a list of three-tuples containg the variable, its type scheme and its sharing information.
-We write $\sigma = \Gamma(x)$ for the type scheme $\sigma$, assigned to the term x in $\Gamma$.
+We write $\sigma = \Gamma_{\sigma}(x)$ for the type scheme $\sigma$, assigned to the term x in $\Gamma$.
 \texttt{dom}($\Gamma$) is the set of identifiers in the type assignment i.e.
-\texttt{dom}($\Gamma$) = $\{ x \mid (x^{\vec{y}}:\sigma) \in \Gamma\}$.
+\texttt{dom}($\Gamma$) = $\{ x \mid (x^{\vec{y}}:\sigma) \in \Gamma\}$. $\Gamma_{\Psi}(x)$ denotes the sharing information of the
+variable $x$.
 %$\Gamma \sqcup \Delta$ is a multiset union of two type assignments $\Gamma$ and $\Delta$.
 
 \begin{defn}[Free Type Variables]
@@ -21,7 +22,7 @@ We write $\sigma = \Gamma(x)$ for the type scheme $\sigma$, assigned to the term
   $\texttt{fvs}(\sigma) = (\texttt{fvs}(\tau) \cup \texttt{fvs}(Q)) \backslash \vec{t})$
 
   \noindent$\texttt{fvs}(\Gamma)$ is the set of free type variables in the type assignment $\Gamma$.\\
-  $\texttt{fvs}(\Gamma) = \bigcup_{x \in \texttt{dom}(\Gamma)} \{ \texttt{fvs}(\Gamma(x)) \}$
+  $\texttt{fvs}(\Gamma) = \bigcup_{x \in \texttt{dom}(\Gamma)} \{ \texttt{fvs}(\Gamma_{\sigma}(x)) \}$
 \end{defn}
 
 \begin{defn}[Typing Judgment]
@@ -89,7 +90,7 @@ The weakening and contraction rules are made explicit in contrast to standard
 Hindley-Milner type system. The contraction sharing rule [CTR-SH] and weakening sharing rule [WKN-SH]
 convey that we can duplicate or drop certain pairs of type assignments as we know they are in sharing with other
 terms that remain in the context. The contraction separation rule [CTR-UN] and weakening separation rule [WKN-SH] can be
-applied to terms only if we can prove that they are of unrestricted which is captured by the antecedent predicate $\Delta$ \texttt{un}
+applied to terms only if we can prove that they are unrestricted which is captured by the antecedent predicate $\Delta$ \texttt{un}
 on the type that is dropped or duplicated.
 
 % Connective rules
@@ -184,8 +185,8 @@ rule for shared and separating resources respectively. [$\Rightarrow$I] and [$\R
 qualified types that would add constraints on the type being computed. [$\forall$I] introduces
 polymorphism and [$\forall$E] eliminates it. The $\lambda$ abstractions $\lambda^{\sepimp}  x. M$ and $\lambda^{\shimp}.M$
 would be assigned function predicates $\ShFun{\phi}$ or $\SeFun{\phi}$ only if it is more restricting that its environment.
-This is specified in the judgments $\cdot \geq \cdot$. To avoid name shadowing, we would assume that
-the binders introduce fresh names. In case of a $\lambda^{\shimp}$, the binder variable is added to the sharing information of all
+This is specified in the judgments $\cdot \geq \cdot$ shown in \cref{fig:bi-base-typing-rules}. To avoid name shadowing, we would assume that
+the binders introduce fresh variables. In case of a $\lambda^{\shimp}$, the binder variable is added to the sharing information of all
 terms present in the type assignment and in case of $\lambda^{\sepimp} $ the binder variable is skipped from
 adding it to the sharing information to imply separation of resources. For example,
 consider the term $\lambda^{\sepimp} c. \lambda^{\sepimp}  x. \lambda^{\shimp}y. c x$. The sharing graph and type assignment is shown in
@@ -314,7 +315,7 @@ we use instantiation or specialization of type variables, and [$\forall$I], [$\R
 We would add the introduced abstraction variable, $x$, into the sharing context in case of [$\shimp$I$^s$].
 We collapse the application rules [$\sepimp$E] and [$\shimp$E] into one rule [App$^s$] where we check for sharing of the used variables in both
 the expressions and then assign a predicate of $\texttt{ShFun}$ or $\texttt{SeFun}$ depending on whether the variables
-are shared or not. The \texttt{un} predicates are added to the types of the terms that are not used directly in the expression
+are shared or separating. The \texttt{un} predicates are added to the types of the terms that are not used directly in the expression
 or which are not in sharing with the terms used.
 
 \begin{figure}[h]\centering
@@ -389,16 +390,16 @@ or which are not in sharing with the terms used.
 The [Let$^s$] rule defines an expression within another expression locally i.e. x would
 not be in scope other than its use in $N$. We partition the typing context into multiple parts.
 $\Gamma$ contains the variables that exists exclusively in $M$ and $\Gamma'$ which
-are exclusively in $N$. $\Gamma''$ is common to both $M$ and $N$ while $\Delta$ is not used in either expressions $M$ or $N$.
+are exclusively in $N$. $\Gamma''$ is common to both $M$ and $N$ while $\Delta$ is separate from both $\Gamma$ and $\Gamma'$.
 Thus $\Gamma$ and $\Gamma'$ will be completely separate from each other while $\Gamma''$ would be in sharing with both $\Gamma$ and $\Gamma'$.
 $\Delta$ would be unrestricted as it is not being shared by either $M$ or $N$. The sharing of $x$ with $\Gamma$ would depend on
 whether $\Gamma$ and $\Gamma'$ are completely disjoint or empty. For the application rule [App$^s$] the type assignment $\Gamma$ would contain
 variables for $M$ and $\Gamma'$ for $N$. If they are completely separate, it would be a separating function application and $M$ would be
-assigned a type $\tau' \sepimp \tau$ else, they would have to be completely sharing and $M$ would be assigned a type $\tau' \rightarrow \tau$.
+assigned a type $\tau' \sepimp \tau$ else, they would have to be completely sharing and $M$ would be assigned a type $\tau' \shimp \tau$.
 The conditions outlined for [App$^s$] do not look as if they are syntax directed and in the cases where the type checker cannot directly infer if the
 resources used are separate or shared, the user would be expected to provide it using type annotations. $\Gamma \tightoverset{\thicksim}{\circledast} \Delta$
 is an assertion that there exists a proof either possible to find by inspecting the type assignment, or provided by the user
-that $\Gamma \circledast \Delta$ is defined. Similarly, $\Gamma \tightoverset{\thicksim}{\varoplus} \Delta$ means that $\Gamma \varoplus \Delta$ is well
+that $\Gamma \circledast \Delta$ is defined. Similarly, $\Gamma \tightoverset{\thicksim}{\varoplus} \Delta$ would mean that $\Gamma \varoplus \Delta$ is well
 defined.
 
 We now state two important theorems regarding the type system and the syntax directed type system. The proofs of both the
@@ -416,7 +417,7 @@ The soundness property captures the essence that derivations in the syntax direc
 \end{theorem}
 The completeness theorem states that we can always find predicates $Q$ and a suitable type $\tau$ for the term $M$ under the assumptions
 $\Gamma$ using syntax directed type system if the original type system asserts that the typing judgement indeed exists.
-The theorems \cref{thm:soundness-syntax-directed} and \cref{thm:completeness-syntax-directed} together provide assurance of both the systems
+The theorems \cref{thm:soundness-syntax-directed} and \cref{thm:completeness-syntax-directed} together provides an assurance of both the systems
 being equivalent.
 
 \section{Type Inference and Algorithm $\M$}\label{sec:algorithm-m}
@@ -426,20 +427,20 @@ We address three independent concerns in the type inference algorithm.
 The first being treatment of polymorphism to be same as Hindley-Milner style. The second, we introduce
 \texttt{Un} predicates for types that are unrestricted. We track this with the help of carrying a
 collection of used variables throughout the algorithm which detects whether a variable is discarded
-or used multiple types. The third being accounting for sharing of the variables.
+or used multiple types. The third, accounting for sharing of the variables.
 The complete algorithm is outlined in \cref{fig:algorithm-m}. The input to the algorithm includes the term $M$ whose
 type has to be inferred, $\tau$ is the expected type of the term, $S$ is the current substition and the
 sharing information $\Psi$. The output includes the set of new predicates $P$ that are generated,
 the new set of substitutions $S'$, the used variables $\Sigma$, and the new sharing information $\Psi'$.
-The type variables $u$ with a subscript denote fresh variables.
+The type variables $u$ with subscripts denote fresh type variables.
 
-We define some auxilary functions in \cref{fig:aux-defs} to lift predicates into the type system.
+We define some auxilary functions shown in \cref{fig:aux-defs} to lift predicates into the type system.
 $Leq(\phi, \Gamma)$ adds the predicate $\phi \geq \sigma$ for all $\sigma$ that are in $\Gamma$.
 $\texttt{Weaken}(x, \sigma, \Sigma, \Psi)$ adds the unrestricted predicate to the type $\sigma$
-if $x$ does not belong to $\Sigma$. $\texttt{Un}(\Gamma)$ adds an unrestricted
-predicate to all the types of the variables that are in the domain of $\Gamma$.
+if $x$ does not belong to used variables $\Sigma$ and is not in sharing with any used variables.
+$\texttt{Un}(\Gamma)$ adds an unrestricted predicate to all the types of the variables that are in the domain of $\Gamma$.
 $\texttt{GenI}(\Gamma, P \Rightarrow \tau)$ generalizes the qualified type to a type scheme.
-$\mathcal{C}(\Gamma, \Psi, \Sigma)$ computes the sharing information of variables in $\Gamma$
+$\mathcal{C}(\Gamma, \Psi, \Sigma)$ computes the closure of sharing information of variables in $\Gamma$
 restricted to the variables in $\Sigma$.
 
 \begin{figure}[h]
@@ -553,7 +554,7 @@ restricted to the variables in $\Sigma$.
 % Var
 The first case in algorithm $\M$ in \cref{fig:algorithm-m} describes the variable case, where we are given the variable identifier and
 the expected type. We try to unify the expected type $\tau$ with the derived type scheme
-$\nu$ from the type assignment $\Gamma$. The return values of the algorithm are
+$\upsilon$ from the type assignment $\Gamma$. The return values of the algorithm are
 a new set of predicates which are nothing but instantiated version of the predicates
 obtained from the typing scheme, the variable $x$ being used and the new
 substitution which is combination of the unification algorithms output and the original
@@ -566,7 +567,7 @@ a sharing function $\ShFun{u_1}$, where $u_1$ is a new type variable for the typ
 The second assigning the function to be less restricting than the other variables in the typing assignment $\Gamma$.
 The third, assigning an unrestricted predicate to the binding variable $x$ if it has not been used
 anywhere in the lambda body $M$, which is done by the $\texttt{Weaken}$ function and the fourth
-being the predicates generated by recursively type checking the body of the lambda expression $M$.
+being the predicates generated by type checking the body of the lambda expression $M$.
 We create sharing links for $x$ with all the variables within the typing context $\Gamma$ in updated
 $\Psi''$.
 % \*x
@@ -588,8 +589,8 @@ $\texttt{Un}(\Gamma|_{\Sigma \cap \Sigma'})$ where $\Gamma|_{\Sigma}$ means the 
 restricted to the variables in $\Sigma$.
 % Let
 In the polymorphic \texttt{let} case we first check for the type of the expression $M$ and
-ensure that the variable binding $x$ is not usd in it to avoid recursive definition which would
-lead to infinite types. We then generalize the computed type to $\sigma$ and then check the type of expression $N$
+ensure that the variable binding $x$ is not used in it to avoid recursive definition
+leading to infinite types. We then generalize the computed type to $\sigma$ and then check the type of expression $N$
 by expanding the type assignment $\Gamma$ with the variable $x$ and type scheme $\sigma$.
 
 We now state the soundness theorem for the algorithm $\M$.
@@ -603,7 +604,7 @@ This type inference algorithm is however not complete. There would be cases wher
 Algorithm $\M$ would compute only one of them and leave out the other one. Consider the type for $\lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x$.
 This term can be inferred to have two types by using algorithm $\M$.
 \begin{itemize}
-  \item $\texttt{Un}\ A \mid \emptyset \vdash \lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x: (A \sepimp A \sepimp B) \sepimp A \sepimp B$
+  \item $\{\texttt{Un}\ A\} \mid \emptyset \vdash \lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x: (A \sepimp A \sepimp B) \sepimp A \sepimp B$
   \item $\emptyset \mid \emptyset \vdash \lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x: (A \sepimp A \shimp B) \sepimp A \shimp B$.
 \end{itemize}
 
