@@ -1,0 +1,220 @@
+\section{Introduction and Motivation}\label{sec:introduction}
+% (5 mins)
+
+
+\begin{frame}
+\frametitle{Introduction and Motivation}
+\begin{itemize}
+\item Hard problem: Resource management in evolving production code
+\item Resources: Files, database connections, anything that represents a shared state in the program
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Resource Management: File Handling}
+  \begin{center}
+    \begin{itemize}
+    \item Modified File Handling API in Haskell
+    \end{itemize}
+    \begin{tabular}[h]{c}
+      \begin{haskell}
+     openFile  :: FilePath   -> IO FileHandle
+
+     closeFile :: FileHandle -> IO ()
+
+     readLine  :: FileHandle -> IO (String, FileHandle)
+
+     writeFile :: String     -> FileHandle
+                             -> IO ((), FileHandle)
+
+
+     upper     :: String     -> String
+      \end{haskell}
+    \end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Resource Management: File Handling}
+  \begin{center}
+    \begin{itemize}
+    \item File Handling
+    \end{itemize}
+    \begin{tabular}[h]{c}
+      \begin{haskell}
+        do f  <- openFile "sample.txt"
+           (s, f)  <- readLine f
+           let c = upper s
+           ((), f) <- writeLine f c
+                  .
+                  .
+                  .
+           () <- closeFile f
+      \end{haskell}
+    \end{tabular}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Resource Management: File Handling}
+  \begin{center}
+    \begin{itemize}
+    \item File Handling Gone Wrong (Part I)
+    \end{itemize}
+    \begin{tabular}[h]{c}
+    \begin{haskell}
+      do f  <- openFile "sample.txt"
+         (s, f)  <- readLine f
+         let c = upper s
+         ((), f) <- writeLine f c
+              .
+              .
+              .
+         () <- closeFile f
+              .
+              .
+              .
+         () <- closeFile f
+         return c
+    \end{haskell}
+    \end{tabular}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Resource Management: File Handling}
+  \begin{center}
+    \begin{itemize}
+    \item File Handling Gone Wrong (Part I)
+    \end{itemize}
+    \begin{tabular}[h]{c}
+    \begin{haskell}
+      do f  <- openFile "sample.txt"
+         (s, f)  <- readLine f
+         let c = upper s
+         ((), f) <- writeLine f c
+              .
+              .
+              .
+        @() <- closeFile f@
+              .
+              .
+              .
+        @() <- closeFile f@
+         return c
+    \end{haskell}
+    \end{tabular}
+    \begin{itemize}
+    \item File is closed twice: Run time crash
+    \end{itemize}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Resource Management: File Handling}
+  \begin{center}
+
+  \begin{itemize}
+  \item File Handling Gone Wrong (Part II)
+  \end{itemize}
+  \begin{tabular}[h]{c}
+    \begin{haskell}
+    do f  <- openFile "sample.txt"
+       (s, f)  <- readLine f
+       let c = upper s
+       ((), f) <- writeLine f c
+           .
+           .
+           .
+       return c
+     \end{haskell}
+  \end{tabular}
+
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Resource Management: File Handling}
+  \begin{center}
+
+  \begin{itemize}
+  \item File Handling Gone Wrong (Part II)
+  \end{itemize}
+  \begin{tabular}[h]{c}
+    \begin{haskell}
+    do f  <- openFile "sample.txt"
+       (s, f)  <- readLine f
+       let c = upper s
+       ((), f) <- writeLine f c
+           .
+           .
+           .
+       return c /*File not closed!!*/
+     \end{haskell}
+  \end{tabular}
+  \begin{itemize}
+  \item File not closed: Memory leak
+  \end{itemize}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Resource Management: Exception Handling}
+  \begin{center}
+
+  \begin{itemize}
+  \item \texttt{MonadError}\citep{liang_monad_1995} in Haskell
+  \end{itemize}
+  \begin{tabular}[h]{c}
+    \begin{haskell}
+class Monad m => MonadError e m | m -> e where
+    throwError :: e -> m a
+    catchError :: m a -> (e -> m a) -> m a
+     \end{haskell}
+  \end{tabular}
+  \begin{itemize}
+  \item \texttt{throwError} starts exception processing
+  \item \texttt{catchError} exception handler
+  \end{itemize}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Resource Management: Exception Handling}
+  \begin{center}
+
+  \begin{itemize}
+  \item \texttt{MonadError} in Haskell
+  \end{itemize}
+  \begin{tabular}[h]{c}
+    \begin{haskell}
+      do f <- openFile "sample.txt"
+         ((s, f)  <- readLine f
+         let c = upper s
+         () <- closeFile f
+         return \dollar Right c) `catchError` (\_ ->
+                             return \dollar Left "Error in reading file")
+     \end{haskell}
+  \end{tabular}
+  \begin{itemize}
+  \item Execution path for exception $\mathrightghost$ file not closed $\mathrightghost$ Memory leak
+  \end{itemize}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Introduction and Motivation}
+  % \begin{tabular}[h]{c}
+  \begin{aquote}{Robin Milner}
+      Well typed programs do not go wrong.
+  \end{aquote}
+
+    \begin{itemize}
+    \item<2-> Can we do better? Can types guide us?
+  \end{itemize}
+  %\end{tabular}
+\end{frame}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "defense-slides"
+%%% End:

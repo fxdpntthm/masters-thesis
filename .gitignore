@@ -276,6 +276,10 @@ tramp
 *.lot
 *.lof
 *.toc
+*.vrb
+*.nav
+*.toc
+*.snm
 
 # reftex files
 *.rel

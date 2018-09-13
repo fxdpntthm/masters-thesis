@@ -21,7 +21,7 @@ morekeywords=[4]{main},
 morekeywords=[6]{do, last, first, try, idtac, repeat},
 %
 % Comments delimiters, we do turn this off for the manual
-morecomment=[s]{\\*}{*\\},
+morecomment=[s]{/*}{*/},
 %
 % Spaces are not displayed as a special character
 showstringspaces=false,
@@ -58,20 +58,25 @@ columns=[l]flexible,
 identifierstyle={\ttfamily\small\color{black}},
 % Style for declaration keywords
 keywordstyle=[1]{\ttfamily\small\color{black}},
+% keywordstyle=[1]{\ttfamily\color{dkviolet}},
 % Style for gallina keywords
-keywordstyle=[2]{\ttfamily\small\color{006400}},
+keywordstyle=[2]{\ttfamily\small\color{black}},
+% keywordstyle=[2]{\ttfamily\color{dkgreen}},
 % Style for sorts keywords
 keywordstyle=[3]{\ttfamily\small\color{black}},
+% keywordstyle=[3]{\ttfamily\color{ltblue}},
 % Style for tactics keywords
 keywordstyle=[4]{\ttfamily\small\color{blue}},
+% keywordstyle=[4]{\ttfamily\color{dkblue}},
 % Style for terminators keywords
 keywordstyle=[5]{\ttfamily\small\color{red}},
+% keywordstyle=[5]{\ttfamily\color{dkred}},
 %Style for iterators
 keywordstyle=[6]{\ttfamily\color{black}},
 % Style for strings
 stringstyle=\ttfamily\small,
 % Style for comments
-commentstyle={\ttfamily\small\color[HTML]{006400}},
+commentstyle={\ttfamily\small\color{dkgreen}},
 %
 moredelim=**[is][\ttfamily\color{red}]{@}{@},
 literate=
