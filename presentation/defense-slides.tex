@@ -1,0 +1,259 @@
+\documentclass[xcolor={dvipsnames}, frame]{beamer}
+
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{MnSymbol}
+\usepackage{stmaryrd}
+
+\usepackage{bussproofs, semantic, framed}
+
+\usepackage{hyperref}
+
+\usepackage{graphicx}
+\usepackage{showframe}
+\usepackage{caption, subcaption, wrapfig}
+\usepackage{textcomp, scrextend}
+\usepackage{xcolor}
+\usepackage{babel}
+\usepackage{url}
+\usepackage{setspace}
+\usepackage{esint}
+\usepackage{natbib}
+
+%\usepackage{minted}
+\usepackage{listings}
+\usepackage{haskell}
+\usepackage{cmll}
+\usepackage{pdflscape}
+
+\usepackage{tikz}
+\usepackage{tikz-qtree}
+%\usetikzlibrary{arrows.meta}
+
+\usepackage{parskip}
+\usepackage{xspace}
+
+\usepackage[capitalize, nameinlink]{cleveref}
+\crefformat{section}{\S#2#1#3} % see manual of cleveref, section 8.2.1
+\crefformat{subsection}{\S#2#1#3}
+\crefformat{subsubsection}{\S#2#1#3}
+
+
+
+\newcommand\fnurl[2]{%
+  \href{#2}{#1}\footnote{\url{#2}}%
+}
+\usetheme{Madrid}
+
+
+\newcommand{\tightoverset}[2]{%
+  \mathop{#2}\limits^{\vbox to -.5ex{\kern-0.75ex\hbox{$#1$}\vss}}}
+
+\newcommand{\BI}{\textbf{\em BI}\xspace}
+\newcommand\sepimp{\mathrel{-\mkern-6mu*}}
+\newcommand\shimp{\twoheadrightarrow}
+
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\Unf}{\mathcal{U}}
+
+
+\newcommand{\SeFun}[1]{\texttt{SeFun}\ #1}
+\newcommand{\ShFun}[1]{\texttt{ShFun}\ #1}
+\newcommand{\Un}[1]{\texttt{Un}\ #1}
+\newcommand{\vdashs}{\vdash^s}
+\newcommand{\Gen}[1]{\texttt{Gen}(#1)}
+\newcommand{\Let}[3]{\texttt{let}\ #1 = #2\ \texttt{in}\ #3}
+\newcommand{\Case}[2]{\texttt{case}\ #1\ \texttt{of}\ #2}
+\newcommand{\Fst}[1]{\texttt{fst}\ #1}
+\newcommand{\Snd}[1]{\texttt{snd}\ #1}
+\newcommand{\Inr}[1]{\texttt{inr}\ #1}
+\newcommand{\Inl}[1]{\texttt{inl}\ #1}
+\newcommand{\Pair}[1]{\langle #1 \rangle}
+\newcommand{\qub}{QuB\xspace}
+
+
+\title{\qub{}}
+\subtitle{A Resource Aware Functional Programming Language}
+\author{Apoorv Ingle}
+\date{}
+\institute[KU]{The University of Kansas}
+% disable useless navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+% disable the section information
+% \setbeamertemplate{headline}{}
+
+\begin{document}
+\frame\titlepage
+
+\begin{frame}
+  \frametitle{Table of Contents}
+  \tableofcontents
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Introduction and Motivation}
+\section{Introduction and Motivation}\label{sec:introduction}
+
+\begin{itemize}
+\item Hard problem: Resource Management in evolving production code
+\item Resources: Files, database connections, anything that represents a shared state in the program
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Resource Management: File Handling in Haskell}
+  \begin{center}
+    \begin{itemize}
+    \item Modified File Handling API
+    \end{itemize}
+    \begin{tabular}[h]{c}
+      \begin{haskell}
+     openFile  :: FilePath   -> IO FileHandle
+
+     closeFile :: FileHandle -> IO ()
+
+     readLine  :: FileHandle -> IO (String, FileHandle)
+
+     writeFile :: String     -> FileHandle
+                             -> IO ((), FileHandle)
+      \end{haskell}
+    \end{tabular}
+\end{center}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Resource Management: File Handling in Haskell}
+  \begin{center}
+    \begin{itemize}
+    \item File Handling
+    \end{itemize}
+    \begin{tabular}[h]{c}
+      \begin{haskell}
+        do f  <- openFile "sample.txt"
+           (s, f)  <- readLine f
+           let c = caps s
+           ((), f) <- writeLine f c
+                  .
+                  .
+                  .
+           () <- closeFile f
+      \end{haskell}
+    \end{tabular}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Resource Management: File Handling in Haskell}
+  \begin{center}
+    \begin{itemize}
+    \item File Handling Gone Wrong (Part I)
+    \end{itemize}
+    \begin{tabular}[h]{c}
+    \begin{haskell}
+      do f  <- openFile "sample.txt"
+         (s, f)  <- readLine f
+         let c = upper s
+         ((), f) <- writeLine f c
+              .
+              .
+              .
+         () <- closeFile f
+              .
+              .
+              .
+         () <- closeFile f
+         return c
+    \end{haskell}
+    \end{tabular}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Resource Management: File Handling in Haskell}
+  \begin{center}
+    \begin{itemize}
+    \item File Handling Gone Wrong (Part I)
+    \end{itemize}
+    \begin{tabular}[h]{c}
+    \begin{haskell}
+      do f  <- openFile "sample.txt"
+         (s, f)  <- readLine f
+         let c = upper s
+         ((), f) <- writeLine f c
+              .
+              .
+              .
+        @() <- closeFile f@
+              .
+              .
+              .
+        @() <- closeFile f@
+         return c
+    \end{haskell}
+    \end{tabular}
+    \begin{itemize}
+    \item File is closed twice
+    \end{itemize}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Resource Management: File Handling in Haskell}
+  \begin{center}
+
+  \begin{itemize}
+  \item File Handling Gone Wrong (Part II)
+  \end{itemize}
+  \begin{tabular}[h]{c}
+    \begin{haskell}
+    do f  <- openFile "sample.txt"
+       (s, f)  <- readLine f
+       let c = upper s
+       ((), f) <- writeLine f c
+           .
+           .
+           .
+       return c
+     \end{haskell}
+  \end{tabular}
+
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Resource Management: File Handling in Haskell}
+  \begin{center}
+
+  \begin{itemize}
+  \item File Handling Gone Wrong (Part II)
+  \end{itemize}
+  \begin{tabular}[h]{c}
+    \begin{haskell}
+    do f  <- openFile "sample.txt"
+       (s, f)  <- readLine f
+       let c = upper s
+       ((), f) <- writeLine f c
+           .
+           .
+           .
+       return c /* File not closed!! */
+     \end{haskell}
+  \end{tabular}
+  \begin{itemize}
+  \item File not closed before function returns
+  \end{itemize}
+  \end{center}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{References}
+\global\long\def\bibname{References}
+\bibliographystyle{plain}
+\bibliography{../Biblio/allcites}
+\end{frame}
+\end{document}
