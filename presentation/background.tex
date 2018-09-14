@@ -1,79 +1,26 @@
 \section{Background Work}\label{sec:background}
 % (10 mins)
+
 \begin{frame}[c]
   \frametitle{Background Work: Simply Typed Lambda Calculus (STLC)}
   \begin{center}
-    \fbox{Types and Typing Context}
-    \begin{flalign*}
-    t, u &\in \text{Type Variables}\\
-    \text{Types}\ \ \  \tau, \upsilon &::= t \mid \iota \mid \tau \rightarrow \tau\\
-    \text{Typing Scheme}\ \ \  \sigma &::= \tau \mid \forall t. \tau\\
-    \text{Typing Context}\ \ \ \Gamma &::= \epsilon \mid \Gamma, x:\sigma
-    \end{flalign*}
-    \fbox{Language}
-    \begin{flalign*}
-      \text{Expressions}\ \ \ M, N &::= x\\
-      &\mid \lambda x. M \mid M N\\
-      &\mid \Let{x}{M}{N}
-       \end{flalign*}
-     \end{center}
-\end{frame}
-
-\begin{frame}[c]
-  \frametitle{Background Work: Hindley-Milner Type System}
-  \begin{center}
-  Hindley-Milner (\HM{}) type system\\
-  Type inferencing and Type checking:\\
-  \begin{itemize}
-  \item Algorithm $\M{}$\citep{damas_principal_1982}\\
-  \item Algorithm $\W{}$\citep{lee_proofs_1998}\\
-\end{itemize}
-  Type unification:\\
-  \begin{itemize}
-  \item Robinson's Algorithm $\Unf{}$\citep{robinson_machine-oriented_1965}
-\end{itemize}
-\end{center}
-\end{frame}
-
-
-\begin{frame}
-  \frametitle{Background Work: Typing Rules STLC}
-  \begin{center}
-    {\small
-    \begin{figure}[h]
-        % var
-        \begin{minipage}{.5\textwidth}
-          \begin{prooftree}
-            \AxiomC{$x: \sigma \in \Gamma$} \RightLabel{[VAR]}
-            \UnaryInfC{$\Gamma \vdash x : \sigma $}
-          \end{prooftree}
-        \end{minipage}\hfill%
-        % let
-        \begin{minipage}{.5\textwidth}
-          \begin{prooftree}
-            \AxiomC{$\Gamma \vdash M : \sigma$}
-            \AxiomC{$\Gamma_{x}, x: \sigma \vdash N: \tau$} \RightLabel{[LET]}
-            \BinaryInfC{$\Gamma \vdash (\Let{x}{M}{N}) : \tau$}
-          \end{prooftree}
-        \end{minipage}
-
-        % forall I
-        \begin{minipage}{0.5\textwidth}
-          \begin{prooftree}
-            \AxiomC{$\Gamma \vdash M : \sigma$}\RightLabel{[$\forall$ I]}
-            \AxiomC{$t \notin \texttt{fvs}(\Gamma)$}
-            \BinaryInfC{$\Gamma \vdash M : \forall t. \sigma$}
-          \end{prooftree}
-        \end{minipage}\hfill%
-        % forall E
-        \begin{minipage}{0.5\textwidth}
-          \begin{prooftree}
-            \AxiomC{$\Gamma \vdash M : \sigma$}
-            \AxiomC{$(\sigma' \sqsubseteq \sigma)$}\RightLabel{[$\forall$ E]}
-            \BinaryInfC{$\Gamma \vdash M : \sigma'$}
-          \end{prooftree}
-        \end{minipage}
-
+    \uncover<+->{
+      \begin{flalign*}
+        \lambda x. M
+        &\begin{cases}
+          \text{Abstract over computation}\\
+          \text{Define functions}
+        \end{cases}\\
+        M N
+        &\begin{cases}
+          \text{Do the computation}\\
+          \text{Use functions}
+        \end{cases}
+      \end{flalign*}
+    }\vspace{1cm}
+    \uncover<+-> {
+      \begin{figure}[h]
+        \centering
         % -> I
         \begin{minipage}{0.5\textwidth}
           \begin{prooftree}
@@ -89,73 +36,170 @@
             \BinaryInfC{$\Gamma \vdash M N : \tau'$}
           \end{prooftree}
         \end{minipage}
-    \end{figure}
+      \end{figure}
+    }\vspace{1cm}
+    \uncover<+->{
+      Hinley-Milner (\HM{}) type system ensures sane programs
     }
   \end{center}
 \end{frame}
 
-\begin{frame}
-  \frametitle{Background Work: Algorithm $\W{}$}
-  \begin{center}
-  \begin{figure}[h]
-    \centering
-    {\small
-      \fbox{$\M(\Gamma \vdash M:\tau) = S$}\\
-      % VAR
-      \begin{minipage}{0.45\linewidth}
-        \begin{flalign*}
-            \M(\Gamma \vdash &x:\tau)  = \mathcal{U}(\tau, [\vec{u}/\vec{t}]\upsilon)\\
-            &\text{where\qquad}\  \forall \vec{t}. \upsilon = \Gamma(x)
-        \end{flalign*}
-      \end{minipage}\hfill%
-      % \x. M
-      \begin{minipage}{0.50\linewidth}
-        \begin{flalign*}
-          \M(\Gamma \vdash &\lambda x. M:\tau) = S  \circ S' \\
-            \text{where\qquad}\ S  &= \mathcal{U}(\tau, u_1 \rightarrow u_2)\\
-            S'  &= \M(S \Gamma, x: S  u_1 \vdash M : S u_2)
-          \end{flalign*}
-      \end{minipage}
+% \begin{frame}[c]
+%   \frametitle{Background Work: Simply Typed Lambda Calculus (STLC)}
+%   \begin{center}
+%     \fbox{Types and Typing Context}
+%     \begin{flalign*}
+%     t, u &\in \text{Type Variables}\\
+%     \text{Types}\ \ \  \tau, \upsilon &::= t \mid \iota \mid \tau \rightarrow \tau\\
+%     \text{Typing Scheme}\ \ \  \sigma &::= \tau \mid \forall t. \tau\\
+%     \text{Typing Context}\ \ \ \Gamma &::= \epsilon \mid \Gamma, x:\sigma
+%     \end{flalign*}
+%     \fbox{Language}
+%     \begin{flalign*}
+%       \text{Expressions}\ \ \ M, N &::= x\\
+%       &\mid \lambda x. M \mid M N\\
+%       &\mid \Let{x}{M}{N}
+%        \end{flalign*}
+%      \end{center}
+% \end{frame}
 
-      % M N
-      \begin{minipage}{0.45\linewidth}
-        \begin{flalign*}
-          \M(\Gamma \vdash &M N:\tau)  = S  \circ S' \\
-          \text{where\qquad}\ S  &= \M(\Gamma \vdash M: u \rightarrow \tau)\\
-          S'  &= \M(S  \Gamma \vdash N: S u)
-        \end{flalign*}
-      \end{minipage}\hfill%
-      % let x = M in N
-      \begin{minipage}{0.50\linewidth}
-        \begin{flalign*}
-          \M(\Gamma \vdash (&\Let{x}{M}{N}):\tau) = S  \circ S' \\
-          \text{where\qquad}\ S  &= \M(\Gamma \vdash M: u)\\
-                              \sigma &= \texttt{Gen}(S \Gamma, S u)\\
-                              S' &= \M(S \Gamma, x:\sigma \vdash N:\tau)\\
-        \end{flalign*}
-      \end{minipage}
+% \begin{frame}[c]
+%   \frametitle{Background Work: Hindley-Milner Type System}
+%   \begin{center}
+%   Hindley-Milner (\HM{}) type system\\
+%   Type inferencing and Type checking:\\
+%   \begin{itemize}
+%   \item Algorithm $\M{}$\citep{damas_principal_1982}\\
+%   \item Algorithm $\W{}$\citep{lee_proofs_1998}\\
+% \end{itemize}
+%   Type unification:\\
+%   \begin{itemize}
+%   \item Robinson's Algorithm $\Unf{}$\citep{robinson_machine-oriented_1965}
+% \end{itemize}
+% \end{center}
+% \end{frame}
 
-      % \fbox{Auxiliary Definitions}
 
-      % \begin{minipage}{0.45\linewidth}
-      %   \begin{flalign*}
-      %     \texttt{Gen}(\Gamma, \tau) &= \forall \vec{t}. \tau\\
-      %     \text{where\qquad}\ \vec{t} &= \texttt{fvs}(\tau)\backslash\texttt{fvs}(\Gamma)
-      %   \end{flalign*}
-      % \end{minipage}%
-      % \begin{minipage}{0.45\linewidth}
-      %   \begin{flalign*}
-      %     \texttt{fvs}(t) &= \{t\}\\
-      %     \texttt{fvs}(\forall \vec{t}. \tau) &= \texttt{fvs}(\tau) \backslash \vec{t}\\
-      %     \texttt{fvs}(\Gamma) &= \bigcup_{\forall (x:\sigma) \in \Gamma} \texttt{fvs}(\sigma)
-      %   \end{flalign*}
-      % \end{minipage}
+% \begin{frame}
+%   \frametitle{Background Work: Typing Rules STLC}
+%   \begin{center}
+%     {\small
+%     \begin{figure}[h]
+%         % var
+%         \begin{minipage}{.5\textwidth}
+%           \begin{prooftree}
+%             \AxiomC{$x: \sigma \in \Gamma$} \RightLabel{[VAR]}
+%             \UnaryInfC{$\Gamma \vdash x : \sigma $}
+%           \end{prooftree}
+%         \end{minipage}\hfill%
+%         % let
+%         \begin{minipage}{.5\textwidth}
+%           \begin{prooftree}
+%             \AxiomC{$\Gamma \vdash M : \sigma$}
+%             \AxiomC{$\Gamma_{x}, x: \sigma \vdash N: \tau$} \RightLabel{[LET]}
+%             \BinaryInfC{$\Gamma \vdash (\Let{x}{M}{N}) : \tau$}
+%           \end{prooftree}
+%         \end{minipage}
 
-    }
-  \label{fig:hm-algo-m}
-\end{figure}
-\end{center}
-\end{frame}
+%         % forall I
+%         \begin{minipage}{0.5\textwidth}
+%           \begin{prooftree}
+%             \AxiomC{$\Gamma \vdash M : \sigma$}\RightLabel{[$\forall$ I]}
+%             \AxiomC{$t \notin \texttt{fvs}(\Gamma)$}
+%             \BinaryInfC{$\Gamma \vdash M : \forall t. \sigma$}
+%           \end{prooftree}
+%         \end{minipage}\hfill%
+%         % forall E
+%         \begin{minipage}{0.5\textwidth}
+%           \begin{prooftree}
+%             \AxiomC{$\Gamma \vdash M : \sigma$}
+%             \AxiomC{$(\sigma' \sqsubseteq \sigma)$}\RightLabel{[$\forall$ E]}
+%             \BinaryInfC{$\Gamma \vdash M : \sigma'$}
+%           \end{prooftree}
+%         \end{minipage}
+
+%         % -> I
+%         \begin{minipage}{0.5\textwidth}
+%           \begin{prooftree}
+%             \AxiomC{$\Gamma_{x}, x: \tau \vdash M : \tau'$} \RightLabel{[$\rightarrow$ I]}
+%             \UnaryInfC{$\Gamma \vdash \lambda x. M : \tau \rightarrow \tau'$}
+%           \end{prooftree}
+%         \end{minipage}\hfill%
+%         % -> E
+%         \begin{minipage}{0.5\textwidth}
+%           \begin{prooftree}
+%             \AxiomC{$\Gamma \vdash M : \tau \rightarrow \tau'$}
+%             \AxiomC{$\Gamma \vdash N : \tau$} \RightLabel{[$\rightarrow$ E]}
+%             \BinaryInfC{$\Gamma \vdash M N : \tau'$}
+%           \end{prooftree}
+%         \end{minipage}
+%     \end{figure}
+%     }
+%   \end{center}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Background Work: Algorithm $\M{}$}
+%   \begin{center}
+%   \begin{figure}[h]
+%     \centering
+%     {\small
+%       \fbox{$\M(\Gamma \vdash M:\tau) = S$}\\
+%       % VAR
+%       \begin{minipage}{0.45\linewidth}
+%         \begin{flalign*}
+%             \M(\Gamma \vdash &x:\tau)  = \mathcal{U}(\tau, [\vec{u}/\vec{t}]\upsilon)\\
+%             &\text{where\qquad}\  \forall \vec{t}. \upsilon = \Gamma(x)
+%         \end{flalign*}
+%       \end{minipage}\hfill%
+%       % \x. M
+%       \begin{minipage}{0.50\linewidth}
+%         \begin{flalign*}
+%           \M(\Gamma \vdash &\lambda x. M:\tau) = S  \circ S' \\
+%             \text{where\qquad}\ S  &= \mathcal{U}(\tau, u_1 \rightarrow u_2)\\
+%             S'  &= \M(S \Gamma, x: S  u_1 \vdash M : S u_2)
+%           \end{flalign*}
+%       \end{minipage}
+
+%       % M N
+%       \begin{minipage}{0.45\linewidth}
+%         \begin{flalign*}
+%           \M(\Gamma \vdash &M N:\tau)  = S  \circ S' \\
+%           \text{where\qquad}\ S  &= \M(\Gamma \vdash M: u \rightarrow \tau)\\
+%           S'  &= \M(S  \Gamma \vdash N: S u)
+%         \end{flalign*}
+%       \end{minipage}\hfill%
+%       % let x = M in N
+%       \begin{minipage}{0.50\linewidth}
+%         \begin{flalign*}
+%           \M(\Gamma \vdash (&\Let{x}{M}{N}):\tau) = S  \circ S' \\
+%           \text{where\qquad}\ S  &= \M(\Gamma \vdash M: u)\\
+%                               \sigma &= \texttt{Gen}(S \Gamma, S u)\\
+%                               S' &= \M(S \Gamma, x:\sigma \vdash N:\tau)\\
+%         \end{flalign*}
+%       \end{minipage}
+
+%       % \fbox{Auxiliary Definitions}
+
+%       % \begin{minipage}{0.45\linewidth}
+%       %   \begin{flalign*}
+%       %     \texttt{Gen}(\Gamma, \tau) &= \forall \vec{t}. \tau\\
+%       %     \text{where\qquad}\ \vec{t} &= \texttt{fvs}(\tau)\backslash\texttt{fvs}(\Gamma)
+%       %   \end{flalign*}
+%       % \end{minipage}%
+%       % \begin{minipage}{0.45\linewidth}
+%       %   \begin{flalign*}
+%       %     \texttt{fvs}(t) &= \{t\}\\
+%       %     \texttt{fvs}(\forall \vec{t}. \tau) &= \texttt{fvs}(\tau) \backslash \vec{t}\\
+%       %     \texttt{fvs}(\Gamma) &= \bigcup_{\forall (x:\sigma) \in \Gamma} \texttt{fvs}(\sigma)
+%       %   \end{flalign*}
+%       % \end{minipage}
+
+%     }
+%   \label{fig:hm-algo-m}
+% \end{figure}
+% \end{center}
+% \end{frame}
 
 
 \begin{frame}[c]
@@ -174,71 +218,55 @@
 
 \begin{frame}[c]
   \frametitle{Background Work: Second Order Propositional Logic}
+  \begin{center}
     Language:
-    \begin{center}
-  \begin{flalign*}
-    \text{Propostions \& connectives}\quad A, B, C &::= x \mid A \supset B \mid \forall x. B \mid ... \\
-    \text{Context}\quad \Gamma,\Delta &::= \epsilon \mid \Gamma, A
-  \end{flalign*}
-\end{center}
-Logic Rules:
-\begin{center}
-\begin{figure}[h]\centering
-    % ID
-    \begin{minipage}{0.20\linewidth}
-      \begin{prooftree}
-        \AxiomC{${\color{white}A \Gamma A}$}\RightLabel{[Ax]}
-        \UnaryInfC{$A \vdash A $}
-      \end{prooftree}
-    \end{minipage}%
-    % % WKN
-    % \begin{minipage}{0.33\linewidth}
-    %   \begin{prooftree}
-    %     \AxiomC{$\Gamma \vdash B$}\RightLabel{[WKN]}
-    %     \UnaryInfC{$\Gamma, A \vdash B$}
-    %   \end{prooftree}
-    % \end{minipage}%
-    % % CTR
-    % \begin{minipage}{0.33\linewidth}
-    %   \begin{prooftree}
-    %     \AxiomC{$\Gamma, A, A \vdash B$}\RightLabel{[CTR]}
-    %     \UnaryInfC{$\Gamma, A \vdash B $}
-    %   \end{prooftree}
-    % \end{minipage}
+    \begin{flalign*}
+      \text{Propostions \& connectives}\quad A, B, C &::= x \mid A \supset B \mid \forall x. B \mid ... \\
+      \text{Context}\quad \Gamma,\Delta &::= \epsilon \mid \Gamma, A
+    \end{flalign*}
+    Logic Rules:
+    \begin{figure}[h]\centering
+      % ID
+      \begin{minipage}{0.20\linewidth}
+        \begin{prooftree}
+          \AxiomC{${\color{white}A \Gamma A}$}\RightLabel{[Ax]}
+          \UnaryInfC{$A \vdash A $}
+        \end{prooftree}
+      \end{minipage}
 
-    % \forall I
-    \begin{minipage}{0.5\linewidth}
-      \begin{prooftree}
-        \AxiomC{$\Gamma \vdash B$}
-        \AxiomC{$x \notin \Gamma$}\RightLabel{[$\forall$I]}
-        \BinaryInfC{$\forall x. B$}
-      \end{prooftree}
-    \end{minipage}\hfill%
-    % \forall E
-    \begin{minipage}{0.5\linewidth}
-      \begin{prooftree}
-        \AxiomC{$\Gamma \vdash \forall x. B$}
-        \AxiomC{$\Gamma \vdash A$}\RightLabel{[$\forall$E]}
-        \BinaryInfC{$B[x/A]$}
-      \end{prooftree}
-    \end{minipage}
+      % \forall I
+      \begin{minipage}{0.5\linewidth}
+        \begin{prooftree}
+          \AxiomC{$\Gamma \vdash B$}
+          \AxiomC{$x \notin \Gamma$}\RightLabel{[$\forall$I]}
+          \BinaryInfC{$\forall x. B$}
+        \end{prooftree}
+      \end{minipage}\hfill%
+      % \forall E
+      \begin{minipage}{0.5\linewidth}
+        \begin{prooftree}
+          \AxiomC{$\Gamma \vdash \forall x. B$}
+          \AxiomC{$\Gamma \vdash A$}\RightLabel{[$\forall$E]}
+          \BinaryInfC{$B[x/A]$}
+        \end{prooftree}
+      \end{minipage}
 
-    % -> I
-    \begin{minipage}{0.5\linewidth}
-      \begin{prooftree}
-        \AxiomC{$\Gamma,A \vdash B$}\RightLabel{[$\supset$I]}
-        \UnaryInfC{$\Gamma \vdash A \supset B$}
-      \end{prooftree}
-    \end{minipage}\hfill%
-    % -> E
-    \begin{minipage}{0.5\linewidth}
-      \begin{prooftree}
-        \AxiomC{$\Gamma \vdash A \supset B$}
-        \AxiomC{$\Gamma \vdash A$}\RightLabel{[$\supset$E]}
-        \BinaryInfC{$\Gamma \vdash B $}
-      \end{prooftree}
-    \end{minipage}
-\end{figure}
+      % -> I
+      \begin{minipage}{0.5\linewidth}
+        \begin{prooftree}
+          \AxiomC{$\Gamma,A \vdash B$}\RightLabel{[$\supset$I]}
+          \UnaryInfC{$\Gamma \vdash A \supset B$}
+        \end{prooftree}
+      \end{minipage}\hfill%
+      % -> E
+      \begin{minipage}{0.5\linewidth}
+        \begin{prooftree}
+          \AxiomC{$\Gamma \vdash A \supset B$}
+          \AxiomC{$\Gamma \vdash A$}\RightLabel{[$\supset$E]}
+          \BinaryInfC{$\Gamma \vdash B $}
+        \end{prooftree}
+      \end{minipage}
+    \end{figure}
   \end{center}
 \end{frame}
 

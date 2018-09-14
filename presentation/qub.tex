@@ -430,11 +430,147 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{\qub{}: Algorithm $\W{}$}
+  \frametitle{\qub{}: Soundess and Completeness of $\vdashs$}
   \begin{center}
+    \begin{theorem}[Soundness of $\vdash^s$]
+      If $P \mid \Gamma \vdash^s M:\tau$ then $P \mid \Gamma \vdash M : \tau$
+    \end{theorem}
+
+    \begin{theorem}[Completeness of $\vdashs$]
+      If $P \mid \Gamma \vdash M:\sigma$ then
+      $\exists Q, \tau$ such that $Q \mid \Gamma \vdashs M:\tau$
+      and $(P \mid \sigma) \sqsubseteq \texttt{Gen}(\Gamma, Q \Rightarrow \tau)$
+    \end{theorem}
+
+    {\small
+      \fbox{Original Type System} $\equiv$ \fbox{Syntax Directed Typing Rules}
+
+      \fbox{Proof in Original Type System} $\equiv$ \fbox{Proof in Syntax Directed Typing Rules}
+    }
+
   \end{center}
 \end{frame}
 
+
+\begin{frame}
+  \frametitle{\qub{}: Algorithm $\M{}$}
+  \begin{center}
+    \begin{figure}[h]
+    {\small
+      \begin{minipage}[ht]{1\linewidth}
+        \centering
+        \fbox{
+          $\M(S, \Psi, \Gamma \vdash M : \tau) = P, S', \Sigma, \Psi'$
+        }
+      \end{minipage}
+      % x var
+      \begin{minipage}{1\linewidth}
+        \begin{flalign*}
+          \M(S, \Psi, \Gamma \vdash x : \tau) &= ([\vec{u} / \vec{t}]P), S' \circ S, \{x\}, \Psi \\
+          \text{where\qquad}\ (x : \forall \vec{t}. P \Rightarrow \upsilon) &\in S \Gamma \\
+          S' &= \Unf([\vec{u} / \vec{t}]\upsilon, S \tau)
+        \end{flalign*}
+      \end{minipage}
+
+      % \&x. M: t
+      \begin{minipage}{1\linewidth}
+        \begin{flalign*}
+          \M(S, \Psi, \Gamma \vdash \lambda^{\shimp} x. M : \tau) &= \{P \cup Q \}, S', \Sigma \backslash x, \Psi''  \\
+          \text{where\qquad}\ P; S'; \Sigma; \Psi' &= \M(\Unf(\tau, u_1 u_2 u_3) \circ S, \Psi, \Gamma, x:u_2 \vdash M: u_3) \\
+          \Psi'' &= \{\forall_{y \in \texttt{dom}(\Psi')}. \Psi'(y) + x\} \cup \{(x, \{ y \mid y \in \texttt{dom}(\Gamma) \})\}\\
+          Q &= \{\ShFun{u_1}\} \cup \texttt{Leq}(u_1, \Gamma|_{\Sigma}) \cup \texttt{Weaken}(x, u_2, \Sigma, \Psi'')
+        \end{flalign*}
+      \end{minipage}
+
+      % \*x. M: t
+      \begin{minipage}{1\linewidth}
+        \begin{flalign*}
+          \M(S, \Psi, \Gamma \vdash \lambda^{\sepimp}  x. M : \tau) &= \{ P \cup Q \}, S', \Sigma \backslash x, \Psi''\\
+          \text{where\qquad}\ P; S'; \Sigma; \Psi' &= \M(\Unf(\tau, u_1 u_2 u_3) \circ S, X; \Gamma, x:u_2 \vdash M: u_3) \\
+          \Psi'' &= \Psi' \cup \{(x, \{ x \})\}\\
+          Q &= \{\SeFun{u_1}\} \cup \texttt{Leq}(u_1, \Gamma\mid_{\Sigma}) \cup \texttt{Weaken}(x, u_2, \Sigma, \Psi'')
+        \end{flalign*}
+      \end{minipage}
+
+      % M N: t
+      \begin{minipage}{1\linewidth}
+        \begin{flalign*}
+          \M(S, \Psi, \Gamma \vdash M N : \tau) &= \{ P \cup P' \cup Q \}, R', \Sigma \cup \Sigma', \Psi'' \\
+          \text{where\qquad}\ P; R; \Sigma; \Psi' &= \M(S, \Psi, \Gamma \vdash M:  u_1 u_2 \tau) \\
+          P'; R'; \Sigma'; \Psi'' &= \M(S R, \Psi', S \Gamma \vdash N: u_2)\\
+          \text{if}\ \mathcal{C}(\Gamma, \Psi'', \Sigma) &= \mathcal{C}(\Gamma, \Psi'', \Sigma')\\
+          \text{then}\ Q &= \{\ShFun{u_1}\} \\
+          \text{else}\ \text{if}\ &(\Sigma \# \mathcal{C}(R\Gamma, \Psi'', \Sigma')\ \text{and}\ \Sigma' \# \mathcal{C}(R\Gamma, \Psi'', \Sigma))\\
+          &\text{then}\ Q = \{\SeFun{u_1}\}
+          %\text{else}\ Q &= \{\SeFun{u_1}\} \cup \text{Un}(\Gamma|_{\Sigma \cap \Sigma'})
+        \end{flalign*}
+      \end{minipage}
+
+      % let x = M in N: t
+      \begin{minipage}{1\linewidth}
+        \begin{flalign*}
+          \M(S, \Psi, \Gamma \vdash \Let{x}{M}{N} : \tau) &= (P \cup Q), R', \Sigma \cup \{\Sigma' \backslash x \}, \Psi'' \\
+          \text{where\qquad}\ P; R; \Sigma; \Psi' &= \M(S, \Psi, \Gamma \vdash M:u_1)  \\
+          \sigma &= \texttt{GenI}(R\Gamma; R(P \Rightarrow u_1)) \\
+          P'; R'; \Sigma'; \Psi'' &= \M(R, \Psi', \Gamma, x:\sigma \vdash N : \tau) \\
+          Q &= \texttt{Un}(\Gamma|_{\Sigma \cap \Sigma'}) \cup \texttt{Weaken}(x, \sigma, \Sigma', \Psi'')
+        \end{flalign*}
+      \end{minipage}
+    }
+\end{figure}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{\qub{}: Algorithm $\M{}$}
+  \begin{center}
+    \begin{figure}[h]
+    {\small
+      \begin{minipage}[ht]{1\linewidth}
+        \centering
+        \fbox{
+          $\M(S, \Psi, \Gamma \vdash M : \tau) = P, S', \Sigma, \Psi'$
+        }
+      \end{minipage}
+      % M N: t
+      \begin{minipage}{1\linewidth}
+        \begin{flalign*}
+          \M(S, \Psi, \Gamma \vdash M N : \tau) &= \{ P \cup P' \cup Q \}, R', \Sigma \cup \Sigma', \Psi'' \\
+          \text{where\qquad}\ P; R; \Sigma; \Psi' &= \M(S, \Psi, \Gamma \vdash M:  u_1 u_2 \tau) \\
+          P'; R'; \Sigma'; \Psi'' &= \M(S R, \Psi', S \Gamma \vdash N: u_2)\\
+          \text{if}\ \mathcal{C}(\Gamma, \Psi'', \Sigma) &= \mathcal{C}(\Gamma, \Psi'', \Sigma')\\
+          \text{then}\ Q &= \{\ShFun{u_1}\} \\
+          \text{else}\ \text{if}\ &(\Sigma \# \mathcal{C}(R\Gamma, \Psi'', \Sigma')\ \text{and}\ \Sigma' \# \mathcal{C}(R\Gamma, \Psi'', \Sigma))\\
+          &\text{then}\ Q = \{\SeFun{u_1}\}
+          %\text{else}\ Q &= \{\SeFun{u_1}\} \cup \text{Un}(\Gamma|_{\Sigma \cap \Sigma'})
+        \end{flalign*}
+      \end{minipage}
+
+      % let x = M in N: t
+      \begin{minipage}{1\linewidth}
+        \begin{flalign*}
+          \M(S, \Psi, \Gamma \vdash \Let{x}{M}{N} : \tau) &= (P \cup Q), R', \Sigma \cup \{\Sigma' \backslash x \}, \Psi'' \\
+          \text{where\qquad}\ P; R; \Sigma; \Psi' &= \M(S, \Psi, \Gamma \vdash M:u_1)  \\
+          \sigma &= \texttt{GenI}(R\Gamma; R(P \Rightarrow u_1)) \\
+          P'; R'; \Sigma'; \Psi'' &= \M(R, \Psi', \Gamma, x:\sigma \vdash N : \tau) \\
+          Q &= \texttt{Un}(\Gamma|_{\Sigma \cap \Sigma'}) \cup \texttt{Weaken}(x, \sigma, \Sigma', \Psi'')
+        \end{flalign*}
+      \end{minipage}
+    }
+\end{figure}
+  \end{center}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{\qub{}: Soundess of Algorithm $\M$}
+  \begin{center}
+\begin{theorem}[Soundness of $\M$]
+  if $\M(S, \Psi, \Gamma \vdash M : \tau) = P, S', \Sigma, \Psi'$ then $S' P \mid S' (\Gamma |_\Sigma ) \vdash M : S' \tau$
+\end{theorem}
+  \fbox{Algorithm M} $\rightarrow$ \fbox{Type system}
+  \end{center}
+\end{frame}
 
 
 
@@ -443,8 +579,8 @@
 %%% TeX-master: "defense-slides"
 %%% End:
 
-\begin{frame}
-  \frametitle{\qub{}}
-  \begin{center}
-  \end{center}
-\end{frame}
+% \begin{frame}
+%   \frametitle{\qub{}}
+%   \begin{center}
+%   \end{center}
+% \end{frame}

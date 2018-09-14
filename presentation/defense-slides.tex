@@ -1,4 +1,4 @@
-\documentclass[xcolor={dvipsnames}, frame]{beamer}
+\documentclass[xcolor={dvipsnames}]{beamer}
 
 \usepackage{amsmath}
 \usepackage{amsthm}
@@ -11,10 +11,11 @@
 \usepackage{hyperref}
 
 \usepackage{graphicx}
-\usepackage{showframe}
+% for showing frames while development
+%\usepackage{showframe}
 \usepackage{caption, subcaption, wrapfig}
 \usepackage{textcomp, scrextend}
-\usepackage{xcolor}
+%\usepackage{xcolor}
 \usepackage{babel}
 \usepackage{url}
 \usepackage{setspace}
@@ -42,15 +43,14 @@
 
 \usepackage[style=british]{csquotes}
 
-\def\signed #1{{\leavevmode\unskip\nobreak\hfil\penalty50\hskip1em
-  \hbox{}\nobreak\hfill #1%
+\def\signed #1{{\leavevmode\unskip\nobreak\hfil\penalty50\hskip2em
+  \hbox{}\nobreak\hfil--- #1%
   \parfillskip=0pt \finalhyphendemerits=0 \endgraf}}
 
 \newsavebox\mybox
 \newenvironment{aquote}[1]
-  {\savebox\mybox{#1}\begin{quote}\openautoquote\hspace*{-.7ex}}
-  {\unskip\closeautoquote\vspace*{1mm}\signed{\usebox\mybox}\end{quote}}
-
+  {\savebox\mybox{#1}\begin{quote}}
+  {\signed{\usebox\mybox}\end{quote}}
 
 
 \usepackage[capitalize, nameinlink]{cleveref}
@@ -59,11 +59,10 @@
 \crefformat{subsubsection}{\S#2#1#3}
 
 
-
 \newcommand\fnurl[2]{%
   \href{#2}{#1}\footnote{\url{#2}}%
 }
-\usetheme{Madrid}
+\mode<presentation>{\usetheme{Madrid}}
 
 
 \newcommand{\tightoverset}[2]{%
@@ -93,6 +92,7 @@
 \newcommand{\qub}{QuB\xspace}
 
 \usepackage{halloweenmath}
+\usepackage[normalem]{ulem}
 
 \title{\qub{}}
 \subtitle{A Resource Aware Functional Programming Language}
@@ -133,11 +133,16 @@
 % 2 mins
 \include{conclusion}
 
-% \begin{frame}[allowframebreaks]
-%   \frametitle{References}
-%   \global\long\def\bibname{References}
-%   \bibliographystyle{plain}
-%   \bibliography{../Biblio/allcites}
-% \end{frame}
+\begin{frame}[allowframebreaks]
+  \frametitle{References}
+  \global\long\def\bibname{References}
+  \bibliographystyle{plain}
+  \bibliography{../Biblio/allcites}
+\end{frame}
 
 \end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

@@ -1,29 +1,65 @@
-\section{Examples}\label{sec:examples}
+\section{Examples And Extenstions}\label{sec:examples}
 
 \begin{frame}
-  \frametitle{Multiplicative Products}
-  
+  \frametitle{Examples: Basic Structures}
+  \begin{itemize}
+  \item Multiplicative Product
+      \begin{flalign*}
+      \tau \otimes \tau' &= \tau \sepimp \tau' \sepimp (\tau \sepimp \tau' \sepimp \upsilon) \sepimp \upsilon\\
+      (,) &= \lambda^{\sepimp}  x. \lambda^{\sepimp}  y. \lambda^{\sepimp}  f. f x y
+    \end{flalign*}
+  \item Additive Product
+    \begin{flalign*}
+      \tau \with \tau' &= \tau \sepimp \tau' \shimp (\tau \sepimp \tau' \shimp \upsilon) \shimp \upsilon\\
+      (;) &= \lambda^{\sepimp}  x. \lambda^{\shimp} y. \lambda^{\shimp} f. f x y
+    \end{flalign*}
+  \item Sums
+    \begin{flalign*}
+      \tau \oplus \tau' &= (\tau \rightarrow \upsilon) \rightarrow (\tau' \rightarrow \upsilon) \rightarrow \upsilon\\
+      \texttt{case}\ {c}\ \texttt{of}\ {\{ f;g \}} &= \lambda^{\sepimp}c. \lambda^{\shimp}f. \lambda^{\shimp}g. c f g
+    \end{flalign*}
+    \begin{minipage}[h]{0.45\linewidth}
+      \begin{flalign*}
+        \Inl{} &: \tau \sepimp (\tau \oplus \tau')\\
+        \Inl{} &= \lambda^{\sepimp} x. \lambda^{\shimp} f. \lambda^{\shimp} g. f x
+      \end{flalign*}
+    \end{minipage}%
+    \begin{minipage}[h]{0.45\linewidth}
+      \begin{flalign*}
+        \Inr{} &: \tau' \sepimp (\tau \oplus \tau')\\
+        \Inr{} &= \lambda^{\sepimp} y. \lambda^{\shimp} f. \lambda^{\shimp} g. g y
+      \end{flalign*}
+    \end{minipage}
+  \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Additive Products}
-  
+  \frametitle{\qub{}: Extension}
+  \begin{itemize}
+  \item<1-> User defined types and type classes
+  \item<2-> Kind System with type constructors
+    \begin{flalign*}
+      \text{Type Variables}\ \ t, u         &\in \text{Type Variables}  \\
+      \text{Kinds}\ \ \               \kappa          &::= \star \mid \kappa' \rightarrow \kappa\\
+      \text{Types}\ \ \             \tau^{\kappa}      &::= t^\kappa \mid T^{\kappa} \mid \tau^{\kappa' \rightarrow \kappa}\tau^{\kappa'}\\
+      \text{Type Constructors}\ \ \   T^{\kappa}       &\in \mathcal{T}^{\kappa}\
+      \text{where}\qquad\{\otimes, \with, \oplus, \tightoverset{\scalebox{0.5}{!}}{\sepimp}, \sepimp, \tightoverset{\scalebox{0.5}{!}}{\shimp}, \shimp \} \subseteq \mathcal{T}^{\star \rightarrow \star \rightarrow \star}\\
+      \text{Predicates}\ \ \          \pi, \omega     &::= \Un{\tau} \mid \SeFun{\tau} \mid \ShFun{\tau} \mid \tau \geq \tau' \\
+      \text{Qualified Types}\ \ \     \rho            &::= \tau^{\star} \mid \pi => \rho \\
+      \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma
+    \end{flalign*}
+  \end{itemize}
+
 \end{frame}
 
-\begin{frame}
-  \frametitle{Sums}
-  
-\end{frame}
 
-\begin{frame}
-  \frametitle{Multilicative Implication}
-  
-\end{frame}
+% \begin{frame}
+%   \frametitle{Multiplicative Implication}
+% \end{frame}
 
-\begin{frame}
-  \frametitle{Additive Implication}
-  
-\end{frame}
+% \begin{frame}
+%   \frametitle{Additive Implication}
+% \end{frame}
 
 
 %%% Local Variables:

@@ -1,12 +1,29 @@
 \section{Introduction and Motivation}\label{sec:introduction}
 % (5 mins)
 
+\begin{frame}[c]
+  \frametitle{Introduction and Motivation}
+  {\large
+    \begin{center}
+      Hard problems in programming
+
+      {\color{red}Naming variables}
+    \end{center}
+    }
+\end{frame}
+
 \begin{frame}
-\frametitle{Introduction and Motivation}
-\begin{itemize}
-\item Hard problem: Resource management in evolving production code
-\item Resources: Files, database connections, anything that represents a shared state in the program
-\end{itemize}
+  \frametitle{Introduction and Motivation}
+  \begin{large}
+  \begin{center}
+    Hard problems in programming
+
+    {\color{red}Resource management}
+    \\{\normalsize  in evolving production code}
+
+    {\normalsize Resources: Files, database connections, entity with a shared state}
+\end{center}
+\end{large}
 \end{frame}
 
 \begin{frame}[fragile, c]
@@ -190,28 +207,59 @@ class Monad m => MonadError e m | m -> e where
          ((s, f)  <- readLine f
          let c = upper s
          () <- closeFile f
-         return \dollar Right c) `catchError` (\_ ->
-                             return \dollar Left "Error in reading file")
+         return \dollar Right c)
+             `catchError` (\_ ->
+                    return \dollar Left "Error in reading file")
      \end{haskell}
   \end{tabular}
   \begin{itemize}
-  \item Execution path for exception $\mathrightghost$ file not closed $\mathrightghost$ Memory leak
+  \item Exception may cause memory leak
   \end{itemize}
   \end{center}
 \end{frame}
 
-\begin{frame}
+\begin{frame}[c]
   \frametitle{Introduction and Motivation}
-  % \begin{tabular}[h]{c}
-  \begin{aquote}{Robin Milner}
-      Well typed programs do not go wrong.
-  \end{aquote}
-
-    \begin{itemize}
-    \item<2-> Can we do better? Can types guide us?
-  \end{itemize}
-  %\end{tabular}
+  \begin{center}
+    \uncover<+-> {\LARGE
+      \begin{aquote}{R. Milner}
+        Well typed programs do not go wrong.
+      \end{aquote}
+    }
+    \vspace{2cm}
+    % \begin{description}
+    % \item<2-> \qquad \qquad {\color{red}Can we do better?}
+    % \end{description}
+    \uncover<+-> {\LARGE
+      \begin{aquote}{Coldplay}
+        \sout{Lights}{\color{red} Types} will guide you home
+      \end{aquote}
+    }
+  \end{center}
 \end{frame}
+
+\begin{frame}
+  \frametitle{Contributions}
+  \begin{itemize}
+  \item
+    Design and implement \qub{} type system
+    \begin{framed}
+      \begin{itemize}
+      \item Resources as first class citizens
+      \item Program objects are restricted or unrestricted
+      \item Functions that share resources with their arguments or are separate.
+      \end{itemize}
+    \end{framed}
+
+  \item Formalizing and proving important properties of \qub{}
+  \item \qub{} is logic of \BI with steroids
+    \begin{itemize}
+    \item Environments as graphs
+    \end{itemize}
+  \item Working examples
+  \end{itemize}
+\end{frame}
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "defense-slides"
