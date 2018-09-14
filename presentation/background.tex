@@ -211,7 +211,7 @@
     \end{itemize}
 
     \begin{flalign*}
-      \text{\HM{} type system} &\equiv \text{Second Order Propositional Logic}
+      \text{\HM{} type system} &\equiv \text{Second Order Intuitionistic Propositional Logic}
     \end{flalign*}
 
     \begin{figure}[h]
@@ -224,10 +224,9 @@
 \end{frame}
 
 \begin{frame}[c]
-  \frametitle{Background Work: Second Order Propositional Logic}
+  \frametitle{Background Work: Second Order Intuitionistic Propositional Logic}
   \begin{center}
-    \uncover<2->{\LARGE {\color{red}Propostions are truth values not resources}}
-
+    \uncover<2->{\LARGE {\color{red}Propostions are truth values not resources}}\\
     \uncover<1->{{\small
         \fbox{Language}
         \begin{flalign*}
@@ -287,335 +286,361 @@
   \frametitle{Background Work: Substructural Logic}
   \begin{center}
     \begin{itemize}
-    \item<1-> Two implicit rules in Propositional Calculus\\
+    \item<1-> Structural rules implicit in intuistionistic propositional logics\\
       % WKN
-      \begin{minipage}{0.5\linewidth}
+      \begin{minipage}{0.33\linewidth}
         \begin{prooftree}
           \AxiomC{$\Gamma \vdash B$}\RightLabel{[WKN]}
           \UnaryInfC{$\Gamma, A \vdash B$}
         \end{prooftree}
       \end{minipage}\hfill%
       % CTR
-      \begin{minipage}{0.5\linewidth}
+      \begin{minipage}{0.33\linewidth}
         \begin{prooftree}
           \AxiomC{$\Gamma, A, A \vdash B$}\RightLabel{[CTR]}
           \UnaryInfC{$\Gamma, A \vdash B $}
         \end{prooftree}
+      \end{minipage}\hfill%
+      % EXCH
+      \begin{minipage}{0.33\linewidth}
+        \begin{prooftree}
+          \AxiomC{$\Gamma, \Delta \vdash B$}\RightLabel{[EXCH]}
+          \UnaryInfC{$\Delta, \Gamma \vdash B $}
+        \end{prooftree}
       \end{minipage}
-    \item<2-> Control the use of [WKN] and [CTR]
+
+    \item <2-> Control the use of [WKN] and [CTR]\\
     \end{itemize}
+    \uncover<2->{\LARGE \color{red} Propostions now behave like resources}
   \end{center}
 \end{frame}
 
 \begin{frame}[c]
-  \frametitle{Background Work: Linear Logic}
-  Certain contexts cannot undergo weakening or contraction\citep{girard_linear_1987, wadler_taste_1993}\\
-  \begin{flalign*}
-    \text{Context}\quad \Gamma,\Delta &::= \epsilon \mid \Gamma, \Pair{A} \mid \Gamma, [A]
-  \end{flalign*}
-
-  \begin{flalign*}
-    \Gamma, \Pair{A} &\not\vdash \Gamma\\
-    \Gamma, \Pair{A} &\not\vdash \Gamma, \Pair{A}, \Pair{A}\\
-    \Gamma, [A] &\vdash \Gamma\\
-    \Gamma, [A] &\vdash \Gamma, [A], [A]\\
-  \end{flalign*}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Background Work: Linear Logic}
+  \frametitle{Background Work: Substructural Logic}
   \begin{center}
-  \fbox{Language}\\
-  \begin{flalign*}
-    \text{Context} \Gamma,\Delta &::= \epsilon \mid \Gamma, \Pair{A} \mid \Gamma, [A]\\
-    \text{Propostions} A, B, C &::= X \mid \oc A \mid A \rightspoon B \mid A \with B \mid A \otimes B \mid A \oplus B
-  \end{flalign*}
-  \fbox{Structural Rules}\\
-  \begin{figure}[h]
-  \centering
- % []ID
-    \begin{minipage}{0.30\textwidth}
-      \begin{prooftree}
-        \AxiomC{{\color{white}$\Gamma, \Delta \vdash A$}} \RightLabel{[ID$_{[]}$]}
-        \UnaryInfC{$[A] \vdash A$}
-      \end{prooftree}
-    \end{minipage}
-  % !ID
-    \begin{minipage}{0.30\textwidth}
-      \begin{prooftree}
-        \AxiomC{{\color{white}$\Gamma, \Delta \vdash A$}} \RightLabel{[ID$_{\Pair{}}$]}
-        \UnaryInfC{$\Pair{A} \vdash A$}
-      \end{prooftree}
-    \end{minipage}
-
-    % EXCH
-    \begin{minipage}{0.30\textwidth}
-      \begin{prooftree}
-        \AxiomC{$\Gamma, \Delta \vdash A$} \RightLabel{[EXCH]}
-        \UnaryInfC{$\Delta, \Gamma \vdash A$}
-      \end{prooftree}
-    \end{minipage}
-    % CTRN
-    \begin{minipage}{0.30\textwidth}
-      \begin{prooftree}
-        \AxiomC{$\Gamma, [A], [A] \vdash B$} \RightLabel{[CTRN]}
-        \UnaryInfC{$\Gamma, [A] \vdash B$}
-      \end{prooftree}
-    \end{minipage}
-    % WKN
-    \begin{minipage}{0.30\textwidth}
-      \begin{prooftree}
-        \AxiomC{$\Gamma \vdash B$} \RightLabel{[WKN]}
-        \UnaryInfC{$\Gamma, [A] \vdash B$}
-      \end{prooftree}
-    \end{minipage}
-
-    % ! I
-    \begin{minipage}{0.30\textwidth}
-      \begin{prooftree}
-        \AxiomC{$[\Gamma] \vdash A$} \RightLabel{[$\oc$I]}
-        \UnaryInfC{$[\Gamma] \vdash \oc A$}
-      \end{prooftree}
-    \end{minipage}
-    % ! E
-    \begin{minipage}{0.30\textwidth}
-      \begin{prooftree}
-        \AxiomC{$\Gamma \vdash \oc A$}
-        \AxiomC{$\Delta, [A] \vdash B$} \RightLabel{[$\oc$E]}
-        \BinaryInfC{$\Gamma, \Delta \vdash B$}
-      \end{prooftree}
-    \end{minipage}
-  \end{figure}
-\end{center}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Background Work: Linear Logic}
-  \begin{center}
-      \fbox{
-      Connective Rules
-    }
-    \begin{itemize}[\noindent {}]
-    \item[]<1->
-     % -o I
-    \begin{minipage}{0.30\textwidth}
-      \begin{prooftree}
-        \AxiomC{$\Gamma, A \vdash B$} \RightLabel{$[\rightspoon I]$}
-        \UnaryInfC{$\Gamma \vdash A \rightspoon B$}
-      \end{prooftree}
-    \end{minipage}\hfill%
-    % -o E
-    \begin{minipage}{0.60\textwidth}
-      \begin{prooftree}
-        \AxiomC{$\Gamma \vdash  A \rightspoon B$}
-        \AxiomC{$\Delta \vdash A$} \RightLabel{$[\rightspoon E]$}
-        \BinaryInfC{$\Gamma, \Delta \vdash B$}
-      \end{prooftree}
-    \end{minipage}
-    % & I
-    \item[]<2-> \begin{minipage}{.3\textwidth}
-      \begin{prooftree}
-        \AxiomC{$\Gamma \vdash A$}
-        \AxiomC{$\Gamma \vdash B$} \RightLabel{$[\with I]$}
-        \BinaryInfC{$\Gamma \vdash A \with B$}
-      \end{prooftree}
-    \end{minipage}\hfill%
-    % & E_1
-    \begin{minipage}{.3\textwidth}
-      \begin{prooftree}
-        \AxiomC{$\Gamma \vdash A \with B$} \RightLabel{$[\with E_1]$}
-        \UnaryInfC{$\Gamma \vdash A$}
-      \end{prooftree}
-    \end{minipage}\hfill%
-    % & E_2
-    \begin{minipage}{.3\textwidth}
-      \begin{prooftree}
-        \AxiomC{$\Gamma \vdash A \with B$} \RightLabel{$[\with E_2]$}
-        \UnaryInfC{$\Gamma \vdash B$}
-      \end{prooftree}
-    \end{minipage}
-  \item[]<3->
-    % otimes I
-    \begin{minipage}{.3\textwidth}
-      \begin{prooftree}
-        \AxiomC{$\Gamma \vdash A$}
-        \AxiomC{$\Delta \vdash B$} \RightLabel{$[\otimes I]$}
-        \BinaryInfC{$\Gamma, \Delta \vdash A \otimes B$}
-      \end{prooftree}
-    \end{minipage}\hfill%
-    % otimes E
-    \begin{minipage}{.6\textwidth}
-      \begin{prooftree}
-        \AxiomC{$\Gamma \vdash A \otimes B$} \RightLabel{$[\otimes E]$}
-        \AxiomC{$\Delta, A, B \vdash C$}
-        \BinaryInfC{$\Gamma,\Delta \vdash C$}
-      \end{prooftree}
-    \end{minipage}
-  \item[]<4->
-    % oplus I_1
-    \begin{minipage}{.45\textwidth}
-      \begin{prooftree}
-        \AxiomC{$\Gamma \vdash A$} \RightLabel{$[\oplus I_1]$}
-        \UnaryInfC{$\Gamma \vdash A \oplus B$}
-      \end{prooftree}
-    \end{minipage}\hfill%
-    % oplus I_1
-    \begin{minipage}{.45\textwidth}
-      \begin{prooftree}
-        \AxiomC{$\Delta \vdash B$} \RightLabel{$[\oplus I_2]$}
-        \UnaryInfC{$\Delta \vdash A \oplus B$}
-      \end{prooftree}
-    \end{minipage}
-    % oplus E
-    \begin{minipage}{1\textwidth}
-      \begin{prooftree}
-        \AxiomC{$\Gamma \vdash A \oplus B$}
-        \AxiomC{$\Delta, A \vdash C$}
-        \AxiomC{$\Delta, B \vdash C$}\RightLabel{$[\oplus E]$}
-        \TrinaryInfC{$\Gamma, \Delta \vdash C$}
-      \end{prooftree}
-    \end{minipage}
-  \end{itemize}
+    \begin{tabular}[h]{c c c}
+      System                                                    & Who    & Restrictions\\\hline\hline
+      Linear Logic\citep{girard_linear_1987}                    & Girard & [WKN] [CTRN]\\
+%      Revelance Logic                                           & Orlev  & \\
+      Lambek Logic\citep{lambek_mathematics_1958}               & Lambek & [EXCH]\\
+      Logic of Bunched Implications\citep{ohearn_logic_1999}    & O'Hearn and Pym & [WKN] [CTRN]\\
+      \vdots                                                    & \vdots & \vdots 
+    \end{tabular}
   \end{center}
 \end{frame}
 
-\begin{frame}[fragile,c]
-  \frametitle{Background Work: Linear Logic}
-  \begin{itemize}
-  \item<1-> Propositions act like Resources\\
-    \begin{center}
-      ``A consumed to give B''\quad $A, A \rightspoon B \vdash B$\\
-      ``Both A and B''\quad $A \otimes B$\\
-      ``Choice between A and B''\quad $A \with B$\\
-    Cannot create new copies\quad $A \not\vdash A \otimes A$\\
-    %\[
-      %\bigpumpkin%, \bigpumpkin \rightspoon \mathcloud \vdash \mathcloud
-    %\]
-    Fall back to intuistionstic logic\quad $\oc A \rightspoon B \equiv A \supset B$
-  \end{center}
-  \item<2-> Curry-Howard Corresondence: Type systems based on Linear Logic
-  \item<2-> Active Area of research: L$^3$\citep{ahmed_l3_2007},
-    F$^\circ$\citep{mazurak_lolliproc_2010}, Linear Haskell\citep{bernardy_linear_2017}, Quill\citep{morris_best_2016}
-  \item<2-> Resources are first class values
-  \end{itemize}
-\end{frame}
 
-\begin{frame}[fragile, c]
-  \frametitle{Background Work: Linear Logic}
-  Downside: Asymmetry between implication and conjunction\\
-  Multiplicative Fragment:
-  \begin{center}
-    $$A \otimes B \vdash C \text{ iff } A \vdash B \rightspoon C$$
-  \end{center}
-  Additive Fragment:
-  \begin{center}
-    $$ \oc A \with \oc B \vdash C \text{ iff } \oc A \vdash \oc B \rightspoon C$$
-  \end{center}
-  Modality is necessary to avoid over-restriction
-\end{frame}
+% \begin{frame}[c]
+%   \frametitle{Background Work: Linear Logic}
+%   Certain contexts cannot undergo weakening or contraction\citep{girard_linear_1987, wadler_taste_1993}\\
+%   \begin{flalign*}
+%     \text{Context}\quad \Gamma,\Delta &::= \epsilon \mid \Gamma, \Pair{A} \mid \Gamma, [A]
+%   \end{flalign*}
+
+%   \begin{flalign*}
+%     \Gamma, \Pair{A} &\not\vdash \Gamma\\
+%     \Gamma, \Pair{A} &\not\vdash \Gamma, \Pair{A}, \Pair{A}\\
+%     \Gamma, [A] &\vdash \Gamma\\
+%     \Gamma, [A] &\vdash \Gamma, [A], [A]\\
+%   \end{flalign*}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Background Work: Linear Logic}
+%   \begin{center}
+%   \fbox{Language}\\
+%   \begin{flalign*}
+%     \text{Context} \Gamma,\Delta &::= \epsilon \mid \Gamma, \Pair{A} \mid \Gamma, [A]\\
+%     \text{Propostions} A, B, C &::= X \mid \oc A \mid A \rightspoon B \mid A \with B \mid A \otimes B \mid A \oplus B
+%   \end{flalign*}
+%   \fbox{Structural Rules}\\
+%   \begin{figure}[h]
+%   \centering
+%  % []ID
+%     \begin{minipage}{0.30\textwidth}
+%       \begin{prooftree}
+%         \AxiomC{{\color{white}$\Gamma, \Delta \vdash A$}} \RightLabel{[ID$_{[]}$]}
+%         \UnaryInfC{$[A] \vdash A$}
+%       \end{prooftree}
+%     \end{minipage}
+%   % !ID
+%     \begin{minipage}{0.30\textwidth}
+%       \begin{prooftree}
+%         \AxiomC{{\color{white}$\Gamma, \Delta \vdash A$}} \RightLabel{[ID$_{\Pair{}}$]}
+%         \UnaryInfC{$\Pair{A} \vdash A$}
+%       \end{prooftree}
+%     \end{minipage}
+
+%     % EXCH
+%     \begin{minipage}{0.30\textwidth}
+%       \begin{prooftree}
+%         \AxiomC{$\Gamma, \Delta \vdash A$} \RightLabel{[EXCH]}
+%         \UnaryInfC{$\Delta, \Gamma \vdash A$}
+%       \end{prooftree}
+%     \end{minipage}
+%     % CTRN
+%     \begin{minipage}{0.30\textwidth}
+%       \begin{prooftree}
+%         \AxiomC{$\Gamma, [A], [A] \vdash B$} \RightLabel{[CTRN]}
+%         \UnaryInfC{$\Gamma, [A] \vdash B$}
+%       \end{prooftree}
+%     \end{minipage}
+%     % WKN
+%     \begin{minipage}{0.30\textwidth}
+%       \begin{prooftree}
+%         \AxiomC{$\Gamma \vdash B$} \RightLabel{[WKN]}
+%         \UnaryInfC{$\Gamma, [A] \vdash B$}
+%       \end{prooftree}
+%     \end{minipage}
+
+%     % ! I
+%     \begin{minipage}{0.30\textwidth}
+%       \begin{prooftree}
+%         \AxiomC{$[\Gamma] \vdash A$} \RightLabel{[$\oc$I]}
+%         \UnaryInfC{$[\Gamma] \vdash \oc A$}
+%       \end{prooftree}
+%     \end{minipage}
+%     % ! E
+%     \begin{minipage}{0.30\textwidth}
+%       \begin{prooftree}
+%         \AxiomC{$\Gamma \vdash \oc A$}
+%         \AxiomC{$\Delta, [A] \vdash B$} \RightLabel{[$\oc$E]}
+%         \BinaryInfC{$\Gamma, \Delta \vdash B$}
+%       \end{prooftree}
+%     \end{minipage}
+%   \end{figure}
+% \end{center}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Background Work: Linear Logic}
+%   \begin{center}
+%       \fbox{
+%       Connective Rules
+%     }
+%     \begin{itemize}[\noindent {}]
+%     \item[]<1->
+%      % -o I
+%     \begin{minipage}{0.30\textwidth}
+%       \begin{prooftree}
+%         \AxiomC{$\Gamma, A \vdash B$} \RightLabel{$[\rightspoon I]$}
+%         \UnaryInfC{$\Gamma \vdash A \rightspoon B$}
+%       \end{prooftree}
+%     \end{minipage}\hfill%
+%     % -o E
+%     \begin{minipage}{0.60\textwidth}
+%       \begin{prooftree}
+%         \AxiomC{$\Gamma \vdash  A \rightspoon B$}
+%         \AxiomC{$\Delta \vdash A$} \RightLabel{$[\rightspoon E]$}
+%         \BinaryInfC{$\Gamma, \Delta \vdash B$}
+%       \end{prooftree}
+%     \end{minipage}
+%     % & I
+%     \item[]<2-> \begin{minipage}{.3\textwidth}
+%       \begin{prooftree}
+%         \AxiomC{$\Gamma \vdash A$}
+%         \AxiomC{$\Gamma \vdash B$} \RightLabel{$[\with I]$}
+%         \BinaryInfC{$\Gamma \vdash A \with B$}
+%       \end{prooftree}
+%     \end{minipage}\hfill%
+%     % & E_1
+%     \begin{minipage}{.3\textwidth}
+%       \begin{prooftree}
+%         \AxiomC{$\Gamma \vdash A \with B$} \RightLabel{$[\with E_1]$}
+%         \UnaryInfC{$\Gamma \vdash A$}
+%       \end{prooftree}
+%     \end{minipage}\hfill%
+%     % & E_2
+%     \begin{minipage}{.3\textwidth}
+%       \begin{prooftree}
+%         \AxiomC{$\Gamma \vdash A \with B$} \RightLabel{$[\with E_2]$}
+%         \UnaryInfC{$\Gamma \vdash B$}
+%       \end{prooftree}
+%     \end{minipage}
+%   \item[]<3->
+%     % otimes I
+%     \begin{minipage}{.3\textwidth}
+%       \begin{prooftree}
+%         \AxiomC{$\Gamma \vdash A$}
+%         \AxiomC{$\Delta \vdash B$} \RightLabel{$[\otimes I]$}
+%         \BinaryInfC{$\Gamma, \Delta \vdash A \otimes B$}
+%       \end{prooftree}
+%     \end{minipage}\hfill%
+%     % otimes E
+%     \begin{minipage}{.6\textwidth}
+%       \begin{prooftree}
+%         \AxiomC{$\Gamma \vdash A \otimes B$} \RightLabel{$[\otimes E]$}
+%         \AxiomC{$\Delta, A, B \vdash C$}
+%         \BinaryInfC{$\Gamma,\Delta \vdash C$}
+%       \end{prooftree}
+%     \end{minipage}
+%   \item[]<4->
+%     % oplus I_1
+%     \begin{minipage}{.45\textwidth}
+%       \begin{prooftree}
+%         \AxiomC{$\Gamma \vdash A$} \RightLabel{$[\oplus I_1]$}
+%         \UnaryInfC{$\Gamma \vdash A \oplus B$}
+%       \end{prooftree}
+%     \end{minipage}\hfill%
+%     % oplus I_1
+%     \begin{minipage}{.45\textwidth}
+%       \begin{prooftree}
+%         \AxiomC{$\Delta \vdash B$} \RightLabel{$[\oplus I_2]$}
+%         \UnaryInfC{$\Delta \vdash A \oplus B$}
+%       \end{prooftree}
+%     \end{minipage}
+%     % oplus E
+%     \begin{minipage}{1\textwidth}
+%       \begin{prooftree}
+%         \AxiomC{$\Gamma \vdash A \oplus B$}
+%         \AxiomC{$\Delta, A \vdash C$}
+%         \AxiomC{$\Delta, B \vdash C$}\RightLabel{$[\oplus E]$}
+%         \TrinaryInfC{$\Gamma, \Delta \vdash C$}
+%       \end{prooftree}
+%     \end{minipage}
+%   \end{itemize}
+%   \end{center}
+% \end{frame}
+
+% \begin{frame}[fragile,c]
+%   \frametitle{Background Work: Linear Logic}
+%   \begin{itemize}
+%   \item<1-> Propositions act like Resources\\
+%     \begin{center}
+%       ``A consumed to give B''\quad $A, A \rightspoon B \vdash B$\\
+%       ``Both A and B''\quad $A \otimes B$\\
+%       ``Choice between A and B''\quad $A \with B$\\
+%     Cannot create new copies\quad $A \not\vdash A \otimes A$\\
+%     %\[
+%       %\bigpumpkin%, \bigpumpkin \rightspoon \mathcloud \vdash \mathcloud
+%     %\]
+%     Fall back to intuistionstic logic\quad $\oc A \rightspoon B \equiv A \supset B$
+%   \end{center}
+%   \item<2-> Curry-Howard Corresondence: Type systems based on Linear Logic
+%   \item<2-> Active Area of research: L$^3$\citep{ahmed_l3_2007},
+%     F$^\circ$\citep{mazurak_lolliproc_2010}, Linear Haskell\citep{bernardy_linear_2017}, Quill\citep{morris_best_2016}
+%   \item<2-> Resources are first class values
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}[fragile, c]
+%   \frametitle{Background Work: Linear Logic}
+%   Downside: Asymmetry between implication and conjunction\\
+%   Multiplicative Fragment:
+%   \begin{center}
+%     $$A \otimes B \vdash C \text{ iff } A \vdash B \rightspoon C$$
+%   \end{center}
+%   Additive Fragment:
+%   \begin{center}
+%     $$ \oc A \with \oc B \vdash C \text{ iff } \oc A \vdash \oc B \rightspoon C$$
+%   \end{center}
+%   Modality is necessary to avoid over-restriction
+% \end{frame}
 
 
 \begin{frame}[c]
   \frametitle{Background Work: Qualified Types}
-  General framework to incorporate predicates into type language
   \begin{center}
-  $$P \mid \Gamma \vdash M:\sigma $$
-  ``Type of $M$ is $\sigma$ when predicates in $P$ are satisfied and
-  free variables in $M$ are specified in $\Gamma$''\cite{jones_theory_1994}
+    {\LARGE   $$P \mid \Gamma \vdash M:\sigma $$}
+``Type of $M$ is $\sigma$\\
+  when predicates in $P$ are satisfied\\
+  and $\Gamma$ specifies the free variables in $M$''\cite{jones_theory_1994}
+
+  General framework, incorporates predicates into type language
   \end{center}
 \end{frame}
 
-\begin{frame}[c]
-  \frametitle{Background Work: Typing Rules with Qualified Types}
-  \HM{} system with qualified Types:
-  \begin{figure}[h]
-    \centering
-    {\small
-      \begin{minipage}{.35\textwidth}
-      \begin{prooftree}
-        \AxiomC{$x: \sigma \in \Gamma$} \RightLabel{[VAR]}
-        \UnaryInfC{$P \mid \Gamma \vdash x : \sigma $}
-      \end{prooftree}
-    \end{minipage}%
-    % let
-    \begin{minipage}{.55\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash M : \sigma$}
-        \AxiomC{$Q \mid \Gamma_{x}, x: \sigma \vdash N: \tau$} \RightLabel{[LET]}
-        \BinaryInfC{$P,Q \mid \Gamma \vdash (\Let{x}{M}{N}) : \tau$}
-      \end{prooftree}
-    \end{minipage}
+% \begin{frame}[c]
+%   \frametitle{Background Work: Typing Rules with Qualified Types}
+%   \HM{} system with qualified Types:
+%   \begin{figure}[h]
+%     \centering
+%     {\small
+%       \begin{minipage}{.35\textwidth}
+%       \begin{prooftree}
+%         \AxiomC{$x: \sigma \in \Gamma$} \RightLabel{[VAR]}
+%         \UnaryInfC{$P \mid \Gamma \vdash x : \sigma $}
+%       \end{prooftree}
+%     \end{minipage}%
+%     % let
+%     \begin{minipage}{.55\textwidth}
+%       \begin{prooftree}
+%         \AxiomC{$P \mid \Gamma \vdash M : \sigma$}
+%         \AxiomC{$Q \mid \Gamma_{x}, x: \sigma \vdash N: \tau$} \RightLabel{[LET]}
+%         \BinaryInfC{$P,Q \mid \Gamma \vdash (\Let{x}{M}{N}) : \tau$}
+%       \end{prooftree}
+%     \end{minipage}
 
-    % forall I
-    \begin{minipage}{0.55\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash M : \sigma$}\RightLabel{[$\forall$ I]}
-        \AxiomC{$t \notin \texttt{fvs}(\Gamma) \cup \texttt{fvs}(P)$}
-        \BinaryInfC{$P \mid \Gamma \vdash M : \forall t. \sigma$}
-      \end{prooftree}
-    \end{minipage}%
-    % forall E
-    \begin{minipage}{0.40\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash M : \forall t. \sigma$}\RightLabel{[$\forall$ E]}
-        \UnaryInfC{$P \mid \Gamma \vdash M: [\tau / t] \sigma$}
-      \end{prooftree}
-    \end{minipage}
+%     % forall I
+%     \begin{minipage}{0.55\textwidth}
+%       \begin{prooftree}
+%         \AxiomC{$P \mid \Gamma \vdash M : \sigma$}\RightLabel{[$\forall$ I]}
+%         \AxiomC{$t \notin \texttt{fvs}(\Gamma) \cup \texttt{fvs}(P)$}
+%         \BinaryInfC{$P \mid \Gamma \vdash M : \forall t. \sigma$}
+%       \end{prooftree}
+%     \end{minipage}%
+%     % forall E
+%     \begin{minipage}{0.40\textwidth}
+%       \begin{prooftree}
+%         \AxiomC{$P \mid \Gamma \vdash M : \forall t. \sigma$}\RightLabel{[$\forall$ E]}
+%         \UnaryInfC{$P \mid \Gamma \vdash M: [\tau / t] \sigma$}
+%       \end{prooftree}
+%     \end{minipage}
 
-    % -> I
-    \begin{minipage}{0.40\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma_{x}, x: \tau \vdash M : \tau'$} \RightLabel{[$\rightarrow$ I]}
-        \UnaryInfC{$P \mid \Gamma \vdash \lambda x. M : \tau \rightarrow \tau'$}
-      \end{prooftree}
-    \end{minipage}%
-    % -> E
-    \begin{minipage}{0.55\textwidth}
-      \begin{prooftree}
-        \AxiomC{$P \mid \Gamma \vdash M : \tau \rightarrow \tau'$}
-        \AxiomC{$P \mid \Gamma \vdash N : \tau$} \RightLabel{[$\rightarrow$ E]}
-        \BinaryInfC{$P \mid \Gamma \vdash M N : \tau'$}
-      \end{prooftree}
-    \end{minipage}
+%     % -> I
+%     \begin{minipage}{0.40\textwidth}
+%       \begin{prooftree}
+%         \AxiomC{$P \mid \Gamma_{x}, x: \tau \vdash M : \tau'$} \RightLabel{[$\rightarrow$ I]}
+%         \UnaryInfC{$P \mid \Gamma \vdash \lambda x. M : \tau \rightarrow \tau'$}
+%       \end{prooftree}
+%     \end{minipage}%
+%     % -> E
+%     \begin{minipage}{0.55\textwidth}
+%       \begin{prooftree}
+%         \AxiomC{$P \mid \Gamma \vdash M : \tau \rightarrow \tau'$}
+%         \AxiomC{$P \mid \Gamma \vdash N : \tau$} \RightLabel{[$\rightarrow$ E]}
+%         \BinaryInfC{$P \mid \Gamma \vdash M N : \tau'$}
+%       \end{prooftree}
+%     \end{minipage}
 
-    % => I
-    \begin{minipage}{0.40\textwidth}
-      {\color{red}
-        \begin{prooftree}
-          \AxiomC{$P, \pi \mid \Gamma \vdash M : \rho$} \RightLabel{[$\Rightarrow$I]}
-          \UnaryInfC{$P \mid \Gamma \vdash M : \pi \Rightarrow \rho$}
-        \end{prooftree}
-      }
-      \begin{center}
-      $\pi \Rightarrow \rho$: $\pi$ qualifies $\rho$
-    \end{center}
+%     % => I
+%     \begin{minipage}{0.40\textwidth}
+%       {\color{red}
+%         \begin{prooftree}
+%           \AxiomC{$P, \pi \mid \Gamma \vdash M : \rho$} \RightLabel{[$\Rightarrow$I]}
+%           \UnaryInfC{$P \mid \Gamma \vdash M : \pi \Rightarrow \rho$}
+%         \end{prooftree}
+%       }
+%       \begin{center}
+%       $\pi \Rightarrow \rho$: $\pi$ qualifies $\rho$
+%     \end{center}
 
-    \end{minipage}%
-    % => E
-    \begin{minipage}{0.45\textwidth}
-      {\color{red}
-        \begin{prooftree}
-          \AxiomC{$P \mid \Gamma \vdash M : \pi \Rightarrow \rho$}
-          \AxiomC{$P \Rightarrow \pi$} \RightLabel{[$\Rightarrow$E]}
-          \BinaryInfC{$P \mid \Gamma \vdash M: \rho$}
-        \end{prooftree}
-      }
-      \begin{center}
-      $P \Rightarrow \pi$: $P$ entails $\pi$
-    \end{center}
+%     \end{minipage}%
+%     % => E
+%     \begin{minipage}{0.45\textwidth}
+%       {\color{red}
+%         \begin{prooftree}
+%           \AxiomC{$P \mid \Gamma \vdash M : \pi \Rightarrow \rho$}
+%           \AxiomC{$P \Rightarrow \pi$} \RightLabel{[$\Rightarrow$E]}
+%           \BinaryInfC{$P \mid \Gamma \vdash M: \rho$}
+%         \end{prooftree}
+%       }
+%       \begin{center}
+%       $P \Rightarrow \pi$: $P$ entails $\pi$
+%     \end{center}
 
-    \end{minipage}
-  }
-\end{figure}
-\begin{center}
-\qquad\qquad
-\end{center}
-\end{frame}
+%     \end{minipage}
+%   }
+% \end{figure}
+% \begin{center}
+% \qquad\qquad
+% \end{center}
+% \end{frame}
 
 \begin{frame}
   \frametitle{Background Work: Quill}
-  Quill\citep{morris_best_2016}: Language with qualified types for linear types and first class polymorphism\\
-  Three Predicates:
+  Quill\citep{morris_best_2016}: Qualified types + linear logic\\
+  Predicates:
   \begin{itemize}
   \item $\Un{\tau}$\quad If $\tau$ does not have resources
     or can be copied or dropped easily.
@@ -628,6 +653,8 @@
 
 \begin{frame}[fragile, c]
   \frametitle{Background Work: Quill}
+  Quill\citep{morris_best_2016}: Qualified types + linear logic\\
+  Qualifying Types:
   \begin{itemize}
   \item Unrestricted Types: $\Un{\texttt{Int}}$, $\Un{\text{Bool}}$
   \item Restricted or Linear Types: FileHandle
