@@ -17,7 +17,7 @@
           \text{Use functions}
         \end{cases}
       \end{flalign*}
-    }\vspace{1cm}
+    }
     \uncover<+-> {
       \begin{figure}[h]
         \centering
@@ -205,68 +205,80 @@
 \begin{frame}[c]
   \frametitle{Background Work: Curry-Howard Correspondence}
   \begin{center}
-  \begin{itemize}
-  \item Types are Propostions\\
-  \item Programs are Proofs\\
-  \end{itemize}
+    \begin{itemize}
+    \item Types are Propostions\\
+    \item Programs are Proofs\\
+    \end{itemize}
 
-  \begin{flalign*}
-  \text{\HM{} type system} &\equiv \text{Second Order Propositional Logic}
-  \end{flalign*}
+    \begin{flalign*}
+      \text{\HM{} type system} &\equiv \text{Second Order Propositional Logic}
+    \end{flalign*}
+
+    \begin{figure}[h]
+      \centering
+      \includegraphics[scale=0.1]{cardelli-hc-corr.jpg}\\
+      {\tiny Source: \url{http://lucacardelli.name/Artifacts/Drawings/CurryHoward/CurryHoward.pdf}}
+    \end{figure}
+
 \end{center}
 \end{frame}
 
 \begin{frame}[c]
   \frametitle{Background Work: Second Order Propositional Logic}
   \begin{center}
-    Language:
-    \begin{flalign*}
-      \text{Propostions \& connectives}\quad A, B, C &::= x \mid A \supset B \mid \forall x. B \mid ... \\
-      \text{Context}\quad \Gamma,\Delta &::= \epsilon \mid \Gamma, A
-    \end{flalign*}
-    Logic Rules:
-    \begin{figure}[h]\centering
-      % ID
-      \begin{minipage}{0.20\linewidth}
-        \begin{prooftree}
-          \AxiomC{${\color{white}A \Gamma A}$}\RightLabel{[Ax]}
-          \UnaryInfC{$A \vdash A $}
-        \end{prooftree}
-      \end{minipage}
+    \uncover<2->{\LARGE {\color{red}Propostions are truth values not resources}}
 
-      % \forall I
-      \begin{minipage}{0.5\linewidth}
-        \begin{prooftree}
-          \AxiomC{$\Gamma \vdash B$}
-          \AxiomC{$x \notin \Gamma$}\RightLabel{[$\forall$I]}
-          \BinaryInfC{$\forall x. B$}
-        \end{prooftree}
-      \end{minipage}\hfill%
-      % \forall E
-      \begin{minipage}{0.5\linewidth}
-        \begin{prooftree}
-          \AxiomC{$\Gamma \vdash \forall x. B$}
-          \AxiomC{$\Gamma \vdash A$}\RightLabel{[$\forall$E]}
-          \BinaryInfC{$B[x/A]$}
-        \end{prooftree}
-      \end{minipage}
+    \uncover<1->{{\small
+        \fbox{Language}
+        \begin{flalign*}
+          \text{Propostions \& connectives}\quad A, B, C &::= x \mid A \supset B \mid \forall x. B \mid ... \\
+          \text{Context}\quad \Gamma,\Delta &::= \epsilon \mid \Gamma, A
+        \end{flalign*}
+        \fbox{Logic Rules}
+        \begin{figure}[h]\centering
+          % ID
+          \begin{minipage}{0.20\linewidth}
+            \begin{prooftree}
+              \AxiomC{${\color{white}A \Gamma A}$}\RightLabel{[Ax]}
+              \UnaryInfC{$A \vdash A $}
+            \end{prooftree}
+          \end{minipage}
 
-      % -> I
-      \begin{minipage}{0.5\linewidth}
-        \begin{prooftree}
-          \AxiomC{$\Gamma,A \vdash B$}\RightLabel{[$\supset$I]}
-          \UnaryInfC{$\Gamma \vdash A \supset B$}
-        \end{prooftree}
-      \end{minipage}\hfill%
-      % -> E
-      \begin{minipage}{0.5\linewidth}
-        \begin{prooftree}
-          \AxiomC{$\Gamma \vdash A \supset B$}
-          \AxiomC{$\Gamma \vdash A$}\RightLabel{[$\supset$E]}
-          \BinaryInfC{$\Gamma \vdash B $}
-        \end{prooftree}
-      \end{minipage}
-    \end{figure}
+          % \forall I
+          \begin{minipage}{0.5\linewidth}
+            \begin{prooftree}
+              \AxiomC{$\Gamma \vdash B$}
+              \AxiomC{$x \notin \Gamma$}\RightLabel{[$\forall$I]}
+              \BinaryInfC{$\forall x. B$}
+            \end{prooftree}
+          \end{minipage}\hfill%
+          % \forall E
+          \begin{minipage}{0.5\linewidth}
+            \begin{prooftree}
+              \AxiomC{$\Gamma \vdash \forall x. B$}
+              \AxiomC{$\Gamma \vdash A$}\RightLabel{[$\forall$E]}
+              \BinaryInfC{$B[x/A]$}
+            \end{prooftree}
+          \end{minipage}
+
+          % -> I
+          \begin{minipage}{0.5\linewidth}
+            \begin{prooftree}
+              \AxiomC{$\Gamma,A \vdash B$}\RightLabel{[$\supset$I]}
+              \UnaryInfC{$\Gamma \vdash A \supset B$}
+            \end{prooftree}
+          \end{minipage}\hfill%
+          % -> E
+          \begin{minipage}{0.5\linewidth}
+            \begin{prooftree}
+              \AxiomC{$\Gamma \vdash A \supset B$}
+              \AxiomC{$\Gamma \vdash A$}\RightLabel{[$\supset$E]}
+              \BinaryInfC{$\Gamma \vdash B $}
+            \end{prooftree}
+          \end{minipage}
+        \end{figure}
+      }
+    }
   \end{center}
 \end{frame}
 
