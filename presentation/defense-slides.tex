@@ -2,11 +2,12 @@
 
 \usepackage{amsmath}
 \usepackage{amsthm}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
 \usepackage{MnSymbol}
 \usepackage{stmaryrd}
 \usepackage{upquote}
 \usepackage{bussproofs, semantic, framed}
-\usepackage{halloweenmath}
 \usepackage{hyperref}
 
 \usepackage{graphicx}
@@ -76,7 +77,7 @@
 \newcommand{\M}{\mathcal{M}}
 \newcommand{\W}{\mathcal{W}}
 \newcommand{\Unf}{\mathcal{U}}
-
+\newcommand{\Fun}[1]{\texttt{Fun}\ #1}
 \newcommand{\SeFun}[1]{\texttt{SeFun}\ #1}
 \newcommand{\ShFun}[1]{\texttt{ShFun}\ #1}
 \newcommand{\Un}[1]{\texttt{Un}\ #1}
@@ -91,6 +92,7 @@
 \newcommand{\Pair}[1]{\langle #1 \rangle}
 \newcommand{\qub}{QuB\xspace}
 
+\usepackage{halloweenmath}
 
 \title{\qub{}}
 \subtitle{A Resource Aware Functional Programming Language}
@@ -131,11 +133,11 @@
 % 2 mins
 \include{conclusion}
 
-\begin{frame}[allowframebreaks]
-  \frametitle{References}
-\global\long\def\bibname{References}
-\bibliographystyle{plain}
-\bibliography{../Biblio/allcites}
+% \begin{frame}[allowframebreaks]
+%   \frametitle{References}
+%   \global\long\def\bibname{References}
+%   \bibliographystyle{plain}
+%   \bibliography{../Biblio/allcites}
+% \end{frame}
 
-\end{frame}
 \end{document}
