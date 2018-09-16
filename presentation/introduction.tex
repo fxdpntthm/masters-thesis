@@ -7,7 +7,7 @@
     \begin{center}
       Hard problems in programming
 
-      {\color{red}Naming variables}
+      {\LARGE \color{red}Naming variables}
     \end{center}
     }
 \end{frame}
@@ -18,7 +18,7 @@
   \begin{center}
     Hard problems in programming
 
-    {\color{red}Resource management}
+    {\LARGE \color{red}Resource management}
     \\{\normalsize  in evolving production code}
 
     {\normalsize Resources: Files, database connections, entity with a shared state}
@@ -165,7 +165,7 @@
            .
            .
            .
-       return c /*File not closed!!*/
+       return c {- File not closed!! -}
      \end{haskell}
   \end{tabular}
   \begin{itemize}
@@ -244,16 +244,20 @@ class Monad m => MonadError e m | m -> e where
   \item
     Design and implement \qub{} type system
       \begin{itemize}
-      \item Resources as first class citizens
-      \item Program objects are restricted or unrestricted
-      \item Functions that share resources with their arguments or are separate.
+        {\color{red}
+        \item Resources as first class citizens
+        \item Program objects are restricted or unrestricted
+        \item Functions that share resources with their arguments or are separate.
+        }
       \end{itemize}
   \item Formalizing and proving important properties of \qub{}
-  \item \qub{} is logic of \BI with steroids
+  \item \qub{} is logic of \BI on steroids
     \begin{itemize}
-    \item Environments as graphs
+      {\color{red}
+      \item Typing Environments as graphs
+      }
     \end{itemize}
-  \item Working examples
+  \item {\color{red}Working examples}
   \end{itemize}
 \end{frame}
 

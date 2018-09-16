@@ -39,7 +39,7 @@
       \end{figure}
     }\vspace{1cm}
     \uncover<+->{
-      Hinley-Milner (\HM{}) type system ensures sane programs
+      Hindley-Milner (\HM{}) type system ensures sane programs
     }
   \end{center}
 \end{frame}
@@ -226,7 +226,7 @@
 \begin{frame}[c]
   \frametitle{Background Work: Second Order Intuitionistic Propositional Logic}
   \begin{center}
-    \uncover<2->{\LARGE {\color{red}Propostions are truth values not resources}}\\
+    \uncover<2->{\LARGE {\color{red}Propositions are truth values not resources}}\\
     \uncover<1->{{\small
         \fbox{Language}
         \begin{flalign*}
@@ -286,7 +286,7 @@
   \frametitle{Background Work: Substructural Logic}
   \begin{center}
     \begin{itemize}
-    \item<1-> Structural rules implicit in intuistionistic propositional logics\\
+    \item<1-> Structural rules implicit in intuitionistic propositional logics\\
       % WKN
       \begin{minipage}{0.33\linewidth}
         \begin{prooftree}
@@ -311,7 +311,7 @@
 
     \item <2-> Control the use of [WKN] and [CTR]\\
     \end{itemize}
-    \uncover<2->{\LARGE \color{red} Propostions now behave like resources}
+    \uncover<2->{\LARGE \color{red} Propositions now behave like resources}
   \end{center}
 \end{frame}
 
@@ -514,9 +514,9 @@
 %     %\[
 %       %\bigpumpkin%, \bigpumpkin \rightspoon \mathcloud \vdash \mathcloud
 %     %\]
-%     Fall back to intuistionstic logic\quad $\oc A \rightspoon B \equiv A \supset B$
+%     Fall back to intuitionistic logic\quad $\oc A \rightspoon B \equiv A \supset B$
 %   \end{center}
-%   \item<2-> Curry-Howard Corresondence: Type systems based on Linear Logic
+%   \item<2-> Curry-Howard Correspondence: Type systems based on Linear Logic
 %   \item<2-> Active Area of research: L$^3$\citep{ahmed_l3_2007},
 %     F$^\circ$\citep{mazurak_lolliproc_2010}, Linear Haskell\citep{bernardy_linear_2017}, Quill\citep{morris_best_2016}
 %   \item<2-> Resources are first class values
@@ -537,18 +537,212 @@
 %   Modality is necessary to avoid over-restriction
 % \end{frame}
 
+\begin{frame}[c]
+  \frametitle{Background Work: Logic of Bunched Implications (\BI{})}
+  \begin{center}
+    \begin{itemize}
+  \item Contexts are lists or sets
+    $$ \Gamma, A, B $$
+  \item In logic of \BI{}, contexts are trees and called are bunches
+  \item Two connective used to combine bunches: $A;B$ or $A, B$\\
+    \begin{center}
+      \begin{figure}[h]\centering
+      \begin{minipage}{0.5\linewidth}\centering
+        \tikzset{every tree node/.style={minimum width=2em},
+          blank/.style={draw=none},
+          edge from parent/.style=
+          {draw,edge from parent path={(\tikzparentnode) -- (\tikzchildnode)}},
+          level distance=1.5cm}
+        \begin{tikzpicture}
+          \Tree
+          [.,
+          [.;
+          [.A ]
+          [.B ]
+          ]
+          [.C ]
+          ]
+        \end{tikzpicture}
+        \caption*{$\Gamma = (A;B),C$}
+      \end{minipage}%
+      \begin{minipage}{0.5\linewidth}\centering
+        \tikzset{every tree node/.style={minimum width=2em},
+          blank/.style={draw=none},
+          edge from parent/.style=
+          {draw,edge from parent path={(\tikzparentnode) -- (\tikzchildnode)}},
+          level distance=1.5cm}
+        \begin{tikzpicture}
+          \Tree
+          [.;
+          [.A ]
+          [.,
+          [.C ]
+          [.B ]
+          ]
+          ]
+        \end{tikzpicture}
+        \caption*{$\Gamma = A;(B,C)$}
+      \end{minipage}
+    \end{figure}
+
+    \end{center}
+
+\end{itemize}
+\end{center}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Background Work: Logic of \BI{}}
+  \begin{center}
+  Controlling structural rules based on context
+
+  \begin{itemize}
+
+\item Contraction
+  \begin{center}
+   $A;B \vdash A$ \qquad $A;B \vdash B$\\
+   $A,B \not\vdash A$ \qquad $A,B \not\vdash B$
+ \end{center}
+ \item Weakening
+  \begin{center}
+   $A;B \vdash A;B;B$ \qquad $A;B \vdash A;A;B$\\
+   $A,B \not\vdash A,B,B$ \qquad $A,B \not\vdash A,A,B$
+ \end{center}
+\end{itemize}
+  Interpretation:
+  \begin{itemize}
+  \item Propositions connected with , are separate
+  \item Propositions connected with ; are in sharing
+\end{itemize}
+\end{center}
+
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Background Work: Logic of \BI{}}
+  \begin{center}
+    (Absence of) Structural rules and logical connectives:
+    \begin{itemize}
+    \item Meaning of conjunction
+      \begin{center}
+      \begin{minipage}{0.45\linewidth}
+        \begin{flalign*}
+          A,B \vdash A \otimes B
+        \end{flalign*}
+      \end{minipage}\hfill%
+      \begin{minipage}{0.45\linewidth}
+        \begin{flalign*}
+        A;B \vdash A \with B
+      \end{flalign*}
+      \end{minipage}
+    \end{center}
+    \item Meaning of implication
+      \begin{minipage}{0.5\linewidth}
+        \begin{prooftree}
+          \AxiomC{$\Gamma, A \vdash B$} \RightLabel{[$\sepimp$I]}
+          \UnaryInfC{$\Gamma \vdash A \sepimp B$}
+        \end{prooftree}
+      \end{minipage}%
+      \begin{minipage}{0.5\linewidth}
+        \begin{prooftree}
+          \AxiomC{$\Gamma; A \vdash B$} \RightLabel{[$\shimp$I]}
+          \UnaryInfC{$\Gamma \vdash A \shimp B$}
+        \end{prooftree}
+      \end{minipage}
+    \end{itemize}
+  \end{center}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Background work: Logic of \BI{}}
+  \begin{center}
+    Coffee Shop
+
+    1 cup coffee costs \$2
+
+    \uncover<1->{
+      \begin{tabular}[c]{c c c c c}
+        \raisebox{-0.4\height}{\includegraphics[scale=0.205]{one_usd}}
+        & {\LARGE $\otimes$}
+        & \raisebox{-0.4\height}{\includegraphics[scale=0.205]{one_usd}}
+        & {\LARGE $\vdash$}
+        & \raisebox{-0.4\height}{\includegraphics[scale=0.03]{coffee_cup}}
+      \end{tabular}
+    }
+    \uncover<2->{
+      \begin{tabular}[c]{c c c c c}
+        \raisebox{-0.4\height}{\includegraphics[scale=0.2]{one_usd}}
+        & {\LARGE $\with$}
+        & \raisebox{-0.4\height}{\includegraphics[scale=0.2]{one_usd}}
+        & {\LARGE $\not\vdash$}
+        & \raisebox{-0.4\height}{\includegraphics[scale=0.03]{coffee_cup}}
+      \end{tabular}
+    }
+  \end{center}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Background work: Logic of \BI{}}
+  \begin{center}
+    Coffee Shop
+
+    1 cup coffee costs \$2
+
+    \begin{tabular}[c]{c c c c c}
+      \raisebox{-0.4\height}{\includegraphics[scale=0.205]{one_usd}}
+      & {\LARGE $\vdash$}
+      & \raisebox{-0.4\height}{\includegraphics[scale=0.2]{one_usd}}
+      & {\LARGE $\sepimp$}
+      & \raisebox{-0.4\height}{\includegraphics[scale=0.03]{coffee_cup}}
+    \end{tabular}
+    \begin{tabular}[c]{c c c c c c c}
+      \raisebox{-0.4\height}{\includegraphics[scale=0.15]{one_usd}}
+      & {\LARGE $;$}
+      & \raisebox{-0.4\height}{\includegraphics[scale=0.15]{one_usd}}
+      & {\LARGE $\sepimp$}
+      & \raisebox{-0.4\height}{\includegraphics[scale=0.015]{coffee_cup}}
+      & {\LARGE $\not\vdash$}
+      & \raisebox{-0.4\height}{\includegraphics[scale=0.015]{coffee_cup}}
+    \end{tabular}
+  \end{center}
+\end{frame}
 
 \begin{frame}[c]
   \frametitle{Background Work: Qualified Types}
   \begin{center}
-    {\LARGE   $${\color{red}P} \mid \Gamma \vdash M:\sigma $$}
+    {\LARGE   $$\Gamma \vdash M:\sigma $$}
+``Type of $M$ is $\sigma$\\
+  and $\Gamma$ specifies the free variables in $M$''
+
+  {\LARGE   $${\color{red}P} \mid \Gamma \vdash M:\sigma $$}
 ``Type of $M$ is $\sigma$\\
   when predicates in $P$ are satisfied\\
   and $\Gamma$ specifies the free variables in $M$''\cite{jones_theory_1994}
 
-  General framework, incorporates predicates into type language
+  Incorporate predicates into type language for finer grained polymorphism
   \end{center}
 \end{frame}
+
+\begin{frame}[c]
+  \frametitle{Background Work: Qualified Types}
+  \begin{center}
+  {\LARGE   $${\color{red}P} \mid \Gamma \vdash M:\sigma $$}
+``Type of $M$ is $\sigma$\\
+  when predicates in $P$ are satisfied\\
+  and $\Gamma$ specifies the free variables in $M$''\cite{jones_theory_1994}
+
+  Incorporate predicates into type language for finer grained polymorphism
+
+
+
+  {\LARGE $(P \mid \sigma)$}
+
+  Instances of $\sigma$ that satisfy P
+  \end{center}
+\end{frame}
+
 
 % \begin{frame}[c]
 %   \frametitle{Background Work: Typing Rules with Qualified Types}
@@ -651,7 +845,6 @@
   \end{itemize}
 \end{frame}
 
-
 \begin{frame}[fragile, c]
   \frametitle{Background Work: Quill}
   \begin{center}
@@ -665,152 +858,6 @@
     $\Fun{(\texttt{String} \rightarrow \texttt{String})}$
   \end{itemize}
 \end{frame}
-
-\begin{frame}[c]
-  \frametitle{Background Work: Logic of Bunched Implications (\BI{})}
-  \begin{center}
-    \begin{itemize}
-  \item Contexts are lists or sets
-    $$ \Gamma, A, B $$
-  \item In logic of \BI{}, contexts are trees and called are bunches
-  \item Two connective used to combine bunches: $A;B$ or $A, B$\\
-    \begin{center}
-      \begin{figure}[h]\centering
-      \begin{minipage}{0.5\linewidth}\centering
-        \tikzset{every tree node/.style={minimum width=2em},
-          blank/.style={draw=none},
-          edge from parent/.style=
-          {draw,edge from parent path={(\tikzparentnode) -- (\tikzchildnode)}},
-          level distance=1.5cm}
-        \begin{tikzpicture}
-          \Tree
-          [.,
-          [.;
-          [.A ]
-          [.B ]
-          ]
-          [.C ]
-          ]
-        \end{tikzpicture}
-        \caption*{$\Gamma = (A;B),C$}
-      \end{minipage}%
-      \begin{minipage}{0.5\linewidth}\centering
-        \tikzset{every tree node/.style={minimum width=2em},
-          blank/.style={draw=none},
-          edge from parent/.style=
-          {draw,edge from parent path={(\tikzparentnode) -- (\tikzchildnode)}},
-          level distance=1.5cm}
-        \begin{tikzpicture}
-          \Tree
-          [.;
-          [.A ]
-          [.,
-          [.C ]
-          [.B ]
-          ]
-          ]
-        \end{tikzpicture}
-        \caption*{$\Gamma = A;(B,C)$}
-      \end{minipage}
-    \end{figure}
-
-    \end{center}
-
-\end{itemize}
-\end{center}
-\end{frame}
-
-\begin{frame}[c]
-  \frametitle{Background Work: Logic of \BI{}}
-  \begin{center}
-  Controling structural rules based on context
-
-  \begin{itemize}
-
-\item Contraction
-  \begin{center}
-   $A;B \vdash A$ \qquad $A;B \vdash B$\\
-   $A,B \not\vdash A$ \qquad $A,B \not\vdash B$
- \end{center}
- \item Weakening
-  \begin{center}
-   $A;B \vdash A;B;B$ \qquad $A;B \vdash A;A;B$\\
-   $A,B \not\vdash A,B,B$ \qquad $A,B \not\vdash A,A,B$
- \end{center}
-\end{itemize}
-  Interpretation:
-  \begin{itemize}
-  \item Propostions connected with , are separate
-  \item Propostions connected with ; are in sharing
-\end{itemize}
-\end{center}
-
-\end{frame}
-
-\begin{frame}[c]
-  \frametitle{Background Work: Logic of \BI{}}
-  \begin{center}
-    (Absense of) Structural rules and logical connecitves:
-    \begin{itemize}
-    \item Meaning of conjunction
-      \begin{center}
-      \begin{minipage}{0.45\linewidth}
-        \begin{flalign*}
-          A,B \vdash A \otimes B
-        \end{flalign*}
-      \end{minipage}\hfill%
-      \begin{minipage}{0.45\linewidth}
-        \begin{flalign*}
-        A;B \vdash A \with B
-      \end{flalign*}
-      \end{minipage}
-    \end{center}
-    \item Meaning of implication
-      \begin{minipage}{0.5\linewidth}
-        \begin{prooftree}
-          \AxiomC{$\Gamma, A \vdash B$} \RightLabel{[$\sepimp$I]}
-          \UnaryInfC{$\Gamma \vdash A \sepimp B$}
-        \end{prooftree}
-      \end{minipage}%
-      \begin{minipage}{0.5\linewidth}
-        \begin{prooftree}
-          \AxiomC{$\Gamma; A \vdash B$} \RightLabel{[$\shimp$I]}
-          \UnaryInfC{$\Gamma \vdash A \shimp B$}
-        \end{prooftree}
-      \end{minipage}
-    \end{itemize}
-  \end{center}
-\end{frame}
-
-
-\begin{frame}
-  \frametitle{Background work: Logic of \BI{}}
-  \begin{center}
-    Coffee Shop
-
-    1 cup coffee costs \$2
-
-    \uncover<1->{
-      \begin{tabular}[c]{c c c c c}
-        \raisebox{-0.4\height}{\includegraphics[scale=0.205]{one_usd}}
-        & {\LARGE $\otimes$}
-        & \raisebox{-0.4\height}{\includegraphics[scale=0.205]{one_usd}}
-        & {\LARGE $\vdash$}
-        & \raisebox{-0.4\height}{\includegraphics[scale=0.03]{coffee_cup}}
-      \end{tabular}
-    }
-    \uncover<2->{
-      \begin{tabular}[c]{c c c c c}
-        \raisebox{-0.4\height}{\includegraphics[scale=0.2]{one_usd}}
-        & {\LARGE $\with$}
-        & \raisebox{-0.4\height}{\includegraphics[scale=0.2]{one_usd}}
-        & {\LARGE $\not\vdash$}
-        & \raisebox{-0.4\height}{\includegraphics[scale=0.03]{coffee_cup}}
-      \end{tabular}
-    }
-  \end{center}
-\end{frame}
-
 
 % \begin{frame}[fragile, c]
 %   \frametitle{Background Work: $\alpha\lambda$-calculus}

@@ -21,7 +21,7 @@ morekeywords=[4]{main},
 morekeywords=[6]{do, last, first, try, idtac, repeat},
 %
 % Comments delimiters, we do turn this off for the manual
-morecomment=[s]{/*}{*/},
+morecomment=[s]{\{-}{-\}},
 %
 % Spaces are not displayed as a special character
 showstringspaces=false,
@@ -81,13 +81,13 @@ commentstyle={\ttfamily\small\color{dkgreen}},
 moredelim=**[is][\ttfamily\color{red}]{@}{@},
 literate=
     {->}{{$\rightarrow\;$}}1
+    {-*}{{$\sepimp\;$}}1
+    {->>}{{$\shimp\;$}}1
     {=>}{{$\Rightarrow\;$}}1
     {++}{{\code{++}}}1
     {~}{{\ }}1
     {\\dollar}{{$\$$\;}}1
     {>>=}{{$\gg\!=\;$}}1
-    {-*}{{$\sepimp\;$}}1
-    {->>}{{$\shimp\;$}}1
     {<-}{{$\leftarrow\;$}}1
 %
 }[keywords,comments,strings]

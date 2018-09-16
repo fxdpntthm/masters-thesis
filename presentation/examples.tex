@@ -1,7 +1,7 @@
-\section{Examples And Extenstions}\label{sec:examples}
+\section{Examples And Extensions}\label{sec:examples}
 
 \begin{frame}
-  \frametitle{Examples: Basic Structures}
+  \frametitle{Examples: Basic Data Structures}
   \begin{itemize}
   \item Multiplicative Product
       \begin{flalign*}
@@ -39,23 +39,54 @@
   \item<1-> User defined types and type classes
   \item<2-> Kind System with type constructors
     \begin{flalign*}
-      \text{Type Variables}\ \ t, u         &\in \text{Type Variables}  \\
-      \text{Kinds}\ \ \               \kappa          &::= \star \mid \kappa' \rightarrow \kappa\\
-      \text{Types}\ \ \             \tau^{\kappa}      &::= t^\kappa \mid T^{\kappa} \mid \tau^{\kappa' \rightarrow \kappa}\tau^{\kappa'}\\
-      \text{Type Constructors}\ \ \   T^{\kappa}       &\in \mathcal{T}^{\kappa}\
-      \text{where}\qquad\{\otimes, \with, \oplus, \tightoverset{\scalebox{0.5}{!}}{\sepimp}, \sepimp, \tightoverset{\scalebox{0.5}{!}}{\shimp}, \shimp \} \subseteq \mathcal{T}^{\star \rightarrow \star \rightarrow \star}\\
-      \text{Predicates}\ \ \          \pi, \omega     &::= \Un{\tau} \mid \SeFun{\tau} \mid \ShFun{\tau} \mid \tau \geq \tau' \\
-      \text{Qualified Types}\ \ \     \rho            &::= \tau^{\star} \mid \pi => \rho \\
-      \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma
+                                           t, u         &\in \text{Type Variables}\\
+      \text{Kinds}\ \ \                    \kappa       &::= \star \mid \kappa' \rightarrow \kappa\\
+      \text{Types}\ \ \ \tau^{\kappa}, \phi^{\kappa}      &::= t^\kappa \mid T^{\kappa} \mid \tau^{\kappa' \rightarrow \kappa}\tau^{\kappa'}\\
+      \text{Type Constructors}\ \ \   T^{\kappa}       &\in \mathcal{T}^{\kappa} \\
+                  &\text{where}\quad\{\otimes, \with, \oplus, \tightoverset{\scalebox{0.5}{!}}{\sepimp}, \sepimp, \tightoverset{\scalebox{0.5}{!}}{\shimp}, \shimp \} \subseteq \mathcal{T}^{\star \rightarrow \star \rightarrow \star}\\
+      \text{Predicates}\ \ \          \pi, \omega     &::= \Un{\tau} \mid \SeFun{\phi} \mid \ShFun{\phi} \mid \tau \geq \tau' \\
+      % \text{Qualified Types}\ \ \     \rho            &::= \tau^{\star} \mid \pi => \rho \\
+      % \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma
     \end{flalign*}
   \end{itemize}
-
 \end{frame}
 
+\begin{frame}[fragile, c]
+  \frametitle{\qub{}: Extension}
+  \begin{center}
+    \begin{itemize}
+    \item<1-> Sharing Pair
 
-% \begin{frame}
-%   \frametitle{Multiplicative Implication}
-% \end{frame}
+      \begin{center}
+        \begin{tabular}[c]{c}
+          \begin{haskell}
+data ShPair a b = ShP a b
+
+fst :: ShPair a b ->> a
+fst (ShP a b) = a              {- Succeeds typecheck -}
+
+snd :: ShPair a b ->> b
+snd (ShP a b) = b              {- Succeeds typecheck -}
+          \end{haskell}
+        \end{tabular}
+      \end{center}
+    \item<2-> Separating Pair
+      \begin{center}
+       \begin{tabular}[c]{c}
+          \begin{haskell}
+data SePair a b = SeP a b
+
+@fst :: SePair a b ${\color{red}\sepimp}$ a
+fst (SeP a b) = a              {- Fails typecheck -}@
+
+swap :: SePair a b $\sepimp$ SePair b a
+swap (SeP a b) = SePair b a    {- Succeeds typecheck -}
+          \end{haskell}
+        \end{tabular}
+      \end{center}
+    \end{itemize}
+  \end{center}
+\end{frame}
 
 % \begin{frame}
 %   \frametitle{Additive Implication}

@@ -1,12 +1,185 @@
 \section{Conclusion and Future Work}\label{sec:conclusion}
 
-\begin{frame}[c]
-  \frametitle{Conclusion and Future Work}
-  What next?
+\begin{frame}[fragile, c]
+  \frametitle{Motivation Revisited}
+  \begin{center}
+    {\LARGE
+      What about filehandles, exceptions and memory leaks and runtime crashes?
+    }
+\end{center}
+
 \end{frame}
 
-\begin{frame}[c]
-  \frametitle{Conclusion and Future Work}
+\begin{frame}[fragile, c]
+  \frametitle{Filehandles Revisited}
+  \begin{center}
+  File Handling API in \qub{}
+  \begin{haskell}
+     openFile  :: FilePath   $\sepimp$ IO FileHandle
+
+     closeFile :: FileHandle $\sepimp$ IO ()
+
+     readLine  :: FileHandle $\sepimp$ IO (String, FileHandle)
+
+     writeFile :: String     $\sepimp$ FileHandle
+                             $\sepimp$ IO ((), FileHandle)
+
+
+
+
+     ($\gg\!=$) :: IO a $\sepimp$ (a $\sepimp$ IO b) $\sepimp$ IO b
+   \end{haskell}
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile, c]
+  \frametitle{Filehandles Revisited}
+  \begin{center}
+  {\LARGE \color{white}Fails Typecheck!}
+
+  \begin{haskell}
+               do f  <- openFile "sample.txt"
+                  (s, f)  <- readLine f
+                  () <- closeFile f
+                  () <- closeFile f
+            \end{haskell}
+            \begin{haskell}
+               ($\gg\!=$) (openFile "sample.txt") (\ f ->
+               
+               ($\gg\!=$) (readLine f) (\ (s, f) ->
+               
+               ($\gg\!=$) (closeFile f) (\ _ -> closeFile f)
+            \end{haskell}
+          \end{center}
+
+\end{frame}
+
+\begin{frame}[fragile, c]
+  \begin{center}
+  {\LARGE \color{white}Fails Typecheck!}
+
+  \frametitle{Filehandles Revisited}
+\begin{haskell}
+               do f  <- openFile "sample.txt"
+                  (s, f)  <- readLine f
+                  () <- closeFile f
+                  () <- closeFile f
+               \end{haskell}
+               \begin{haskell}
+               ($\gg\!=$) (openFile "sample.txt") (\ f ->
+               
+               ($\gg\!=$) (readLine f) (\ (s, f) ->
+               
+               @(${\color{red}\gg\!=}$) (closeFile f) (\ _ -> closeFile f)@
+               \end{haskell}
+          \end{center}
+
+\end{frame}
+
+\begin{frame}[fragile, c]
+  \begin{center}
+  \frametitle{Filehandles Revisited}
+  {\LARGE \color{red}Fails Typecheck!}
+
+\begin{haskell}
+                do f  <- openFile "sample.txt"
+                   (s, f)  <- readLine f
+                   () <- closeFile f
+                   () <- closeFile f
+               \end{haskell}
+               
+               \begin{haskell}
+               {- (${\color{dkgreen}\gg\!=}$) :: IO a ${\color{dkgreen}\sepimp}$ (a ${\color{dkgreen}\sepimp}$ IO b) ${\color{dkgreen}\sepimp}$ IO b -}
+               ($\gg\!=$) (openFile "sample.txt") (\ f ->
+               {- (${\color{dkgreen}\gg\!=}$) :: IO a ${\color{dkgreen}\sepimp}$ (a ${\color{dkgreen}\sepimp}$ IO b) ${\color{dkgreen}\sepimp}$ IO b -}
+               ($\gg\!=$) (readLine f) (\ (s, f) ->
+               {- (${\color{dkgreen}\gg\!=}$) :: IO a ${\color{dkgreen}\sepimp}$ (a ${\color{dkgreen}\sepimp}$ IO b) ${\color{dkgreen}\shimp}$ IO b -}
+               @(${\color{red}\gg\!=}$) (closeFile f) (\ _ -> closeFile f)@
+\end{haskell}
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile, c]
+  \frametitle{Exceptions Revisited}
+  \begin{center}
+    \begin{haskell}
+          openFile :: FilePath $\sepimp$ IO FileHandle
+          closeFile :: FileHandle $\sepimp$ IO ()
+          readFile :: FileHandle $\sepimp$ IOF (String, FileHandle)
+          writeFile :: String $\sepimp$ FileHandle $\sepimp$ IOF ((), FileHandle)
+          
+          throw :: Exception $\sepimp$ IOF a
+          catch :: IOF a $\sepimp$ (Exception $\sepimp$ IO a) ->> IO a
+          \end{haskell}
+     
+     \begin{itemize}
+     \item \texttt{IO a} may not fail
+     \item \texttt{IOF a} may fail
+     \end{itemize}
+\end{center}
+\end{frame}
+
+\begin{frame}[fragile, c]
+  \frametitle{Exceptions Revisited}
+  \begin{center}
+    \begin{haskell}
+               readFromFile :: FilePath $\sepimp$ IO (Either String String)
+               readFromFile fpath =
+               do @fh@  <- openFile fpath
+                  ((s, @fh@)  <- readLine @fh@
+                  let l = caps s
+                  () <- closeFile @fh@
+                  return \dollar Right l) `catch`
+                          (\e -> do closeFile @fh@
+                          return \dollar Left "Could not read file")
+                        \end{haskell}
+                      \end{center}
+     \begin{itemize}
+     \item Filehandle \texttt{fh} is shared between the \texttt{catch} arguments
+\item Avoids memory leak
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile, c]
+    \frametitle{Contributions revisited}
+  \begin{itemize}
+  \item
+    Design and implement \qub{} type system
+      \begin{itemize}
+        {\color{red}
+        \item Resources as first class citizens
+        \item Program objects are restricted or unrestricted
+        \item Functions that share resources with their arguments or are separate.
+        }
+      \end{itemize}
+  \item Formalizing and proving important properties of \qub{}
+  \item \qub{} is logic of \BI on steroids
+    \begin{itemize}
+      {\color{red}
+      \item Typing Environments as graphs
+      }
+    \end{itemize}
+  \item {\color{red}Working examples}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile, c]
+  \frametitle{Future Work}
+  \begin{itemize}
+  \item Type inference algorithm $\M{}$ is incomplete.
+    Terms can have two types.
+    \begin{itemize}
+  \item $\{\texttt{Un}\ A\} \mid \emptyset \vdash \lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x: (A \sepimp A \sepimp B) \sepimp A \sepimp B$
+  \item $\emptyset \mid \emptyset \vdash \lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x: (A \sepimp A \shimp B) \sepimp A \shimp B$
+  \end{itemize}
+  \item No formal semantic model yet
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[fragile, c]
   \begin{center}
     \begin{tabular}[h]{c}
       \Huge  Thank You!
@@ -14,8 +187,7 @@
   \end{center}
 \end{frame}
 
-\begin{frame}[c]
-  \frametitle{Conclusion and Future Work}
+\begin{frame}[fragile, c]
   \begin{center}
     \begin{tabular}[h]{c}
       \Huge Q \& A
