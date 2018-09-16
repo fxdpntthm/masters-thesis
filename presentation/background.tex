@@ -541,7 +541,7 @@
   \frametitle{Background Work: Logic of Bunched Implications (\BI{})}
   \begin{center}
     \begin{itemize}
-  \item Contexts are lists or sets
+  \item Contexts are usually lists or sets
     $$ \Gamma, A, B $$
   \item In logic of \BI{}, contexts are trees and called are bunches
   \item Two connective used to combine bunches: $A;B$ or $A, B$\\
@@ -594,25 +594,26 @@
 \begin{frame}[c]
   \frametitle{Background Work: Logic of \BI{}}
   \begin{center}
-  Controlling structural rules based on context
+  Structural rules guided by context connectives
 
   \begin{itemize}
+  \item Weakening
+    \begin{center}
+      $A \vdash A;A$\\
+      $A \not\vdash A,A$
+    \end{center}
 
-\item Contraction
-  \begin{center}
-   $A;B \vdash A$ \qquad $A;B \vdash B$\\
-   $A,B \not\vdash A$ \qquad $A,B \not\vdash B$
- \end{center}
- \item Weakening
-  \begin{center}
-   $A;B \vdash A;B;B$ \qquad $A;B \vdash A;A;B$\\
-   $A,B \not\vdash A,B,B$ \qquad $A,B \not\vdash A,A,B$
- \end{center}
-\end{itemize}
+  \item Contraction
+    \begin{center}
+      $A;A \vdash A$ \qquad $A;B \vdash B$\\
+      $A,B \not\vdash A$ \qquad $A,B \not\vdash B$
+    \end{center}
+  \end{itemize}
+
   Interpretation:
   \begin{itemize}
-  \item Propositions connected with , are separate
-  \item Propositions connected with ; are in sharing
+  \item Propositions connected with , are separate resources
+  \item Propositions connected with ; are sharing resources
 \end{itemize}
 \end{center}
 

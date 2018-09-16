@@ -43,11 +43,12 @@
                   () <- closeFile f
                   () <- closeFile f
             \end{haskell}
+
             \begin{haskell}
                ($\gg\!=$) (openFile "sample.txt") (\ f ->
-               
+
                ($\gg\!=$) (readLine f) (\ (s, f) ->
-               
+
                ($\gg\!=$) (closeFile f) (\ _ -> closeFile f)
             \end{haskell}
           \end{center}
@@ -65,11 +66,12 @@
                   () <- closeFile f
                   () <- closeFile f
                \end{haskell}
+
                \begin{haskell}
                ($\gg\!=$) (openFile "sample.txt") (\ f ->
-               
+
                ($\gg\!=$) (readLine f) (\ (s, f) ->
-               
+
                @(${\color{red}\gg\!=}$) (closeFile f) (\ _ -> closeFile f)@
                \end{haskell}
           \end{center}
@@ -87,7 +89,7 @@
                    () <- closeFile f
                    () <- closeFile f
                \end{haskell}
-               
+
                \begin{haskell}
                {- (${\color{dkgreen}\gg\!=}$) :: IO a ${\color{dkgreen}\sepimp}$ (a ${\color{dkgreen}\sepimp}$ IO b) ${\color{dkgreen}\sepimp}$ IO b -}
                ($\gg\!=$) (openFile "sample.txt") (\ f ->
@@ -107,15 +109,14 @@
           closeFile :: FileHandle $\sepimp$ IO ()
           readFile :: FileHandle $\sepimp$ IOF (String, FileHandle)
           writeFile :: String $\sepimp$ FileHandle $\sepimp$ IOF ((), FileHandle)
-          
+
           throw :: Exception $\sepimp$ IOF a
           catch :: IOF a $\sepimp$ (Exception $\sepimp$ IO a) ->> IO a
           \end{haskell}
-     
-     \begin{itemize}
-     \item \texttt{IO a} may not fail
-     \item \texttt{IOF a} may fail
-     \end{itemize}
+\begin{itemize}
+\item May not fail \texttt{IO a}
+\item May fail \texttt{IOF a}
+\end{itemize}
 \end{center}
 \end{frame}
 
