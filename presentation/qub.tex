@@ -1,48 +1,45 @@
 \section{\qub{}}\label{sec:qub}
 % (10 min)
 
-\begin{frame}
+\begin{frame}[c]
   \frametitle{\qub{}}
   \begin{center}
-    \begin{itemize}
-    \item Quill: {\color{blue}Qu}al{\color{blue}i}fied types + {\color{blue}l}inear {\color{blue}l}ogic\\
-    \item \qub{}: {\color{blue}Qu}alified types + logic of {\color{blue}b}unched implications 
-    \end{itemize}
+{\LARGE      \qub{}: Curry-Howard interpretation of logic of \BI{}}
   \end{center}
 \end{frame}
 
+% \begin{frame}
+%   \frametitle{\qub{}: Types and Predicates}
+%   \begin{center}
+%       \begin{minipage}{0.65\linewidth}
+%     \begin{flalign*}
+%       \text{Types}\ \ \  \tau, \upsilon, \phi         &::= t \mid \iota \mid \tau \rightarrow \tau\\
+%       &\text{where}\qquad \rightarrow \in \{\tightoverset{\scalebox{0.5}{!}}{\sepimp}, \sepimp, \tightoverset{\scalebox{0.5}{!}}{\shimp}, \shimp \}\\
+%       \text{Predicates}\ \ \        \pi,\omega        &::= \Un{\tau} \mid \ShFun{\phi} \mid \SeFun{\phi} \mid \tau \geq \tau' %\\
+%       % { \color{battleshipgrey}
+%       % \text{Qualified Types}\ \ \     \rho            &::= \tau \mid \pi => \rho \\
+%       % \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma
+%       % }
+%     \end{flalign*}
+%   \end{minipage}
+
+%   \begin{itemize}
+%   \item $\SeFun{\phi}$: $\phi$ is a function that is separate from its argument
+%   \item $\ShFun{\phi}$: $\phi$ is a function that is in sharing with its argument
+%   \item $\Un{\tau}$: $\tau$ does not have resources or they can be copied/dropped easily
+%   \end{itemize}
+%   \end{center}
+% \end{frame}
+
+
 \begin{frame}
-  \frametitle{\qub{}: Types and Predicates}
-  \begin{center}
-      \begin{minipage}{0.65\linewidth}
-    \begin{flalign*}
-      \text{Types}\ \ \  \tau, \upsilon, \phi         &::= t \mid \iota \mid \tau \rightarrow \tau\\
-      &\text{where}\qquad \rightarrow \in \{\tightoverset{\scalebox{0.5}{!}}{\sepimp}, \sepimp, \tightoverset{\scalebox{0.5}{!}}{\shimp}, \shimp \}\\
-      \text{Predicates}\ \ \        \pi,\omega        &::= \Un{\tau} \mid \ShFun{\phi} \mid \SeFun{\phi} \mid \tau \geq \tau' %\\
-      % { \color{battleshipgrey}
-      % \text{Qualified Types}\ \ \     \rho            &::= \tau \mid \pi => \rho \\
-      % \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma
-      % }
-    \end{flalign*}
-  \end{minipage}
-
-  \begin{itemize}
-  \item $\SeFun{\phi}$: $\phi$ is a function that is separate from its argument
-  \item $\ShFun{\phi}$: $\phi$ is a function that is in sharing with its argument
-  \item $\Un{\tau}$: $\tau$ does not have resources or they can be copied/dropped easily
-  \end{itemize}
-  \end{center}
-\end{frame}
-
-
-\begin{frame}
-  \frametitle{\qub{}: Types and Predicates}
+  \frametitle{\qub{}: Types}
   \begin{center}
     \begin{minipage}{0.65\linewidth}
       \begin{flalign*}
         \text{Types}\ \ \  \tau, \upsilon, \phi         &::= t \mid \iota \mid \tau \rightarrow \tau\\
-        &\text{where}\qquad \rightarrow \in \{\tightoverset{\scalebox{0.5}{!}}{\sepimp}, \sepimp, \tightoverset{\scalebox{0.5}{!}}{\shimp}, \shimp \}\\
-        \text{Predicates}\ \ \        \pi,\omega        &::= \Un{\tau} \mid \ShFun{\phi} \mid \SeFun{\phi} \mid \tau \geq \tau' %\\
+        &\text{where}\qquad \rightarrow \in \{ \sepimp, \shimp \}\\
+        % \text{Predicates}\ \ \        \pi,\omega        &::= \Un{\tau} \mid \ShFun{\phi} \mid \SeFun{\phi} \mid \tau \geq \tau' %\\
         % { \color{battleshipgrey}
         % \text{Qualified Types}\ \ \     \rho            &::= \tau \mid \pi => \rho \\
         % \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma
@@ -52,7 +49,7 @@
   \begin{itemize}
   \item $\sepimp$: Function type that is separate from its argument
   \item $\shimp$: Function type that is in sharing with its argument
-  \item $\tightoverset{\scalebox{0.5}{!}}{\sepimp}$, $\tightoverset{\scalebox{0.5}{!}}{\shimp}$: unrestricted versions of $\sepimp$ and $\shimp$
+  % \item $\tightoverset{\scalebox{0.5}{!}}{\sepimp}$, $\tightoverset{\scalebox{0.5}{!}}{\shimp}$: unrestricted versions of $\sepimp$ and $\shimp$
   \end{itemize}
   \end{center}
 \end{frame}

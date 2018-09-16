@@ -3,19 +3,19 @@
 \begin{frame}
   \frametitle{Examples: Basic Data Structures}
   \begin{itemize}
-  \item Multiplicative Product
+  \item Multiplicative Product (Separating Pair)
       \begin{flalign*}
       \tau \otimes \tau' &= \tau \sepimp \tau' \sepimp (\tau \sepimp \tau' \sepimp \upsilon) \sepimp \upsilon\\
-      (,) &= \lambda^{\sepimp}  x. \lambda^{\sepimp}  y. \lambda^{\sepimp}  f. f x y
+      \Pair{x,y} &= \lambda^{\sepimp}  x. \lambda^{\sepimp}  y. \lambda^{\sepimp}  f. f x y
     \end{flalign*}
-  \item Additive Product
+  \item Additive Product  (Sharing Pair)
     \begin{flalign*}
       \tau \with \tau' &= \tau \sepimp \tau' \shimp (\tau \sepimp \tau' \shimp \upsilon) \shimp \upsilon\\
-      (;) &= \lambda^{\sepimp}  x. \lambda^{\shimp} y. \lambda^{\shimp} f. f x y
+      \Pair{x;y} &= \lambda^{\sepimp}  x. \lambda^{\shimp} y. \lambda^{\shimp} f. f x y
     \end{flalign*}
   \item Sums
     \begin{flalign*}
-      \tau \oplus \tau' &= (\tau \rightarrow \upsilon) \rightarrow (\tau' \rightarrow \upsilon) \rightarrow \upsilon\\
+      \tau \oplus \tau' &= (\tau \sepimp \upsilon) \rightarrow (\tau' \shimp \upsilon) \shimp \upsilon\\
       \texttt{case}\ {c}\ \texttt{of}\ {\{ f;g \}} &= \lambda^{\sepimp}c. \lambda^{\shimp}f. \lambda^{\shimp}g. c f g
     \end{flalign*}
     \begin{minipage}[h]{0.45\linewidth}
@@ -33,11 +33,148 @@
   \end{itemize}
 \end{frame}
 
+\begin{frame}[c, fragile]
+  \frametitle{\qub{}: Extension}
+  \begin{center}
+   {\LARGE Programmer Friendly}
+   \begin{itemize}
+   \item<1-> Define custom types
+
+   \begin{haskell}
+                  data Bool   = True | False
+                  data List a = Nil  | Cons a a
+                  data Tree a = Leaf | Node a a
+
+                               $\vdots$
+   \end{haskell}
+
+   \item<2-> Type classes, functional dependencies
+
+    \begin{haskell}
+                  class Monad m a | a -> m where
+                      return :: a -> m a
+                      ($\gg\!=$)  :: a -> (a -> m b) -> m b
+
+                           $\vdots$
+   \end{haskell}
+ \end{itemize}
+
+ \end{center}
+\end{frame}
+
+
+\begin{frame}[c]
+  \frametitle{More Background Work: Qualified Types}
+  \begin{center}
+    {\LARGE   $$\Gamma \vdash M:\sigma $$}
+``Type of $M$ is $\sigma$\\
+  and $\Gamma$ specifies the free variables in $M$''
+
+  {\LARGE   $${\color{red}P} \mid \Gamma \vdash M:\sigma $$}
+``Type of $M$ is $\sigma$\\
+  when predicates in $P$ are satisfied\\
+  and $\Gamma$ specifies the free variables in $M$''\cite{jones_theory_1994}
+
+  Incorporate predicates into type language for finer grained polymorphism
+  \end{center}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{More Background Work: Qualified Types}
+  \begin{center}
+  {\LARGE   $${\color{red}P} \mid \Gamma \vdash M:\sigma $$}
+``Type of $M$ is $\sigma$\\
+  when predicates in $P$ are satisfied\\
+  and $\Gamma$ specifies the free variables in $M$''\cite{jones_theory_1994}
+
+  Incorporate predicates into type language for finer grained polymorphism
+
+
+  {\LARGE $(P \mid \sigma)$}
+
+  Instances of $\sigma$ that satisfy P
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{More Background Work: Quill}
+  \begin{center}
+    Quill\citep{morris_best_2016}: {\color{blue}Qu}al{\color{blue}i}fied types + {\color{blue}l}inear {\color{blue}l}ogic\\
+  \end{center}
+  Predicates:
+  \begin{itemize}
+  \item $\Un{\tau}$\quad If $\tau$ does not have resources
+    or can be copied or dropped easily.
+  \item $\Fun{\tau}$\quad If $\tau$ is a function type
+  \item $\tau \geq \tau'$\quad If $\tau$ less restricting than $\tau'$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile, c]
+  \frametitle{More Background Work: Quill}
+  \begin{center}
+    Quill\citep{morris_best_2016}: {\color{blue}Qu}al{\color{blue}i}fied types + {\color{blue}l}inear {\color{blue}l}ogic\\
+  \end{center}
+  Qualifying Types:
+  \begin{itemize}
+  \item Unrestricted Types: $\Un{\texttt{Int}}$, $\Un{\text{Bool}}$
+  \item Restricted or Linear Types: FileHandle
+  \item Function Types: $\Fun{(\texttt{Int} \rightarrow \texttt{Int})}$,
+    $\Fun{(\texttt{String} \rightarrow \texttt{String})}$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{\qub{}: Types and Predicates}
+  \begin{center}
+      \begin{minipage}{0.65\linewidth}
+    \begin{flalign*}
+      \text{Types}\ \ \  \tau, \upsilon, \phi         &::= t \mid \iota \mid \tau \rightarrow \tau\\
+      &\text{where}\qquad \rightarrow \in \{\tightoverset{\scalebox{0.5}{!}}{\sepimp}, \sepimp, \tightoverset{\scalebox{0.5}{!}}{\shimp}, \shimp \}\\
+      \text{Predicates}\ \ \        \pi,\omega        &::= \Un{\tau} \mid \ShFun{\phi} \mid \SeFun{\phi} \mid \tau \geq \tau' %\\
+      % { \color{battleshipgrey}
+      % \text{Qualified Types}\ \ \     \rho            &::= \tau \mid \pi => \rho \\
+      % \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma
+      % }
+    \end{flalign*}
+  \end{minipage}
+
+  \begin{itemize}
+  \item $\SeFun{\phi}$: $\phi$ is a function that is separate from its argument
+  \item $\ShFun{\phi}$: $\phi$ is a function that is in sharing with its argument
+  \item $\Un{\tau}$: $\tau$ does not have resources or they can be copied/dropped easily
+  \end{itemize}
+  \end{center}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{\qub{}: Types and Predicates}
+  \begin{center}
+    \begin{minipage}{0.65\linewidth}
+      \begin{flalign*}
+        \text{Types}\ \ \  \tau, \upsilon, \phi         &::= t \mid \iota \mid \tau \rightarrow \tau\\
+        &\text{where}\qquad \rightarrow \in \{ \sepimp, \shimp \}\\
+        \text{Predicates}\ \ \        \pi,\omega        &::= \Un{\tau} \mid \ShFun{\phi} \mid \SeFun{\phi} \mid \tau \geq \tau' %\\
+        % { \color{battleshipgrey}
+        % \text{Qualified Types}\ \ \     \rho            &::= \tau \mid \pi => \rho \\
+        % \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma
+        % }
+    \end{flalign*}
+    \end{minipage}
+  \begin{itemize}
+  \item $\sepimp$: Function type that is separate from its argument
+  \item $\shimp$: Function type that is in sharing with its argument
+  \item $\tightoverset{\scalebox{0.5}{!}}{\sepimp}$, $\tightoverset{\scalebox{0.5}{!}}{\shimp}$: Unrestricted versions of $\sepimp$ and $\shimp$
+  \end{itemize}
+  \end{center}
+\end{frame}
+
+
 \begin{frame}
   \frametitle{\qub{}: Extension}
   \begin{itemize}
-  \item User defined types and type classes
-  \item Kind System with type constructors
+  \item Kind System with type constructors and qualified types\cite{barendregt_1991, mark_type_2000}
     \begin{flalign*}
                                            t, u         &\in \text{Type Variables}\\
       \text{Kinds}\ \ \                    \kappa       &::= \star \mid \kappa' \rightarrow \kappa\\
@@ -50,6 +187,7 @@
     \end{flalign*}
   \end{itemize}
 \end{frame}
+
 
 \begin{frame}[fragile, c]
   \frametitle{\qub{}: Extension}
