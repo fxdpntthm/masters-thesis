@@ -428,18 +428,23 @@
   \begin{center}
     \begin{itemize}
 
-    \item Two meanings of conjunction: Separate or Shared
-
-        \begin{tabular}[h]{c c c}
-          $A, B \vdash A$ &  $A, B \vdash B$   & Contraction \\
-
-          \multicolumn{2}{c}{$A \vdash A \wedge A$} & Weakening \\
-
-          \multicolumn{2}{c}{$A, B \vdash B, A$} & Exchange
-        \end{tabular}
-
-      \item In logic of \BI{}, contexts are trees and called are bunches
-    \item Two connective used to combine bunches: $A;B$ or $A, B$\\
+    \item<1-> Conjunction ($\wedge$) split into two flavors
+      \begin{center}
+      \begin{tabular}[c]{c l}
+      $A \otimes B$& A is separate from B\\
+      $A \with B$&  A is a different view of B or A shares with B
+      \end{tabular}
+    \end{center}
+    \item<2-> \BI{} contexts sensitive to different conjunction
+      \begin{center}
+        \begin{minipage}[h]{0.5\linewidth}
+          $A, B \vdash A \otimes B$
+        \end{minipage}%
+        \begin{minipage}[h]{0.5\linewidth}
+          $A; B \vdash A \with B$
+        \end{minipage}
+    \end{center}
+    \item<3-> Contexts form trees, called bunches
       \begin{center}
         \begin{figure}[h]\centering
       \begin{minipage}{0.5\linewidth}\centering
@@ -458,7 +463,7 @@
           [.C ]
           ]
         \end{tikzpicture}
-        \caption*{$\Gamma = (A;B),C$}
+        \caption*{$(A;B),C$}
       \end{minipage}%
       \begin{minipage}{0.5\linewidth}\centering
         \tikzset{every tree node/.style={minimum width=2em},
@@ -476,7 +481,7 @@
           ]
           ]
         \end{tikzpicture}
-        \caption*{$\Gamma = A;(B,C)$}
+        \caption*{$A;(B,C)$}
       \end{minipage}
     \end{figure}
 
@@ -489,224 +494,67 @@
 \begin{frame}[c]
   \frametitle{Background Work: Logic of \BI{}}
   \begin{center}
-  Structural rules guided by context connectives
+  Context connectives guide structural rules
 
   \begin{itemize}
-  \item Weakening
+  \item Contraction
     \begin{center}
       $A \vdash A;A$\\
       $A \not\vdash A,A$
     \end{center}
 
-  \item Contraction
+  \item Weakening
     \begin{center}
-      $A;A \vdash A$ \qquad $A;B \vdash B$\\
+      $A;A \vdash A$ \qquad $A;B \vdash B$ \qquad $A;B \vdash A$\\
       $A,B \not\vdash A$ \qquad $A,B \not\vdash B$
     \end{center}
   \end{itemize}
-
-  Interpretation:
-  \begin{itemize}
-  \item Propositions connected with , are separate resources
-  \item Propositions connected with ; are sharing resources
-\end{itemize}
 \end{center}
-
 \end{frame}
 
 \begin{frame}[c]
   \frametitle{Background Work: Logic of \BI{}}
   \begin{center}
-    (Absence of) Structural rules and logical connectives:
-    \begin{itemize}
-    \item Meaning of conjunction
-      \begin{center}
-      \begin{minipage}{0.45\linewidth}
-        \begin{flalign*}
-          A,B \vdash A \otimes B
-        \end{flalign*}
-      \end{minipage}\hfill%
-      \begin{minipage}{0.45\linewidth}
-        \begin{flalign*}
-        A;B \vdash A \with B
-      \end{flalign*}
-      \end{minipage}
-    \end{center}
-    \item Meaning of implication
-      \begin{minipage}{0.5\linewidth}
-        \begin{prooftree}
-          \AxiomC{$\Gamma, A \vdash B$} \RightLabel{[$\sepimp$I]}
-          \UnaryInfC{$\Gamma \vdash A \sepimp B$}
-        \end{prooftree}
-      \end{minipage}%
-      \begin{minipage}{0.5\linewidth}
-        \begin{prooftree}
-          \AxiomC{$\Gamma; A \vdash B$} \RightLabel{[$\shimp$I]}
-          \UnaryInfC{$\Gamma \vdash A \shimp B$}
-        \end{prooftree}
-      \end{minipage}
-    \end{itemize}
+    Implications naturally get corresponding flavors
+
+    $A \otimes B \vdash C\ \text{iff}\ A \vdash B \sepimp C$
+
+    $A \with B \vdash C\ \text{iff}\ A \vdash B \shimp C$
   \end{center}
 \end{frame}
 
+\begin{frame}
+  \frametitle{Background work: Logic of \BI{}}
+  \begin{center}
+    Coffee Shop (Revisited)
 
-% \begin{frame}[c]
-%   \frametitle{Background Work: Typing Rules with Qualified Types}
-%   \HM{} system with qualified Types:
-%   \begin{figure}[h]
-%     \centering
-%     {\small
-%       \begin{minipage}{.35\textwidth}
-%       \begin{prooftree}
-%         \AxiomC{$x: \sigma \in \Gamma$} \RightLabel{[VAR]}
-%         \UnaryInfC{$P \mid \Gamma \vdash x : \sigma $}
-%       \end{prooftree}
-%     \end{minipage}%
-%     % let
-%     \begin{minipage}{.55\textwidth}
-%       \begin{prooftree}
-%         \AxiomC{$P \mid \Gamma \vdash M : \sigma$}
-%         \AxiomC{$Q \mid \Gamma_{x}, x: \sigma \vdash N: \tau$} \RightLabel{[LET]}
-%         \BinaryInfC{$P,Q \mid \Gamma \vdash (\Let{x}{M}{N}) : \tau$}
-%       \end{prooftree}
-%     \end{minipage}
+    1 cup coffee costs \$2 \qquad  1 cookie costs \$1
+    \begin{tabular}[c]{c c c c c}
+        \raisebox{-0.4\height}{\includegraphics[scale=0.12]{one_usd}}
+        & {\LARGE $\vdash$}
+        & \raisebox{-0.4\height}{\includegraphics[scale=0.121]{one_usd_2}}
+        & {\LARGE $\sepimp$}
+        & \raisebox{-0.4\height}{\includegraphics[scale=0.025]{coffee_cup}}
+      \end{tabular}
 
-%     % forall I
-%     \begin{minipage}{0.55\textwidth}
-%       \begin{prooftree}
-%         \AxiomC{$P \mid \Gamma \vdash M : \sigma$}\RightLabel{[$\forall$ I]}
-%         \AxiomC{$t \notin \texttt{fvs}(\Gamma) \cup \texttt{fvs}(P)$}
-%         \BinaryInfC{$P \mid \Gamma \vdash M : \forall t. \sigma$}
-%       \end{prooftree}
-%     \end{minipage}%
-%     % forall E
-%     \begin{minipage}{0.40\textwidth}
-%       \begin{prooftree}
-%         \AxiomC{$P \mid \Gamma \vdash M : \forall t. \sigma$}\RightLabel{[$\forall$ E]}
-%         \UnaryInfC{$P \mid \Gamma \vdash M: [\tau / t] \sigma$}
-%       \end{prooftree}
-%     \end{minipage}
+      \begin{tabular}[c]{c c c c c}
+        \raisebox{-0.4\height}{\includegraphics[scale=0.12]{one_usd}}
+        & {\LARGE $\vdash$}
+        & \raisebox{-0.4\height}{\includegraphics[scale=0.16]{one_usd_rev}}
+        & {\LARGE $\shimp$}
+        & \raisebox{-0.4\height}{\includegraphics[scale=0.25]{cookie}}
+      \end{tabular}
 
-%     % -> I
-%     \begin{minipage}{0.40\textwidth}
-%       \begin{prooftree}
-%         \AxiomC{$P \mid \Gamma_{x}, x: \tau \vdash M : \tau'$} \RightLabel{[$\rightarrow$ I]}
-%         \UnaryInfC{$P \mid \Gamma \vdash \lambda x. M : \tau \rightarrow \tau'$}
-%       \end{prooftree}
-%     \end{minipage}%
-%     % -> E
-%     \begin{minipage}{0.55\textwidth}
-%       \begin{prooftree}
-%         \AxiomC{$P \mid \Gamma \vdash M : \tau \rightarrow \tau'$}
-%         \AxiomC{$P \mid \Gamma \vdash N : \tau$} \RightLabel{[$\rightarrow$ E]}
-%         \BinaryInfC{$P \mid \Gamma \vdash M N : \tau'$}
-%       \end{prooftree}
-%     \end{minipage}
+      \begin{tabular}[c]{c c c c c}
+        \raisebox{-0.4\height}{\includegraphics[scale=0.12]{one_usd}}
+        & {\LARGE $\not\vdash$}
+        & \raisebox{-0.4\height}{\includegraphics[scale=0.17]{one_usd_rev}}
+        & {\LARGE $\shimp$}
+        & \raisebox{-0.4\height}{\includegraphics[scale=0.025]{coffee_cup}}
+      \end{tabular}
 
-%     % => I
-%     \begin{minipage}{0.40\textwidth}
-%       {\color{red}
-%         \begin{prooftree}
-%           \AxiomC{$P, \pi \mid \Gamma \vdash M : \rho$} \RightLabel{[$\Rightarrow$I]}
-%           \UnaryInfC{$P \mid \Gamma \vdash M : \pi \Rightarrow \rho$}
-%         \end{prooftree}
-%       }
-%       \begin{center}
-%       $\pi \Rightarrow \rho$: $\pi$ qualifies $\rho$
-%     \end{center}
-
-%     \end{minipage}%
-%     % => E
-%     \begin{minipage}{0.45\textwidth}
-%       {\color{red}
-%         \begin{prooftree}
-%           \AxiomC{$P \mid \Gamma \vdash M : \pi \Rightarrow \rho$}
-%           \AxiomC{$P \Rightarrow \pi$} \RightLabel{[$\Rightarrow$E]}
-%           \BinaryInfC{$P \mid \Gamma \vdash M: \rho$}
-%         \end{prooftree}
-%       }
-%       \begin{center}
-%       $P \Rightarrow \pi$: $P$ entails $\pi$
-%     \end{center}
-
-%     \end{minipage}
-%   }
-% \end{figure}
-% \begin{center}
-% \qquad\qquad
-% \end{center}
-% \end{frame}
-
-
-% \begin{frame}[fragile, c]
-%   \frametitle{Background Work: $\alpha\lambda$-calculus}
-%   Curry-Howard interpretation of logic of \BI{}\footfullcite{ohearn_bunched_2003}\\
-%   \begin{centering}
-%   \fbox{Language}
-%   \begin{flalign*}
-%    \text{Context}\ \ \ \Gamma, \Delta &::= \{\}_m \mid \{\}_a \mid x:\tau \mid \Gamma, \Delta \mid \Gamma;\Delta\\
-%     \text{Types}\ \ \  \tau, \upsilon &::= t \mid \iota \mid \tau \shimp \tau \mid \tau \sepimp \tau \\
-%     \text{Expressions}\ \ \ M, N      &::= x \mid \lambda x. M \mid \alpha x. M \mid M N
-%   \end{flalign*}
-%   \fbox{Typing rules}
-% \begin{figure}[h]
-%   \centering
-%     % var
-%     \begin{minipage}{0.30\textwidth}
-%       \begin{prooftree}
-%         \AxiomC{$x: \tau \in \Gamma$} \RightLabel{[VAR]}
-%         \UnaryInfC{$\Gamma \vdash x : \tau $}
-%       \end{prooftree}
-%     \end{minipage}%
-%     % CTR
-%     \begin{minipage}{0.30\textwidth}
-%       \begin{prooftree}
-%         \AxiomC{$\Gamma; \Gamma \vdash M:\tau$} \RightLabel{[CTR]}
-%         \UnaryInfC{$\Gamma \vdash M:\tau$}
-%       \end{prooftree}
-%     \end{minipage}%
-%     % WKN
-%     \begin{minipage}{0.30\textwidth}
-%       \begin{prooftree}
-%         \AxiomC{$\Gamma \vdash M:\tau$} \RightLabel{[WKN]}
-%         \UnaryInfC{$\Gamma;\Delta \vdash M:\tau $}
-%       \end{prooftree}
-%     \end{minipage}
-
-%     % -* I
-%     \begin{minipage}{0.45\textwidth}
-%       \begin{prooftree}
-%         \AxiomC{$\Gamma_{x}, x: \tau \vdash M : \tau'$} \RightLabel{[$\sepimp$I]}
-%         \UnaryInfC{$\Gamma \vdash \lambda  x. M : \tau \sepimp \tau'$}
-%       \end{prooftree}
-%     \end{minipage}%
-%     % -* E
-%     \begin{minipage}{0.45\textwidth}
-%       \begin{prooftree}
-%         \AxiomC{$\Gamma \vdash M : \tau \sepimp \tau' \ \ \ \ \
-%           \Delta \vdash N : \tau$} \RightLabel{[$\sepimp$E]}
-%         \UnaryInfC{$\Gamma,\Delta \vdash M N : \tau'$}
-%       \end{prooftree}
-%     \end{minipage}
-
-%     % -> I
-%     \begin{minipage}{0.45\textwidth}
-%       \begin{prooftree}
-%         \AxiomC{$\Gamma_{x}; x: \tau \vdash M : \tau'$} \RightLabel{[$\shimp$I]}
-%         \UnaryInfC{$\Gamma \vdash \alpha  x. M : \tau \shimp \tau'$}
-%       \end{prooftree}
-%     \end{minipage}%
-%     % -> E
-%     \begin{minipage}{0.45\textwidth}
-%       \begin{prooftree}
-%         \AxiomC{$\Gamma \vdash M : \tau \shimp \tau' \ \ \ \ \
-%           \Delta \vdash N : \tau$} \RightLabel{[$\shimp$E]}
-%         \UnaryInfC{$\Gamma;\Delta \vdash M N : \tau'$}
-%       \end{prooftree}
-%     \end{minipage}
-% \end{figure}
-% \end{centering}
-% \end{frame}
+  \end{center}
+\end{frame}
 
 
 %%% Local Variables:
