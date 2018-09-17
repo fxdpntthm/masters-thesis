@@ -1,7 +1,7 @@
 \section{Examples And Extensions}\label{sec:examples}
 
 \begin{frame}
-  \frametitle{Examples: Basic Data Structures}
+  \frametitle{Examples: $\lambda$-encoding standard structures}
   \begin{itemize}
   \item Multiplicative Product (Separating Pair)
       \begin{flalign*}
@@ -36,7 +36,7 @@
 \begin{frame}[c, fragile]
   \frametitle{\qub{}: Extension}
   \begin{center}
-   {\LARGE Programmer Friendly}
+   {\large Towards programmer friendly}
    \begin{itemize}
    \item<1-> Define custom types
 
@@ -44,18 +44,19 @@
                   data Bool   = True | False
                   data List a = Nil  | Cons a a
                   data Tree a = Leaf | Node a a
-
                                $\vdots$
    \end{haskell}
-
    \item<2-> Type classes, functional dependencies
-
     \begin{haskell}
-                  class Monad m a | a -> m where
-                      return :: a -> m a
+                 class Monad m a  where
+                      return      :: a -> m a
                       ($\gg\!=$)  :: a -> (a -> m b) -> m b
 
-                           $\vdots$
+                 class Collection e co | co -> e where
+                      empty :: co
+                      insert :: e -> co -> co
+                      member :: e -> co -> Bool
+                              $\vdots$
    \end{haskell}
  \end{itemize}
 
@@ -64,65 +65,74 @@
 
 
 \begin{frame}[c]
-  \frametitle{More Background Work: Qualified Types}
-  \begin{center}
-    {\LARGE   $$\Gamma \vdash M:\sigma $$}
-``Type of $M$ is $\sigma$\\
-  and $\Gamma$ specifies the free variables in $M$''
-
-  {\LARGE   $${\color{red}P} \mid \Gamma \vdash M:\sigma $$}\footnote{\cite{jones_theory_1994}}\footnote{abc}
-``Type of $M$ is $\sigma$\\
-  when predicates in $P$ are satisfied\\
-  and $\Gamma$ specifies the free variables in $M$''
-
-  Incorporate predicates into type language for finer grained polymorphism
-  \end{center}
-\end{frame}
-
-\begin{frame}[c]
-  \frametitle{More Background Work: Qualified Types}
-  \begin{center}
-  {\LARGE   $${\color{red}P} \mid \Gamma \vdash M:\sigma $$}
-``Type of $M$ is $\sigma$\\
-  when predicates in $P$ are satisfied\\
-  and $\Gamma$ specifies the free variables in $M$''\footcite{jones_theory_1994}
-
-  Incorporate predicates into type language for finer grained polymorphism
-
-
-  {\LARGE $(P \mid \sigma)$}
-
-  Instances of $\sigma$ that satisfy P
-  \end{center}
-\end{frame}
-
-\begin{frame}
-  \frametitle{More Background Work: Quill}
-  \begin{center}
-    Quill\footcite{morris_best_2016}: {\color{blue}Qu}al{\color{blue}i}fied types + {\color{blue}l}inear {\color{blue}l}ogic\\
-  \end{center}
-  Predicates:
+  \frametitle{More Bootstrapping: Qualified Types and Kinds}
   \begin{itemize}
-  \item $\Un{\tau}$\quad If $\tau$ does not have resources
-    or can be copied or dropped easily.
-  \item $\Fun{\tau}$\quad If $\tau$ is a function type
-  \item $\tau \geq \tau'$\quad If $\tau$ less restricting than $\tau'$
+  \item Incorporate predicates into type language for finer grained
+    polymorphism
+    % {\large   $\Gamma \vdash M:\sigma $}
+    % ``Type of $M$ is $\sigma$\\
+    % and $\Gamma$ specifies the free variables in $M$\footnote[frame]{\fullcite{jones_theory_1994}}''
+    \begin{center}
+      $P \mid \Gamma \vdash M:\sigma$
+    \end{center}
+    % ``Type of $M$ is $\sigma$\\
+    % when predicates in $P$ are satisfied\\
+    % and $\Gamma$ specifies the free variables in $M$\footnote[frame]{\fullcite{jones_theory_1994}}''
+  \item Incorporate kinds, build hierarchy over types and generalize types to type constructors\footnote[frame]{\fullcite{barendregt_1991, jones_system_1993}}
+    \begin{center}
+      \begin{flalign*}
+        \text{Kinds}\ \ \                    \kappa       &::= \star \mid \kappa' \rightarrow \kappa\\
+        \text{Types}\ \ \ \tau^{\kappa}, \phi^{\kappa}      &::= t^\kappa \mid T^{\kappa} \mid \tau^{\kappa' \rightarrow \kappa}\tau^{\kappa'}\\
+        \text{Type Constructors}\ \ \   T^{\kappa}         &\in \mathcal{T}^{\kappa}\quad \text{where}\quad T^{\kappa} \subseteq \dots
+      \end{flalign*}
+    \end{center}
   \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile, c]
-  \frametitle{More Background Work: Quill}
-  \begin{center}
-    Quill\footcite{morris_best_2016}: {\color{blue}Qu}al{\color{blue}i}fied types + {\color{blue}l}inear {\color{blue}l}ogic\\
-  \end{center}
-  Qualifying Types:
-  \begin{itemize}
-  \item Unrestricted Types: $\Un{\texttt{Int}}$, $\Un{\text{Bool}}$
-  \item Restricted or Linear Types: FileHandle
-  \item Function Types: $\Fun{(\texttt{Int} \rightarrow \texttt{Int})}$,
-    $\Fun{(\texttt{String} \rightarrow \texttt{String})}$
-  \end{itemize}
-\end{frame}
+% \begin{frame}[c]
+%   \frametitle{More Bootstrapping: Qualified Types}
+%   \begin{center}
+%   {\LARGE   $${\color{red}P} \mid \Gamma \vdash M:\sigma $$}
+% ``Type of $M$ is $\sigma$\\
+%   when predicates in $P$ are satisfied\\
+%   and $\Gamma$ specifies the free variables in $M$''\footcite{jones_theory_1994}
+
+%   Incorporate predicates into type language for finer grained polymorphism
+
+
+%   {\LARGE $(P \mid \sigma)$}
+
+%   Instances of $\sigma$ that satisfy P
+%   \end{center}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{More Bootstrapping: Quill}
+%   \begin{center}
+%     Quill\footcite{morris_best_2016}: {\color{blue}Qu}al{\color{blue}i}fied types + {\color{blue}l}inear {\color{blue}l}ogic\\
+%   \end{center}
+%   Predicates:
+%   \begin{itemize}
+%   \item $\Un{\tau}$\quad If $\tau$ does not have resources
+%     or can be copied or dropped easily.
+%   \item $\Fun{\tau}$\quad If $\tau$ is a function type
+%   \item $\tau \geq \tau'$\quad If $\tau$ less restricting than $\tau'$
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}[fragile, c]
+%   \frametitle{More Bootstrapping: Quill}
+%   \begin{center}
+%     Quill\footcite{morris_best_2016}: {\color{blue}Qu}al{\color{blue}i}fied types + {\color{blue}l}inear {\color{blue}l}ogic\\
+%   \end{center}
+%   Qualifying Types:
+%   \begin{itemize}
+%   \item Unrestricted Types: $\Un{\texttt{Int}}$, $\Un{\text{Bool}}$
+%   \item Restricted or Linear Types: FileHandle
+%   \item Function Types: $\Fun{(\texttt{Int} \rightarrow \texttt{Int})}$,
+%     $\Fun{(\texttt{String} \rightarrow \texttt{String})}$
+%   \end{itemize}
+% \end{frame}
 
 \begin{frame}
   \frametitle{\qub{}: Types and Predicates}
@@ -131,7 +141,7 @@
     \begin{flalign*}
       \text{Types}\ \ \  \tau, \upsilon, \phi         &::= t \mid \iota \mid \tau \rightarrow \tau\\
       &\text{where}\qquad \rightarrow \in \{\tightoverset{\scalebox{0.5}{!}}{\sepimp}, \sepimp, \tightoverset{\scalebox{0.5}{!}}{\shimp}, \shimp \}\\
-      \text{Predicates}\ \ \        \pi,\omega        &::= \Un{\tau} \mid \ShFun{\phi} \mid \SeFun{\phi} \mid \tau \geq \tau' %\\
+      \text{Predicates}\ \ \        \pi,\omega        &::= \Un{\tau} \mid \ShFun{\phi} \mid \SeFun{\phi}\\% \mid \tau \geq \tau' %\\
       % { \color{battleshipgrey}
       % \text{Qualified Types}\ \ \     \rho            &::= \tau \mid \pi => \rho \\
       % \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma
@@ -142,7 +152,7 @@
   \begin{itemize}
   \item $\SeFun{\phi}$: $\phi$ is a function that is separate from its argument
   \item $\ShFun{\phi}$: $\phi$ is a function that is in sharing with its argument
-  \item $\Un{\tau}$: $\tau$ does not have resources or they can be copied/dropped easily
+  \item $\Un{\tau}$: $\tau$ does not have resources or they can be copied/dropped easily\footnote[frame]{\fullcite{morris_best_2016}}
   \end{itemize}
   \end{center}
 \end{frame}
@@ -154,8 +164,8 @@
     \begin{minipage}{0.65\linewidth}
       \begin{flalign*}
         \text{Types}\ \ \  \tau, \upsilon, \phi         &::= t \mid \iota \mid \tau \rightarrow \tau\\
-        &\text{where}\qquad \rightarrow \in \{ \sepimp, \shimp \}\\
-        \text{Predicates}\ \ \        \pi,\omega        &::= \Un{\tau} \mid \ShFun{\phi} \mid \SeFun{\phi} \mid \tau \geq \tau' %\\
+        &\text{where}\qquad \rightarrow \in \{\tightoverset{\scalebox{0.5}{!}}{\sepimp}, \sepimp, \tightoverset{\scalebox{0.5}{!}}{\shimp}, \shimp \}\\
+        \text{Predicates}\ \ \        \pi,\omega        &::= \Un{\tau} \mid \ShFun{\phi} \mid \SeFun{\phi}\\% \mid \tau \geq \tau' %\\
         % { \color{battleshipgrey}
         % \text{Qualified Types}\ \ \     \rho            &::= \tau \mid \pi => \rho \\
         % \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma
@@ -171,65 +181,66 @@
 \end{frame}
 
 
-\begin{frame}
-  \frametitle{\qub{}: Extension}
-  \begin{itemize}
-  \item Kind System with type constructors and qualified types\cite{barendregt_1991, mark_type_2000}
-    \begin{flalign*}
-                                           t, u         &\in \text{Type Variables}\\
-      \text{Kinds}\ \ \                    \kappa       &::= \star \mid \kappa' \rightarrow \kappa\\
-      \text{Types}\ \ \ \tau^{\kappa}, \phi^{\kappa}      &::= t^\kappa \mid T^{\kappa} \mid \tau^{\kappa' \rightarrow \kappa}\tau^{\kappa'}\\
-      \text{Type Constructors}\ \ \   T^{\kappa}       &\in \mathcal{T}^{\kappa} \\
-                  &\text{where}\quad\{\otimes, \with, \oplus, \tightoverset{\scalebox{0.5}{!}}{\sepimp}, \sepimp, \tightoverset{\scalebox{0.5}{!}}{\shimp}, \shimp \} \subseteq \mathcal{T}^{\star \rightarrow \star \rightarrow \star}\\
-      \text{Predicates}\ \ \          \pi, \omega     &::= \Un{\tau} \mid \SeFun{\phi} \mid \ShFun{\phi} \mid \tau \geq \tau' \\
-      % \text{Qualified Types}\ \ \     \rho            &::= \tau^{\star} \mid \pi => \rho \\
-      % \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma
-    \end{flalign*}
-  \end{itemize}
-\end{frame}
+% \begin{frame}
+%   \frametitle{\qub{}: Extension}
+%   \begin{itemize}
+%   \item Kind System with type constructors and qualified types\cite{barendregt_1991, mark_type_2000}
+%     \begin{flalign*}
+%                                            t, u         &\in \text{Type Variables}\\
+%       \text{Kinds}\ \ \                    \kappa       &::= \star \mid \kappa' \rightarrow \kappa\\
+%       \text{Types}\ \ \ \tau^{\kappa}, \phi^{\kappa}      &::= t^\kappa \mid T^{\kappa} \mid \tau^{\kappa' \rightarrow \kappa}\tau^{\kappa'}\\
+%       \text{Type Constructors}\ \ \   T^{\kappa}       &\in \mathcal{T}^{\kappa} \\
+%                   &\text{where}\quad\{\otimes, \with, \oplus, \tightoverset{\scalebox{0.5}{!}}{\sepimp}, \sepimp, \tightoverset{\scalebox{0.5}{!}}{\shimp}, \shimp \} \subseteq \mathcal{T}^{\star \rightarrow \star \rightarrow \star}\\
+%       \text{Predicates}\ \ \          \pi, \omega     &::= \Un{\tau} \mid \SeFun{\phi} \mid \ShFun{\phi} \mid \tau \geq \tau' \\
+%       % \text{Qualified Types}\ \ \     \rho            &::= \tau^{\star} \mid \pi => \rho \\
+%       % \text{Type schemes}\ \ \        \sigma          &::= \rho \mid \forall t. \sigma
+%     \end{flalign*}
+%   \end{itemize}
+% \end{frame}
 
 
 \begin{frame}[fragile, c]
-  \frametitle{\qub{}: Extension}
+  \frametitle{\qub{}: Datatypes with Sharing and Separation}
   \begin{center}
-    \begin{itemize}
-    \item<1-> Sharing Pair
+    \fbox{Sharing Pair}\\
 
-      \begin{center}
-        \begin{tabular}[c]{c}
-          \begin{haskell}
-data ShPair a b = ShP a b
+    \begin{tabular}[c]{c}
+           \begin{haskell}
+data ShPair a b = ShP a; b     {- ; for sharing -}
 
 fst :: ShPair a b ->> a
 fst (ShP a b) = a              {- Succeeds typecheck -}
 
 snd :: ShPair a b ->> b
 snd (ShP a b) = b              {- Succeeds typecheck -}
+
+swap :: ShPair a b ->> ShPair b a
+swap (ShP a b) = ShP b a       {- Succeeds typecheck -}
           \end{haskell}
         \end{tabular}
-      \end{center}
-    \item<2-> Separating Pair
-      \begin{center}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile, c]
+  \frametitle{\qub{}: Datatypes with Sharing and Separation}
+  \begin{center}
+    \fbox{Separating Pair}
        \begin{tabular}[c]{c}
           \begin{haskell}
-data SePair a b = SeP a b
+data SePair a b = SeP a, b     {- , for separation -}
 
 @fst :: SePair a b ${\color{red}\sepimp}$ a
 fst (SeP a b) = a              {- Fails typecheck -}@
+
+@snd :: SePair a b ${\color{red}\sepimp}$ b
+snd (SeP a b) = b              {- Fails typecheck -}@
 
 swap :: SePair a b $\sepimp$ SePair b a
 swap (SeP a b) = SePair b a    {- Succeeds typecheck -}
           \end{haskell}
         \end{tabular}
-      \end{center}
-    \end{itemize}
   \end{center}
 \end{frame}
-
-% \begin{frame}
-%   \frametitle{Additive Implication}
-% \end{frame}
-
 
 %%% Local Variables:
 %%% mode: latex

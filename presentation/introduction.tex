@@ -40,7 +40,7 @@
      readLine   :: FileHandle -> IO (String, FileHandle)
 
      writeFile  :: String     -> FileHandle
-                             -> IO FileHandle
+                              -> IO FileHandle
 
 
      upper      :: String     -> String
@@ -179,7 +179,7 @@
   \frametitle{Resource Management: Exception Handling}
   \begin{center}
     \begin{itemize}
-    \item \texttt{MonadError}\footnote[frame]{\footfullcite{liang_monad_1995}}  type class in Haskell
+    \item \texttt{MonadError}\footnote[frame]{\fullcite{liang_monad_1995}}  type class in Haskell
       \begin{tabular}[c]{c}
         \begin{haskell}
       class Monad m => MonadError e m | m -> e where
@@ -247,27 +247,27 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Contributions revisited}
+  \frametitle{Contributions}
 
   \begin{itemize}
 
   \item {\color{red}Language design}
     \begin{itemize}
     \item {\color{red}Resources are ``first class citizens''}
-    \item {\color{red}Resources(variables) can be in sharing or separated}
+    \item {\color{red}Resources(variables) can be in sharing or separate}
     \end{itemize}
 
   \item {\color{red}\qub{} is logic of \BI on steroids}
     \begin{itemize}
     \item {\color{red}Typing Environments as graphs}
     \end{itemize}
+  \item {\color{red}Working examples}
   \item Formalizing and proving important properties of \qub{}
     \begin{itemize}
     \item Type system
     \item Syntax directed type system (sound and complete)
     \item Type inference algorithm $\M$ (sound)
     \end{itemize}
-  \item {\color{red}Working examples}
 
   \end{itemize}
 

@@ -2,7 +2,7 @@
 % (10 mins)
 
 \begin{frame}[fragile, c]
-    \frametitle{Background Work: STLC and \HM{} type system}
+    \frametitle{Bootstrapping: STLC and \HM{} type system}
     \begin{center}
 
       \uncover<+->{
@@ -43,7 +43,7 @@
 
 
 % \begin{frame}[c]
-%   \frametitle{Background Work: STLC and \HM{} type system}
+%   \frametitle{Bootstrapping: STLC and \HM{} type system}
 %   \begin{center}
 %     \uncover<+->{
 %       \begin{flalign*}
@@ -86,7 +86,7 @@
 % \end{frame}
 
 % \begin{frame}[c]
-%   \frametitle{Background Work: Simply Typed Lambda Calculus (STLC)}
+%   \frametitle{Bootstrapping: Simply Typed Lambda Calculus (STLC)}
 %   \begin{center}
 %     \fbox{Types and Typing Context}
 %     \begin{flalign*}
@@ -105,7 +105,7 @@
 % \end{frame}
 
 % \begin{frame}[c]
-%   \frametitle{Background Work: Hindley-Milner Type System}
+%   \frametitle{Bootstrapping: Hindley-Milner Type System}
 %   \begin{center}
 %   Hindley-Milner (\HM{}) type system\\
 %   Type inferencing and Type checking:\\
@@ -122,7 +122,7 @@
 
 
 % \begin{frame}
-%   \frametitle{Background Work: Typing Rules STLC}
+%   \frametitle{Bootstrapping: Typing Rules STLC}
 %   \begin{center}
 %     {\small
 %     \begin{figure}[h]
@@ -180,7 +180,7 @@
 % \end{frame}
 
 % \begin{frame}
-%   \frametitle{Background Work: Algorithm $\M{}$}
+%   \frametitle{Bootstrapping: Algorithm $\M{}$}
 %   \begin{center}
 %   \begin{figure}[h]
 %     \centering
@@ -244,31 +244,31 @@
 
 
 \begin{frame}[c]
-  \frametitle{Background Work: Curry-Howard Correspondence}
+  \frametitle{Bootstrapping: Curry-Howard Correspondence}
   \begin{center}
+      \text{\HM{} type system} $\equiv$ \text{Second Order Intuitionistic Propositional Logic}
     \begin{itemize}
-    \item Types are Propostions\\
-    \item Programs are Proofs\\
+    \item Types are Propostions
+    \item Programs are Proofs
     \end{itemize}
-    \begin{flalign*}
-      \text{\HM{} type system} &\equiv \text{Second Order Intuitionistic Propositional Logic}
-    \end{flalign*}
+
     \begin{figure}[h]
       \centering
       \includegraphics[scale=0.1]{cardelli-hc-corr.jpg}
+
       {{\tiny Source: \url{http://lucacardelli.name/Artifacts/Drawings/CurryHoward/CurryHoward.pdf}}}
     \end{figure}
 \end{center}
 \end{frame}
 
 \begin{frame}[c]
-  \frametitle{Background Work: Second Order Intuitionistic Propositional Logic}
+  \frametitle{Bootstrapping: S O Intuitionistic Propositional Logic}
   \begin{center}
     \uncover<2->{{\LARGE \color{red}Propositions are truth values not resources}}\\
     \uncover<1->{
         \fbox{Language}
         \begin{flalign*}
-          \text{Propostions \& connectives}\quad A, B, C &::= x \mid A \supset B \mid \forall x. B \mid A \vee B \mid A \wedge B \\
+          \text{Propositions and Connectives}\quad A, B, C &::= x \mid A \supset B \mid \forall x. B \mid A \vee B \mid A \wedge B \\
           \text{Context}\quad \Gamma,\Delta &::= \epsilon \mid \Gamma, A
         \end{flalign*}
         \fbox{Implicit Structural Rules}
@@ -280,105 +280,12 @@
 
           \multicolumn{2}{c}{$A, B \vdash B, A$} & Exchange
         \end{tabular}
-
       }
   \end{center}
 \end{frame}
 
-% \begin{frame}[c]
-%   \frametitle{Background Work: Second Order Intuitionistic Propositional Logic}
-%   \begin{center}
-%     \uncover<2->{\LARGE {\color{red}Propositions are truth values not resources}}\\
-%     \uncover<1->{{\small
-%         \fbox{Language}
-%         \begin{flalign*}
-%           \text{Propostions \& connectives}\quad A, B, C &::= x \mid A \supset B \mid \forall x. B \mid ... \\
-%           \text{Context}\quad \Gamma,\Delta &::= \epsilon \mid \Gamma, A
-%         \end{flalign*}
-%         \fbox{Logic Rules}
-%         \begin{figure}[h]\centering
-%           % ID
-%           \begin{minipage}{0.20\linewidth}
-%             \begin{prooftree}
-%               \AxiomC{$A \in \Gamma $}\RightLabel{[Ax]}
-%               \UnaryInfC{$\Gamma \vdash A $}
-%             \end{prooftree}
-%           \end{minipage}
-
-%           % \forall I
-%           \begin{minipage}{0.5\linewidth}
-%             \begin{prooftree}
-%               \AxiomC{$\Gamma \vdash B$}
-%               \AxiomC{$x \notin \Gamma$}\RightLabel{[$\forall$I]}
-%               \BinaryInfC{$\Gamma \vdash \forall x. B$}
-%             \end{prooftree}
-%           \end{minipage}\hfill%
-%           % \forall E
-%           \begin{minipage}{0.5\linewidth}
-%             \begin{prooftree}
-%               \AxiomC{$\Gamma \vdash \forall x. B$}
-%               \AxiomC{$\Gamma \vdash A$}\RightLabel{[$\forall$E]}
-%               \BinaryInfC{$\Gamma \vdash B[x/A]$}
-%             \end{prooftree}
-%           \end{minipage}
-
-%           % -> I
-%           \begin{minipage}{0.5\linewidth}
-%             \begin{prooftree}
-%               \AxiomC{$\Gamma,A \vdash B$}\RightLabel{[$\supset$I]}
-%               \UnaryInfC{$\Gamma \vdash A \supset B$}
-%             \end{prooftree}
-%           \end{minipage}\hfill%
-%           % -> E
-%           \begin{minipage}{0.5\linewidth}
-%             \begin{prooftree}
-%               \AxiomC{$\Gamma \vdash A \supset B$}
-%               \AxiomC{$\Gamma \vdash A$}\RightLabel{[$\supset$E]}
-%               \BinaryInfC{$\Gamma \vdash B $}
-%             \end{prooftree}
-%           \end{minipage}
-%         \end{figure}
-%       }
-%     }
-%   \end{center}
-% \end{frame}
-
-
-% \begin{frame}[c]
-%   \frametitle{Background Work: Substructural Logic}
-%   \begin{center}
-%     \begin{itemize}
-%     \item<1-> Structural rules implicit in intuitionistic propositional logics\\
-%       % WKN
-%       \begin{minipage}{0.33\linewidth}
-%         \begin{prooftree}
-%           \AxiomC{$\Gamma \vdash B$}\RightLabel{[WKN]}
-%           \UnaryInfC{$\Gamma, A \vdash B$}
-%         \end{prooftree}
-%       \end{minipage}\hfill%
-%       % CTR
-%       \begin{minipage}{0.33\linewidth}
-%         \begin{prooftree}
-%           \AxiomC{$\Gamma, A, A \vdash B$}\RightLabel{[CTR]}
-%           \UnaryInfC{$\Gamma, A \vdash B $}
-%         \end{prooftree}
-%       \end{minipage}\hfill%
-%       % EXCH
-%       \begin{minipage}{0.33\linewidth}
-%         \begin{prooftree}
-%           \AxiomC{$\Gamma, \Delta \vdash B$}\RightLabel{[EXCH]}
-%           \UnaryInfC{$\Delta, \Gamma \vdash B $}
-%         \end{prooftree}
-%       \end{minipage}
-
-%     \item <2-> Control the use of [WKN] and [CTR]\\
-%     \end{itemize}
-%     \uncover<2->{\LARGE \color{red} Propositions now behave like resources}
-%   \end{center}
-% \end{frame}
-
 \begin{frame}[c]
-  \frametitle{Background Work: Substructural Logic}
+  \frametitle{Bootstrapping: Substructural Logic}
   \begin{center}
 {\small     \begin{tabular}[h]{c c c c}
       System                                                                                 &  Who             & Year         & Control\\ \hline\hline
@@ -394,7 +301,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Background work: Logic of \BI{}}
+  \frametitle{Bootstrapping: Logic of \BI{}}
   \begin{center}
     Coffee Shop
 
@@ -424,7 +331,7 @@
 \end{frame}
 
 \begin{frame}[c]
-  \frametitle{Background Work: Logic of \BI{}}
+  \frametitle{Bootstrapping: Logic of \BI{}}
   \begin{center}
     \begin{itemize}
 
@@ -492,7 +399,7 @@
 \end{frame}
 
 \begin{frame}[c]
-  \frametitle{Background Work: Logic of \BI{}}
+  \frametitle{Bootstrapping: Logic of \BI{}}
   \begin{center}
   Context connectives guide structural rules
 
@@ -512,19 +419,8 @@
 \end{center}
 \end{frame}
 
-\begin{frame}[c]
-  \frametitle{Background Work: Logic of \BI{}}
-  \begin{center}
-    Implications naturally get corresponding flavors
-
-    $A \otimes B \vdash C\ \text{iff}\ A \vdash B \sepimp C$
-
-    $A \with B \vdash C\ \text{iff}\ A \vdash B \shimp C$
-  \end{center}
-\end{frame}
-
 \begin{frame}
-  \frametitle{Background work: Logic of \BI{}}
+  \frametitle{Bootstrapping: Logic of \BI{}}
   \begin{center}
     Coffee Shop (Revisited)
 
@@ -553,6 +449,17 @@
         & \raisebox{-0.4\height}{\includegraphics[scale=0.025]{coffee_cup}}
       \end{tabular}
 
+  \end{center}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{Bootstrapping: Logic of \BI{}}
+  \begin{center}
+    Implications get corresponding flavors
+
+    $A \otimes B \vdash C\ \text{iff}\ A \vdash B \sepimp C$
+
+    $A \with B \vdash C\ \text{iff}\ A \vdash B \shimp C$
   \end{center}
 \end{frame}
 

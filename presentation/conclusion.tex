@@ -22,7 +22,7 @@
      readLine  :: FileHandle $\sepimp$ IO (String, FileHandle)
 
      writeFile :: String     $\sepimp$ FileHandle
-                             $\sepimp$ IO ((), FileHandle)
+                             $\sepimp$ IO FileHandle
 
 
 
@@ -43,7 +43,7 @@
                   () <- closeFile f
                   () <- closeFile f
             \end{haskell}
-
+{\LARGE      $\downlsquigarrow \qquad \downlsquigarrow \qquad \downlsquigarrow$}
             \begin{haskell}
                ($\gg\!=$) (openFile "sample.txt") (\ f ->
 
@@ -66,7 +66,7 @@
                   () <- closeFile f
                   () <- closeFile f
                \end{haskell}
-
+{\LARGE      $\downlsquigarrow \qquad \downlsquigarrow \qquad \downlsquigarrow$}
                \begin{haskell}
                ($\gg\!=$) (openFile "sample.txt") (\ f ->
 
@@ -89,7 +89,7 @@
                    () <- closeFile f
                    () <- closeFile f
                \end{haskell}
-
+{\LARGE      $\downlsquigarrow \qquad \downlsquigarrow \qquad \downlsquigarrow$}
                \begin{haskell}
                {- (${\color{dkgreen}\gg\!=}$) :: IO a ${\color{dkgreen}\sepimp}$ (a ${\color{dkgreen}\sepimp}$ IO b) ${\color{dkgreen}\sepimp}$ IO b -}
                ($\gg\!=$) (openFile "sample.txt") (\ f ->
@@ -108,7 +108,7 @@
           openFile :: FilePath $\sepimp$ IO FileHandle
           closeFile :: FileHandle $\sepimp$ IO ()
           readFile :: FileHandle $\sepimp$ IOF (String, FileHandle)
-          writeFile :: String $\sepimp$ FileHandle $\sepimp$ IOF ((), FileHandle)
+          writeFile :: String $\sepimp$ FileHandle $\sepimp$ IOF FileHandle
 
           throw :: Exception $\sepimp$ IOF a
           catch :: IOF a $\sepimp$ (Exception $\sepimp$ IO a) ->> IO a
@@ -124,20 +124,23 @@
   \frametitle{Exceptions Revisited}
   \begin{center}
     \begin{haskell}
-               readFromFile :: FilePath $\sepimp$ IO (Either String String)
-               readFromFile fpath =
-               do @fh@  <- openFile fpath
-                  ((s, @fh@)  <- readLine @fh@
-                  let l = caps s
-                  () <- closeFile @fh@
-                  return \dollar Right l) `catch`
-                          (\e -> do closeFile @fh@
-                          return \dollar Left "Could not read file")
+          readFromFile :: FilePath $\sepimp$ IO (Either String String)
+          readFromFile fpath =
+          (do @fh@  <- openFile fpath
+             (s, @fh@)  <- readLine @fh@
+             let l = caps s
+             () <- closeFile @fh@
+             return \dollar Right l) `catch`
+                     (\e -> do closeFile @fh@
+                               return \dollar Left "Could not read file")
                         \end{haskell}
                       \end{center}
      \begin{itemize}
      \item Filehandle \texttt{fh} is shared between the \texttt{catch} arguments
-\item Avoids memory leak
+       \begin{haskell}
+         catch :: IOF a $\sepimp$ (Exception $\sepimp$ IO a) ->> IO a
+       \end{haskell}
+     \item Avoids memory leak
 \end{itemize}
 \end{frame}
 
@@ -150,20 +153,20 @@
   \item {\color{red}Language design}
     \begin{itemize}
     \item {\color{red}Resources are ``first class citizens''}
-    \item {\color{red}Resources(variables) can be in sharing or separated}
+    \item {\color{red}Resources(variables) can be in sharing or separate}
     \end{itemize}
 
   \item {\color{red}\qub{} is logic of \BI on steroids}
     \begin{itemize}
     \item {\color{red}Typing Environments as graphs}
     \end{itemize}
+  \item {\color{red}Working examples}
   \item Formalizing and proving important properties of \qub{}
     \begin{itemize}
     \item Type system
     \item Syntax directed type system (sound and complete)
     \item Type inference algorithm $\M$ (sound)
     \end{itemize}
-  \item {\color{red}Working examples}
 
   \end{itemize}
 
@@ -171,16 +174,17 @@
 
 \begin{frame}[fragile, c]
   \frametitle{Future Work}
-  \begin{itemize}
-  \item Type inference algorithm $\M{}$ is incomplete.
-    Terms can have two types.
+p  \begin{itemize}
+  \item Type inference algorithm $\M{}$ is incomplete
+
+    Terms can have two types
     \begin{itemize}
     \item $\{\texttt{Un}\ A\} \mid \emptyset \vdash \lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x: (A \sepimp A \sepimp B) \sepimp A \sepimp B$
     \item $\emptyset \mid \emptyset \vdash \lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x: (A \sepimp A \shimp B) \sepimp A \shimp B$
     \end{itemize}
-  \item Current semantics: call-by-value.
+  \item Current semantics: call-by-value assumed
 
-    Formalize resource correctness.
+    Formalize resource correctness
   \end{itemize}
 \end{frame}
 

@@ -58,7 +58,7 @@
   \frametitle{\qub{}: Expression Language}
   \begin{center}
     \begin{flalign*}
-      \text{Term Variables}\ \ \  x, y, z  &\in \text{Var} \nonumber\\
+      \text{Term Variables}\ \ \  x, y, z  &\in \text{Variables} \nonumber\\
       \text{Expressions}\ \ \     M, N     &::= x \\
                                            & \mid \lambda^{\sepimp}x. M \mid \lambda^{\shimp}x. M \\
                                            & \mid M N
@@ -74,7 +74,7 @@
   \frametitle{\qub{}: Typing Environment}
   \begin{center}
     \begin{itemize}
-    \item Logic of \BI{}: Contexts are trees
+    \item Logic of \BI{}: Contexts are bunches
     \item \qub{}: Contexts generalized to graphs
     \end{itemize}
     {\small
@@ -89,19 +89,19 @@
         \Tree
         [.,
         [.;
-        [.a:A ]
-        [.b:B ]
+        [.A ]
+        [.B ]
         ]
-        [.c:C ]
+        [.C ]
         ]
       \end{tikzpicture}
     \end{minipage}\hfill%
     \begin{minipage}[c]{0.45\linewidth}
       \centering
       \begin{tikzpicture}
-        \node[shape=circle,draw=black] (A) at (0,0) {a:A};
-        \node[shape=circle,draw=black] (B) at (0,3) {b:B};
-        \node[shape=circle,draw=black] (C) at (1.5,1.5) {c:C};
+        \node[shape=circle,draw=black] (A) at (0,0) {A};
+        \node[shape=circle,draw=black] (B) at (0,3) {B};
+        \node[shape=circle,draw=black] (C) at (1.5,1.5) {C};
 
         \path [-] (A) edge node {} (B);
       \end{tikzpicture}
@@ -112,17 +112,6 @@
   \item (No) Edges represent (no) sharing
 \end{itemize}
 \end{center}
-\end{frame}
-
-\begin{frame}[fragile, c]
-  \frametitle{\qub{}: Typing Environment}
-  \begin{center}
-  Trees need explicit transformations
-
-
-  Sharing graphs internalize the transformation
-\end{center}
-
 \end{frame}
 
 \begin{frame}[fragile, c]
@@ -153,10 +142,88 @@
         \end{tikzpicture}}
       \end{tabular}
     \end{table}
+\end{center}
+\end{frame}
 
+\begin{frame}[fragile, c]
+  \frametitle{\qub{}: Typing Environment}
+    \begin{itemize}
+    \item \BI{} bunches need explicit transformations
+      \begin{center}
+      $ A; (B, C) \equiv (A;B),(A;C) $
+      \end{center}
+      \begin{center}
+    {\small
+      \begin{minipage}[c]{0.35\linewidth}
+      \centering
+      \tikzset{every tree node/.style={minimum width=2em},
+        blank/.style={draw=none},
+        edge from parent/.style=
+        {draw,edge from parent path={(\tikzparentnode) -- (\tikzchildnode)}},
+        level distance=1.5cm}
+      \begin{tikzpicture}
+        \Tree
+        [.;
+        [.,
+        [.B ]
+        [.C ]
+        ]
+        [.A ]
+        ]
+      \end{tikzpicture}
+    \end{minipage}%
+    \begin{minipage}[c]{0.2\linewidth}
+      \begin{center}
+      {\LARGE $\rightsquigarrow$}\\
+      {\LARGE $\rightsquigarrow$}\\
+      {\LARGE $\rightsquigarrow$}
+    \end{center}
+    \end{minipage}%
+    \begin{minipage}[c]{0.45\linewidth}
+      \centering
+ \tikzset{every tree node/.style={minimum width=2em},
+        blank/.style={draw=none},
+        edge from parent/.style=
+        {draw,edge from parent path={(\tikzparentnode) -- (\tikzchildnode)}},
+        level distance=1.5cm}
+      \begin{tikzpicture}
+        \Tree
+        [.,
+        [.;
+        [.A ]
+        [.B ]
+        ]
+        [.;
+        [.A ]
+        [.C ]
+        ]
+        ]
+      \end{tikzpicture}
+    \end{minipage}
+  }
 \end{center}
 
+
+\item \qub{} sharing graphs internalize the transformation
+  \begin{center}
+      {\small
+    \begin{minipage}[c]{1\linewidth}
+      \centering
+      \begin{tikzpicture}
+        \node[shape=circle,draw=black] (A) at (1.5,3) {A};
+        \node[shape=circle,draw=black] (B) at (0,1.5) {B};
+        \node[shape=circle,draw=black] (C) at (3,1.5) {C};
+
+        \path [-] (A) edge node {} (B);
+        \path [-] (A) edge node {} (C);
+      \end{tikzpicture}
+    \end{minipage}
+  }
+\end{center}
+
+\end{itemize}
 \end{frame}
+
 
 \begin{frame}
   \frametitle{\qub{}: Typing Environment}
