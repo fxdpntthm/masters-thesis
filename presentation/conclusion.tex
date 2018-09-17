@@ -142,27 +142,31 @@
 \end{frame}
 
 
-\begin{frame}[fragile, c]
-    \frametitle{Contributions revisited}
+\begin{frame}
+  \frametitle{Contributions revisited}
+
   \begin{itemize}
-  \item
-    Design and implement \qub{} type system
-      \begin{itemize}
-        {\color{red}
-        \item Resources as first class citizens
-        \item Program objects are restricted or unrestricted
-        \item Functions that share resources with their arguments or are separate.
-        }
-      \end{itemize}
-  \item Formalizing and proving important properties of \qub{}
-  \item \qub{} is logic of \BI on steroids
+
+  \item {\color{red}Language design}
     \begin{itemize}
-      {\color{red}
-      \item Typing Environments as graphs
-      }
+    \item {\color{red}Resources are ``first class citizens''}
+    \item {\color{red}Resources(variables) can be in sharing or separated}
+    \end{itemize}
+
+  \item {\color{red}\qub{} is logic of \BI on steroids}
+    \begin{itemize}
+    \item {\color{red}Typing Environments as graphs}
+    \end{itemize}
+  \item Formalizing and proving important properties of \qub{}
+    \begin{itemize}
+    \item Type system
+    \item Syntax directed type system (sound and complete)
+    \item Type inference algorithm $\M$ (sound)
     \end{itemize}
   \item {\color{red}Working examples}
+
   \end{itemize}
+
 \end{frame}
 
 \begin{frame}[fragile, c]
@@ -171,10 +175,12 @@
   \item Type inference algorithm $\M{}$ is incomplete.
     Terms can have two types.
     \begin{itemize}
-  \item $\{\texttt{Un}\ A\} \mid \emptyset \vdash \lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x: (A \sepimp A \sepimp B) \sepimp A \sepimp B$
-  \item $\emptyset \mid \emptyset \vdash \lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x: (A \sepimp A \shimp B) \sepimp A \shimp B$
-  \end{itemize}
-  \item No formal semantic model yet
+    \item $\{\texttt{Un}\ A\} \mid \emptyset \vdash \lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x: (A \sepimp A \sepimp B) \sepimp A \sepimp B$
+    \item $\emptyset \mid \emptyset \vdash \lambda^{\sepimp}f. \lambda^{\sepimp}x. f x x: (A \sepimp A \shimp B) \sepimp A \shimp B$
+    \end{itemize}
+  \item Current semantics: call-by-value.
+
+    Formalize resource correctness.
   \end{itemize}
 \end{frame}
 

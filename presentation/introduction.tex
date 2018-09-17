@@ -14,16 +14,14 @@
 
 \begin{frame}
   \frametitle{Introduction and Motivation}
-  \begin{large}
   \begin{center}
-    Hard problems in programming
+    {\large Hard problems in programming}
 
     {\LARGE \color{red}Resource management}
     \\{\normalsize  in evolving production code}
 
-    {\normalsize Resources: Files, database connections, entity with a shared state}
+    {\normalsize Resources: Files, database connections, shared mutable state}
 \end{center}
-\end{large}
 \end{frame}
 
 \begin{frame}[fragile, c]
@@ -34,17 +32,20 @@
     \end{itemize}
     \begin{tabular}[h]{c}
       \begin{haskell}
-     openFile  :: FilePath   -> IO FileHandle
 
-     closeFile :: FileHandle -> IO ()
+     openFile   :: FilePath   -> IO FileHandle
 
-     readLine  :: FileHandle -> IO (String, FileHandle)
+     closeFile  :: FileHandle -> IO ()
 
-     writeFile :: String     -> FileHandle
-                             -> IO ((), FileHandle)
+     readLine   :: FileHandle -> IO (String, FileHandle)
+
+     writeFile  :: String     -> FileHandle
+                             -> IO FileHandle
 
 
-     upper     :: String     -> String
+     upper      :: String     -> String
+
+     ($\gg\!=$) :: IO FileHandle -> (FileHandle -> IO b) -> IO b
       \end{haskell}
     \end{tabular}
 \end{center}
@@ -61,7 +62,7 @@
         do f  <- openFile "sample.txt"
            (s, f)  <- readLine f
            let c = upper s
-           ((), f) <- writeLine f c
+           f <- writeLine f c
                   .
                   .
                   .
@@ -82,7 +83,7 @@
       do f  <- openFile "sample.txt"
          (s, f)  <- readLine f
          let c = upper s
-         ((), f) <- writeLine f c
+         f <- writeLine f c
               .
               .
               .
@@ -108,7 +109,7 @@
       do f  <- openFile "sample.txt"
          (s, f)  <- readLine f
          let c = upper s
-         ((), f) <- writeLine f c
+         f <- writeLine f c
               .
               .
               .
@@ -138,7 +139,7 @@
     do f  <- openFile "sample.txt"
        (s, f)  <- readLine f
        let c = upper s
-       ((), f) <- writeLine f c
+       f <- writeLine f c
            .
            .
            .
@@ -161,7 +162,7 @@
     do f  <- openFile "sample.txt"
        (s, f)  <- readLine f
        let c = upper s
-       ((), f) <- writeLine f c
+       f <- writeLine f c
            .
            .
            .
@@ -177,20 +178,27 @@
 \begin{frame}[fragile, c]
   \frametitle{Resource Management: Exception Handling}
   \begin{center}
-  \begin{itemize}
-  \item \texttt{MonadError}\citep{liang_monad_1995} in Haskell
-  \end{itemize}
-  \begin{tabular}[h]{c}
-    \begin{haskell}
-class Monad m => MonadError e m | m -> e where
-    throwError :: e -> m a
-    catchError :: m a -> (e -> m a) -> m a
-     \end{haskell}
-  \end{tabular}
-  \begin{itemize}
-  \item \texttt{throwError} starts exception processing
-  \item \texttt{catchError} exception handler
-  \end{itemize}
+    \begin{itemize}
+    \item \texttt{MonadError}\footnote[frame]{\footfullcite{liang_monad_1995}}  type class in Haskell
+      \begin{tabular}[c]{c}
+        \begin{haskell}
+      class Monad m => MonadError e m | m -> e where
+          throwError :: e -> m a
+          catchError :: m a -> (e -> m a) -> m a
+        \end{haskell}
+      \end{tabular}
+
+    \item\texttt{MonadError} instance with \texttt{IO} and \texttt{Exception}
+      \begin{tabular}[c]{c}
+        \begin{haskell}
+          throwError :: Exception -> IO a
+          catchError :: IO a -> (Exception -> IO a) -> IO a
+        \end{haskell}
+      \end{tabular}
+
+    \item \texttt{throwError} start exception processing
+    \item \texttt{catchError} exception handler
+    \end{itemize}
   \end{center}
 \end{frame}
 
@@ -203,13 +211,13 @@ class Monad m => MonadError e m | m -> e where
   \end{itemize}
   \begin{tabular}[h]{c}
     \begin{haskell}
-      do f <- openFile "sample.txt"
-         ((s, f)  <- readLine f
-         let c = upper s
-         () <- closeFile f
-         return \dollar Right c)
-             `catchError` (\_ ->
-                    return \dollar Left "Error in reading file")
+  (do f <- openFile "sample.txt"
+     @(s, f)  <- readLine f@         {- Exception raised here -}
+      let c = upper s
+      () <- closeFile f
+      return \dollar Right c)
+          `catchError` (\_ ->
+                 return \dollar Left "Error in reading file")
      \end{haskell}
   \end{tabular}
   \begin{itemize}
@@ -232,34 +240,39 @@ class Monad m => MonadError e m | m -> e where
     % \end{description}
     \uncover<+-> {\LARGE
       \begin{aquote}{Coldplay}
-        \sout{Lights}{\color{red} Types} will guide you home
+        \sout{Lights}{\color{red} Types} will guide you home$\dots$
       \end{aquote}
     }
   \end{center}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Contributions}
+  \frametitle{Contributions revisited}
+
   \begin{itemize}
-  \item
-    Design and implement \qub{} type system
-      \begin{itemize}
-        {\color{red}
-        \item Resources as first class citizens
-        \item Program objects are restricted or unrestricted
-        \item Functions that share resources with their arguments or are separate.
-        }
-      \end{itemize}
-  \item Formalizing and proving important properties of \qub{}
-  \item \qub{} is logic of \BI on steroids
+
+  \item {\color{red}Language design}
     \begin{itemize}
-      {\color{red}
-      \item Typing Environments as graphs
-      }
+    \item {\color{red}Resources are ``first class citizens''}
+    \item {\color{red}Resources(variables) can be in sharing or separated}
+    \end{itemize}
+
+  \item {\color{red}\qub{} is logic of \BI on steroids}
+    \begin{itemize}
+    \item {\color{red}Typing Environments as graphs}
+    \end{itemize}
+  \item Formalizing and proving important properties of \qub{}
+    \begin{itemize}
+    \item Type system
+    \item Syntax directed type system (sound and complete)
+    \item Type inference algorithm $\M$ (sound)
     \end{itemize}
   \item {\color{red}Working examples}
+
   \end{itemize}
+
 \end{frame}
+
 
 %%% Local Variables:
 %%% mode: latex

@@ -13,4 +13,4 @@ slides:
 	pdflatex --shell-escape $(SLIDES).tex
 
 clean:
-	rm -rf *.aux *.log *.pdf *.bbl *.out *. *.blg *.dvi *.pyg *.snm *.toc _minted-defense-slides *.nav *.vrb auto/
+	rm -rf *.aux *.log *.pdf *.bbl *.out *. *.blg *.dvi *.pyg *.snm *.toc _minted-defense-slides *.nav *.vrb auto/ *-blx.bib *.bcf *.run.xml

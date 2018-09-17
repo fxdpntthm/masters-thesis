@@ -1,0 +1,522 @@
+@phdthesis{diatchki_thesis_2007,
+  author    = {Iavor Sotirov Diatchki},
+  title     = {High-Level Abstractions for Low-Level Programming},
+  year      = {2007},
+  school    = {OGI School of Science \& Engineering at Oregon Health \& Science University}
+}
+
+@phdthesis{morris_thesis_2013,
+  author    = {John Garrett Morris},
+  title     = {Type Classes and Instance Chains: A Relational Approach},
+  year      = {2013},
+  school    = {Portland State University}
+}
+
+@inproceedings{diatchki_high-level_2005,
+	location = {New York, {NY}, {USA}},
+	title = {High-level Views on Low-level Representations},
+	isbn = {978-1-59593-064-4},
+	url = {http://doi.acm.org/10.1145/1086365.1086387},
+	doi = {10.1145/1086365.1086387},
+	series = {{ICFP} '05},
+	abstract = {This paper explains how the high-level treatment of datatypes in functional languages—using features like constructor functions and pattern matching—can be made to coexist with bitdata. We use this term to describe the bit- level representations of data that are required in the construction of many different applications, including operating systems, device drivers, and assemblers. We explain our approach as a combination of two language extensions, each of which could potentially be adapted to any modern functional language. The first adds simple and elegant constructs for manipulating raw bitfield values, while the second provides a view-like mechanism for defining distinct new bitdata types with fine-control over the underlying representation. Our design leverages polymorphic type inference, as well as techniques for improvement of qualified types, to track both the type and the width of bitdata structures. We have implemented our extensions in a small functional language interpreter, and used it to show that our approach can handle a wide range of practical bitdata types.},
+	pages = {168--179},
+	booktitle = {Proceedings of the Tenth {ACM} {SIGPLAN} International Conference on Functional Programming},
+	publisher = {{ACM}},
+	author = {Diatchki, Iavor S. and Jones, Mark P. and Leslie, Rebekah},
+	urldate = {2018-08-22},
+	date = {2005},
+        year = {2005},
+	keywords = {bit manipulation, bitdata, bitfields, data representation, pattern matching, polymorphism, qualified types, views},
+}
+
+@article{girard_linear_1987,
+	title = {Linear logic},
+	volume = {50},
+	issn = {0304-3975},
+	url = {http://www.sciencedirect.com/science/article/pii/0304397587900454},
+	doi = {10.1016/0304-3975(87)90045-4},
+	abstract = {The familiar connective of negation is broken into two operations: linear negation which is the purely negative part of negation and the modality “of course” which has the meaning of a reaffirmation. Following this basic discovery, a completely new approach to the whole area between constructive logics and programmation is initiated.},
+	pages = {1--101},
+	number = {1},
+	journaltitle = {Theoretical Computer Science},
+	author = {Girard, Jean-Yves},
+        year = {1987}
+}
+
+@book{girard_proofs_1989,
+	location = {New York, {NY}, {USA}},
+	title = {Proofs and Types},
+	isbn = {978-0-521-37181-0},
+	abstract = {An abstract is not available.},
+	publisher = {Cambridge University Press},
+	author = {Girard, Jean-Yves and Taylor, Paul and Lafont, Yves},
+	date = {1989},
+        year = {1989}
+}
+
+@inproceedings{jones_simplifying_1995,
+	location = {New York, {NY}, {USA}},
+	title = {Simplifying and Improving Qualified Types},
+	isbn = {978-0-89791-719-3},
+	url = {http://doi.acm.org/10.1145/224164.224198},
+	doi = {10.1145/224164.224198},
+	series = {{FPCA} '95},
+	pages = {160--169},
+	booktitle = {Proceedings of the Seventh International Conference on Functional Programming Languages and Computer Architecture},
+	publisher = {{ACM}},
+	author = {Jones, Mark P.},
+	date = {1995},
+	year = {1995}
+}
+
+@article{jones_theory_1994,
+	title = {A theory of qualified types},
+	volume = {22},
+	issn = {0167-6423},
+	url = {http://www.sciencedirect.com/science/article/pii/0167642394000050},
+	doi = {https://doi.org/10.1016/0167-6423(94)00005-0},
+	abstract = {This paper describes a general theory of overloading based on a system of qualified types. The central idea is the use of predicates in the type of a term, restricting the scope of universal quantification. A corresponding semantic notion of evidence is introduced and provides a uniform framework for implementing applications of this system, including Haskell style type classes, extensible records and subtyping. Working with qualified types in a simple, implicitly typed, functional language, we extend the Damas-Milner approach to type inference. As a result, we show that the set of all possible typings for a given term can be characterized by a principal type scheme, calculated by a type inference algorithm.},
+	pages = {231 -- 256},
+	number = {3},
+	journaltitle = {Science of Computer Programming},
+	author = {Jones, Mark P.},
+        year = {1994}
+}
+
+@techreport{gaster_polymorphic_1996,
+	location = {England},
+	title = {A Polymorphic Type System for Extensible Records and Variant},
+	abstract = {Records and variants provide flexible ways to construct datatypes, but the restrictions imposed by practical type systems can prevent them from being used in flexible ways. These limitations are often the result of concerns about efficiency or type inference, or of the difficulty in providing accurate types for key operations.
+
+This paper describes a new type system that remedies these problems: it supports extensible records and variants, with a full complement of polymorphic operations on each; and it offers an effective type inference algorithm and a simple compilation method. It is a practical system that can be understood and implemented as a natural extension of languages like Standard {ML} and Haskell. In an area that has already received a great deal of attention from the research community, the type system described here is the first to combine all of these features in a practical framework.
+
+One important aspect of this work is the emphasis that it places on the use of rows in the construction of record and variant types. As a result, with only small extensions of the core type system, we are able to introduce new, powerful operations on records using features such as row polymorphism and first-class labels.},
+	number = {{NOTTCS}-{TR}-96-3},
+	institution = {Department of Computer Science, University of Nottingham, University Park, Nottingham {NG}7 2RD},
+	author = {Gaster, Benedict R and Jones, Mark P.},
+	date = {1996},
+	year = {1996}
+}
+
+@inproceedings{jones_first-class_1997,
+	location = {New York, {NY}, {USA}},
+	title = {First-class Polymorphism with Type Inference},
+	isbn = {978-0-89791-853-4},
+	url = {http://doi.acm.org/10.1145/263699.263765},
+	doi = {10.1145/263699.263765},
+	series = {{POPL} '97},
+	abstract = {Languages like {ML} and Haskell encourage the view of values as first-class entities that can be passed as arguments or results of functions, or stored as components of data structures. The same languages offer parametric polymorphism, which allows the use of values that behave uniformly over a range of different types. But the combination of these features is not supported-- polymorphic values are not first-class. This restriction is sometimes attributed to the dependence of such languages on type inference, in contrast to more expressive, explicitly typed languages, like System F, that do support first-class polymorphism.This paper uses relationships between types and logic to develop a type system, {FCP}, that supports first-class polymorphism, type inference, and also first-class abstract datatypes. The immediate result is a more expressive language, but there are also long term implications for language design.},
+	pages = {483--496},
+	booktitle = {Proceedings of the 24th {ACM} {SIGPLAN}-{SIGACT} Symposium on Principles of Programming Languages},
+	publisher = {{ACM}},
+	author = {Jones, Mark P.},
+	date = {1997},
+	year = {1997}
+}
+
+@inproceedings{mark_type_2000,
+	location = {Berlin, Germany},
+	title = {Type Classes with Functional Dependencies},
+	url = {http://web.cecs.pdx.edu/~mpj/pubs/fundeps.html},
+	abstract = {Type classes in Haskell allow programmers to define functions that can be used on a set of different types, with a potentially different implementation in each case. For example, type classes are used to support equality and numeric types, and for monadic programming. A commonly requested extension to support `multiple parameters' allows a more general interpretation of classes as relations on types, and has many potentially useful applications. Unfortunately, many of these examples do not work well in practice, leading to ambiguities and inaccuracies in inferred types and delaying the detection of type errors.
+
+This paper illustrates the kind of problems that can occur with multiple parameter type classes, and explains how they can be resolved by allowing programmers to specify explicit dependencies between the parameters. A particular novelty of this paper is the application of ideas from the theory of relational databases to the design of type systems.},
+	eventtitle = {{ESOP} 2000},
+	booktitle = {Proceedings of the 9th European Symposium on Programming},
+	publisher = {Springer-Verlag {LNCS} 1782},
+	author = {Jones, Mark P.},
+        year = {2000}
+}
+
+
+@inproceedings{jones_system_1993,
+	location = {New York, {NY}, {USA}},
+	title = {A System of Constructor Classes: Overloading and Implicit Higher-order Polymorphism},
+	isbn = {978-0-89791-595-3},
+	url = {http://doi.acm.org/10.1145/165180.165190},
+	doi = {10.1145/165180.165190},
+	series = {{FPCA} '93},
+	shorttitle = {A System of Constructor Classes},
+	pages = {52--61},
+	booktitle = {Proceedings of the Conference on Functional Programming Languages and Computer Architecture},
+	publisher = {{ACM}},
+	author = {Jones, Mark P.},
+	urldate = {2018-05-31},
+	date = {1993},
+        year = {1993}
+}
+
+@inproceedings{damas_principal_1982,
+	title = {Principal Type-schemes for Functional Programs},
+	url = {http://doi.acm.org/10.1145/582153.582176},
+	doi = {10.1145/582153.582176},
+        abstract = {Damas-milner algorithm},
+	series = {{POPL} '82},
+	pages = {207--212},
+	booktitle = {Proceedings of the 9th {ACM} {SIGPLAN}-{SIGACT} Symposium on Principles of Programming Languages},
+	publisher = {{ACM}},
+	author = {Damas, Luis and Milner, Robin},
+        year = {1982},
+	date = {1982}
+}
+
+
+@article{milner_theory_1978,
+	title = {A theory of type polymorphism in programming},
+	url = {http://www.sciencedirect.com/science/article/pii/0022000078900144},
+	doi = {10.1016/0022-0000(78)90014-4},
+	abstract = {The aim of this work is largely a practical one. A widely employed style of programming, particularly in structure-processing languages which impose no discipline of types, entails defining procedures which work well on objects of a wide variety. We present a formal type discipline for such polymorphic procedures in the context of a simple programming language, and a compile time type-checking algorithm W which enforces the discipline. A Semantic Soundness Theorem (based on a formal semantics for the language) states that well-type programs cannot “go wrong” and a Syntactic Soundness Theorem states that if W accepts a program then it is well typed. We also discuss extending these results to richer languages; a type-checking algorithm based on W is in fact already implemented and working, for the metalanguage {ML} in the Edinburgh {LCF} system.},
+	pages = {348--375},
+        volume = {17},
+	number = {3},
+	journal = {Journal of Computer and System Sciences},
+	shortjournal = {Journal of Computer and System Sciences},
+	author = {Milner, Robin},
+        year = {1978},
+        date = {1978}
+}
+
+
+@article{lee_proofs_1998,
+	title = {Proofs About a Folklore Let-polymorphic Type Inference Algorithm},
+	volume = {20},
+	issn = {0164-0925},
+	url = {http://doi.acm.org/10.1145/291891.291892},
+	doi = {10.1145/291891.291892},
+	abstract = {The Hindley/Milner let-polymorphic type inference system has two different algorithms: one is the de factostandard Algorithm  W that is bottom-up (or context-insensitive), and the other is a “folklore” algorithm that is top-down (or context-sensitive). Because the latter algorithm has not been formally presented with its soundness and completeness proofs, and its relation with the  W algorithm has not been rigorously investigated, its use in place of (or in combination with)  W is not well founded. In this article, we formally define the context-sensitive, top-down type inference algorithm (named “ M”), prove its soundness and completeness, and show a distinguishing property that  M always stops earlier than  W if the input program is ill typed. Our proofs can be seen as theoretical justifications for various type-checking strategies being used in practice.},
+	pages = {707--723},
+	number = {4},
+	journaltitle = {{ACM} Trans. Program. Lang. Syst.},
+        journal = {{ACM} Trans. Program. Lang. Syst.},
+	author = {Lee, Oukseh and Yi, Kwangkeun},
+	date = {1998-07},
+        year = {1998},
+	keywords = {type error, type inference algorithm}
+}
+
+
+@article{robinson_machine-oriented_1965,
+	title = {A Machine-Oriented Logic Based on the Resolution Principle},
+	volume = {12},
+	issn = {0004-5411},
+	url = {http://doi.acm.org/10.1145/321250.321253},
+	doi = {10.1145/321250.321253},
+	pages = {23--41},
+	number = {1},
+	journaltitle = {J. {ACM}},
+        journal = {J. {ACM}},
+	author = {Robinson, J. A.},
+	urldate = {2018-02-04},
+	date = {1965-01},
+        year = {1965}
+}
+
+
+@inproceedings{morris_best_2016,
+	location = {New York, {NY}, {USA}},
+	title = {The Best of Both Worlds: Linear Functional Programming Without Compromise},
+	isbn = {978-1-4503-4219-3},
+	url = {http://doi.acm.org/10.1145/2951913.2951925},
+	doi = {10.1145/2951913.2951925},
+	series = {{ICFP} 2016},
+	shorttitle = {The Best of Both Worlds},
+	abstract = {We present a linear functional calculus with both the safety guarantees expressible with linear types and the rich language of combinators and composition provided by functional programming. Unlike previous combinations of linear typing and functional programming, we compromise neither the linear side (for example, our linear values are first-class citizens of the language) nor the functional side (for example, we do not require duplicate definitions of compositions for linear and unrestricted functions). To do so, we must generalize abstraction and application to encompass both linear and unrestricted functions. We capture the typing of the generalized constructs with a novel use of qualified types. Our system maintains the metatheoretic properties of the theory of qualified types, including principal types and decidable type inference. Finally, we give a formal basis for our claims of expressiveness, by showing that evaluation respects linearity, and that our language is a conservative extension of existing functional calculi.},
+	pages = {448--461},
+	booktitle = {Proceedings of the 21st {ACM} {SIGPLAN} International Conference on Functional Programming},
+	publisher = {{ACM}},
+	author = {Morris, J. Garrett},
+	urldate = {2018-02-06},
+	date = {2016},
+	keywords = {linear types, qualified types, substructural types}
+}
+
+
+@book{pym_semantics_2002,
+	title = {The Semantics and Proof Theory of the Logic of Bunched Implications},
+	isbn = {978-1-4020-0745-3},
+	url = {//www.springer.com/us/book/9781402007453},
+	series = {Applied Logic Series},
+	abstract = {This is a monograph about logic. Specifically, it presents the mathe­ matical theory of the logic of bunched implications, {BI}: I consider Bl's proof theory, model theory and computation theory. However, the mono­ graph is also about informatics in a sense which I explain. Specifically, it is about mathematical models of resources and logics for reasoning about resources. I begin with an introduction which presents my (background) view of logic from the point of view of informatics, paying particular attention to three logical topics which have arisen from the development of logic within informatics: • Resources as a basis for semantics; • Proof-search as a basis for reasoning; and • The theory of representation of object-logics in a meta-logic. The ensuing development represents a logical theory which draws upon the mathematical, philosophical and computational aspects of logic. Part I presents the logical theory of propositional {BI}, together with a computational interpretation. Part {II} presents a corresponding devel­ opment for predicate {BI}. In both parts, I develop proof-, model- and type-theoretic analyses. I also provide semantically-motivated compu­ tational perspectives, so beginning a mathematical theory of resources. I have not included any analysis, beyond conjecture, of properties such as decidability, finite models, games or complexity. I prefer to leave these matters to other occasions, perhaps in broader contexts.},
+	publisher = {Springer Netherlands},
+	author = {Pym, David J.},
+	urldate = {2018-06-27},
+	date = {2002},
+        year = {2002},
+	langid = {english}
+}
+
+
+@article{ohearn_logic_1999,
+	title = {The Logic of Bunched Implications},
+	volume = {5},
+	issn = {1079-8986},
+	url = {http://www.jstor.org/stable/421090},
+	doi = {10.2307/421090},
+	abstract = {We introduce a logic {BI} in which a multiplicative (or linear) and an additive (or intuitionistic) implication live side-by-side. The propositional version of {BI} arises from an analysis of the proof-theoretic relationship between conjunction and implication; it can be viewed as a merging of intuitionistic logic and multiplicative intuitionistic linear logic. The naturality of {BI} can be seen categorically: models of propositional {BI}'s proofs are given by bicartesian doubly closed categories, i.e., categories which freely combine the semantics of propositional intuitionistic logic and propositional multiplicative intuitionistic linear logic. The predicate version of {BI} includes, in addition to standard additive quantifiers, multiplicative (or intensional) quantifiers ∀ $_{\textrm{new}}$ and ∃ $_{\textrm{new}}$ which arise from observing restrictions on structural rules on the level of terms as well as propositions. We discuss computational interpretations, based on sharing, at both the propositional and predicate levels.},
+	pages = {215--244},
+	number = {2},
+	journaltitle = {The Bulletin of Symbolic Logic},
+	author = {O'Hearn, Peter W. and Pym, David J.},
+	urldate = {2018-02-23},
+	year = {1999}
+}
+
+
+@inproceedings{ohearn_resource_1999,
+	location = {London, {UK}, {UK}},
+	title = {Resource Interpretations, Bunched Implications and the {$\alpha\lambda$}-Calculus},
+	isbn = {978-3-540-65763-7},
+	url = {http://dl.acm.org/citation.cfm?id=645894.671769},
+	series = {{TLCA} '99},
+	abstract = {We introduce the {$\alpha\lambda$}-calculus, a typed calculus that includes a multiplicative function type -* alongside an additive function type →. It arises proof-theoretically as a calculus of proof terms for the logic of bunched implications of O'Hearn and Pym, and semantically from doubly closed categories, where a single category possesses two closed structures. Typing contexts in {$\alpha\lambda$} are bunches, i.e., trees built from two combining operations, one that admits the structural rules of Weakening and Contraction and another that does not. To illuminate the consequences of {$\alpha\lambda$}'s approach to the structural rules we define two resource interpretations, extracted from Reynolds's "sharing reading" of affine λ-calculus. Based on this we show how {$\alpha\lambda$} enables syntactic control of interference and Idealized Algol, imperative languages based on affine and simply-typed λ-calculi, to be smoothly combined in one system.},
+	pages = {258--279},
+	booktitle = {Proceedings of the 4th International Conference on Typed Lambda Calculi and Applications},
+	publisher = {Springer-Verlag},
+	author = {O'Hearn, Peter W.},
+	urldate = {2018-02-28},
+	date = {1999},
+        year = {1999}
+}
+
+@article{ohearn_bunched_2003,
+	title = {On Bunched Typing},
+	volume = {13},
+	issn = {09567968, 14697653},
+	url = {http://www.journals.cambridge.org/abstract_S0956796802004495},
+	doi = {10.1017/S0956796802004495},
+	abstract = {We study a typing scheme derived from a semantic situation where a single category possesses several closed structures, corresponding to diﬀerent varieties of function type. In this scheme typing contexts are trees built from two (or more) binary combining operations, or in short, bunches. Bunched typing and its logical counterpart, bunched implications, have arisen in joint work of the author and David Pym. The present paper gives a basic account of the type system, and then focusses on concrete models that illustrate how it may be understood in terms of resource access and sharing.},
+	pages = {747--796},
+	number = {4},
+	journaltitle = {Journal of functional Programming},
+        journal = {Journal of functional Programming},
+	author = {O'Hearn, Peter W.},
+	urldate = {2018-06-04},
+	date = {2003-07},
+        year = {2003}
+}
+
+@article{girard_unity_1993,
+	title = {On the unity of logic},
+	volume = {59},
+	issn = {0168-0072},
+	url = {http://www.sciencedirect.com/science/article/pii/016800729390093S},
+	doi = {10.1016/0168-0072(93)90093-S},
+	abstract = {We present a single sequent calculus common to classical, intuitionistic and linear logics. The main novelty is that classical, intuitionistic and linear logics appear as fragments, i.e. as particular classes of formulas and sequents. For instance, a proof of an intuitionistic formula A may use classical or linear lemmas without any restriction: but after cut-elimination the proof of A is wholly intuitionistic, what is superficially achieved by the subformula property (only intuitionistic formulas are used) and more deeply by a very careful treatment of structural rules. This approach is radically different from the one that consists in “changing the rule of the game” when we want to change logic, e.g. pass from one style of sequent to another: here, there is only one logic, which—depending on its use—may appear classical, intuitionistic or linear.},
+	pages = {201--217},
+	number = {3},
+	journaltitle = {Annals of Pure and Applied Logic},
+	shortjournal = {Annals of Pure and Applied Logic},
+        journal = {Annals of Pure and Applied Logic},
+	author = {Girard, Jean-Yves},
+	urldate = {2018-02-12},
+	date = {1993-02-16},
+        year = {1993}
+}
+
+
+@incollection{wadler_taste_1993,
+	location = {Berlin, Heidelberg},
+	title = {A taste of linear logic},
+	isbn = {978-3-540-47927-7},
+	url = {https://doi.org/10.1007/3-540-57182-5_12},
+	abstract = {This tutorial paper provides an introduction to intuitionistic logic and linear logic, and shows how they correspond to type systems for functional languages via the notion of `Propositions as Types”. The presentation of linear logic is simplified by basing it on the Logic of Unity. An application to the array update problem is briefly discussed.},
+	pages = {185--210},
+	booktitle = {Mathematical Foundations of Computer Science 1993: 18th International Symposium, {MFCS}'93 Gdańsk, Poland, August 30–September 3, 1993 Proceedings},
+	publisher = {Springer Berlin Heidelberg},
+	author = {Wadler, Philip},
+	editor = {Borzyszkowski, Andrzej M. and Sokolowski, Stefan},
+	date = {1993},
+	doi = {10.1007/3-540-57182-5_12},
+        year = {1993}
+}
+
+@inproceedings{mazurak_lolliproc_2010,
+	location = {New York, {NY}, {USA}},
+	title = {Lolliproc: To Concurrency from Classical Linear Logic via Curry-howard and Control},
+	isbn = {978-1-60558-794-3},
+	url = {http://doi.acm.org/10.1145/1863543.1863551},
+	doi = {10.1145/1863543.1863551},
+	series = {{ICFP} '10},
+	shorttitle = {Lolliproc},
+	abstract = {While many type systems based on the intuitionistic fragment of linear logic have been proposed, applications in programming languages of the full power of linear logic - including double-negation elimination - have remained elusive. Meanwhile, linearity has been used in many type systems for concurrent programs - e.g., session types - which suggests applicability to the problems of concurrent programming, but the ways in which linearity has interacted with concurrency primitives in lambda calculi have remained somewhat ad-hoc. In this paper we connect classical linear logic and concurrent functional programming in the language Lolliproc, which provides simple primitives for concurrency that have a direct logical interpretation and that combine to provide the functionality of session types. Lolliproc features a simple process calculus "under the hood" but hides the machinery of processes from programmers. We illustrate Lolliproc by example and prove soundness, strong normalization, and confluence results, which, among other things, guarantees freedom from deadlocks and race conditions.},
+	pages = {39--50},
+	booktitle = {Proceedings of the 15th {ACM} {SIGPLAN} International Conference on Functional Programming},
+	publisher = {{ACM}},
+	author = {Mazurak, Karl and Zdancewic, Steve},
+	date = {2010},
+        year = {2010},
+	keywords = {concurrency, linear logic, type systems}
+}
+
+
+@inproceedings{mazurak_lightweight_2010,
+	location = {New York, {NY}, {USA}},
+	title = {Lightweight Linear Types in System $\text{F}^{\circ}$},
+	isbn = {978-1-60558-891-9},
+	url = {http://doi.acm.org/10.1145/1708016.1708027},
+	doi = {10.1145/1708016.1708027},
+	series = {{TLDI} '10},
+	abstract = {We present System F$^{\circ}$, an extension of System F that uses kinds to distinguish between linear and unrestricted types, simplifying the use of linearity for general-purpose programming. We demonstrate through examples how System F$^{\circ}$ can elegantly express many useful protocols, and we prove that any protocol representable as a {DFA} can be encoded as an F$^{\circ}$ type. We supply mechanized proofs of System F$^{\circ}$'s soundness and parametricity properties, along with a nonstandard operational semantics that formalizes common intuitions about linearity and aids in reasoning about protocols. We compare System F$^{\circ}$ to other linear systems, noting that the simplicity of our kind-based approach leads to a more explicit account of what linearity is meant to capture, allowing otherwise-conflicting interpretations of linearity (in particular, restrictions on aliasing versus restrictions on resource usage) to coexist peacefully. We also discuss extensions to System F{\textasciicircum}o aimed at making the core language more practical, including the additive fragment of linear logic, algebraic datatypes, and recursion.},
+	pages = {77--88},
+	booktitle = {Proceedings of the 5th {ACM} {SIGPLAN} Workshop on Types in Language Design and Implementation},
+	publisher = {{ACM}},
+	author = {Mazurak, Karl and Zhao, Jianzhou and Zdancewic, Steve},
+	date = {2010},
+	year = {2010},
+	keywords = {linear logic, polymorphism, type systems},
+}
+
+@article{ahmed_l3_2007,
+	title = {L$^3$: A Linear Language with Locations},
+	volume = {77},
+	issn = {0169-2968},
+	url = {https://content.iospress.com/articles/fundamenta-informaticae/fi77-4-06},
+	shorttitle = {L{\textasciicircum}3},
+	abstract = {We present a simple, but expressive type system that supports strong updates – updating a memory cell to hold values of unrelated types at different points in time. Our formulation is based upon a standard linear lambda calculus and, as a result, enj},
+	pages = {397--449},
+	number = {4},
+	journaltitle = {Fundamenta Informaticae},
+	journal = {Fundamenta Informaticae},
+	author = {Ahmed, Amal and Fluet, Matthew and Morrisett, Greg},
+	urldate = {2017-11-01},
+	date = {2007-01-01},
+        year = {2007}
+}
+
+
+@article{bernardy_linear_2017,
+	title = {Linear Haskell: Practical Linearity in a Higher-order Polymorphic Language},
+	volume = {2},
+	issn = {2475-1421},
+	url = {http://doi.acm.org/10.1145/3158093},
+	doi = {10.1145/3158093},
+	shorttitle = {Linear Haskell},
+	abstract = {Linear type systems have a long and storied history, but not a clear path forward to integrate with existing languages such as {OCaml} or Haskell. In this paper, we study a linear type system designed with two crucial properties in mind: backwards-compatibility and code reuse across linear and non-linear users of a library. Only then can the benefits of linear types permeate conventional functional programming. Rather than bifurcate types into linear and non-linear counterparts, we instead attach linearity to function arrows. Linear functions can receive inputs from linearly-bound values, but can also operate over unrestricted, regular values.  To demonstrate the efficacy of our linear type system — both how easy it can be integrated in an existing language implementation and how streamlined it makes it to write programs with linear types — we implemented our type system in ghc, the leading Haskell compiler, and demonstrate two kinds of applications of linear types: mutable data with pure interfaces; and enforcing protocols in I/O-performing functions.},
+	pages = {5:1--5:29},
+	issue = {{POPL}},
+	journaltitle = {Proc. {ACM} Program. Lang.},
+        journal = {Proc. {ACM} Program. Lang.},
+	author = {Bernardy, Jean-Philippe and Boespflug, Mathieu and Newton, Ryan R. and Peyton Jones, Simon and Spiwack, Arnaud},
+	urldate = {2018-03-28},
+	date = {2017-12},
+	year = {2017},
+	keywords = {linear logic, polymorphism, linear types, {GHC}, Haskell, laziness, typestate},
+}
+
+
+@incollection{collinson_bunched_2005,
+        location = {Berlin, Heidelberg},
+	title = {On Bunched Polymorphism},
+	isbn = {978-3-540-28231-0 978-3-540-31897-2},
+	url = {https://link.springer.com/chapter/10.1007/11538363_5},
+	series = {Lecture Notes in Computer Science},
+	abstract = {We describe a polymorphic extension of the substructural lambda calculus {$\alpha\lambda$} associated with the logic of bunched implications. This extension is particularly novel in that both variables and type variables are treated substructurally, being maintained through a system of zoned, bunched contexts. Polymorphic universal quantifiers are introduced in both additive and multiplicative forms, and then metatheoretic properties, including subject-reduction and normalization, are established. A sound interpretation in a class of indexed category models is defined and the construction of a generic model is outlined, yielding completeness. A concrete realization of the categorical models is given using pairs of partial equivalence relations on the natural numbers. Polymorphic existential quantifiers are presented, together with some metatheory. Finally, potential applications to closures and memory-management are discussed.},
+	pages = {36--50},
+	booktitle = {Computer Science Logic},
+	publisher = {Springer, Berlin, Heidelberg},
+	author = {Collinson, Matthew and Pym, David and Robinson, Edmund},
+        editor = {Ong, Luke},
+	date = {2005},
+	doi = {10.1007/11538363_5},
+        year = {2005}
+}
+
+
+@incollection{atkey_lambda_sep_2004,
+	location = {Berlin, Heidelberg},
+	title = {A $\lambda$-Calculus for Resource Separation},
+	volume = {3142},
+	isbn = {978-3-540-22849-3 978-3-540-27836-8},
+	url = {http://link.springer.com/10.1007/978-3-540-27836-8_16},
+	abstract = {We present a system of typed {$\lambda$}-calculus, named {$\lambda$}sep, which has a semantics based on the relative separation of the resources used by its objects. {$\lambda$}_{sep} is an extension of the aﬃne {$\alpha\lambda$}-calculus of O’Hearn and Pym that allows ﬁner grained expression of separation constraints. We describe the syntax and typing rules of the system; give a categorical semantics which is coherent, sound and complete; and give a functorcategory semantics which treats as distinct the combination of objects and their relationships, showing how the system can represent constraints on resources.},
+	pages = {158--170},
+	booktitle = {Automata, Languages and Programming},
+	publisher = {Springer Berlin Heidelberg},
+	author = {Atkey, Robert},
+	editor = {Díaz, Josep and Karhumäki, Juhani and Lepistö, Arto and Sannella, Donald},
+	editorb = {Hutchison, David and Kanade, Takeo and Kittler, Josef and Kleinberg, Jon M. and Mattern, Friedemann and Mitchell, John C. and Naor, Moni and Nierstrasz, Oscar and Pandu Rangan, C. and Steffen, Bernhard and Sudan, Madhu and Terzopoulos, Demetri and Tygar, Dough and Vardi, Moshe Y. and Weikum, Gerhard},
+	editorbtype = {redactor},
+	urldate = {2018-06-05},
+	date = {2004},
+	doi = {10.1007/978-3-540-27836-8_16},
+        year = {2004}
+}
+
+@article{barendregt_1991,
+        title={Introduction to generalized type systems},
+        volume={1}, DOI={10.1017/S0956796800020025},
+        number={2},
+        journal={Journal of Functional Programming},
+        publisher={Cambridge University Press},
+        author={Barendregt, Henk},
+        year={1991},
+        pages={125–154}
+}
+
+@book{pierce_tapl_2002,
+  author = {Benjamin C. Pierce},
+  title = {Types and Programming Languages},
+  isbn = {9780262162098},
+  publisher = {MIT Press},
+  year = {2002},
+  date = {2002-01},
+  month = {Jan},
+  keys = {books},
+  homepage = {http://www.cis.upenn.edu/~bcpierce/tapl/}
+}
+
+
+@inproceedings{liang_monad_1995,
+	location = {New York, {NY}, {USA}},
+	title = {Monad Transformers and Modular Interpreters},
+	isbn = {978-0-89791-692-9},
+	url = {http://doi.acm.org/10.1145/199448.199528},
+	doi = {10.1145/199448.199528},
+	series = {{POPL} '95},
+	abstract = {We show how a set of building blocks can be used to construct programming language interpreters, and present implementations of such building blocks capable of supporting many commonly known features, including simple expressions, three different function call mechanisms (call-by-name, call-by-value and lazy evaluation), references and assignment, nondeterminism, first-class continuations, and program tracing.The underlying mechanism of our system is monad transformers, a simple form of abstraction for introducing a wide range of computational behaviors, such as state, I/O, continuations, and exceptions.Our work is significant in the following respects. First, we have succeeded in designing a fully modular interpreter based on monad transformers that incudes features missing from Steele's, Espinosa's, and Wadler's earlier efforts. Second, we have found new ways to lift monad operations through monad transformers, in particular difficult cases not achieved in Moggi's original work. Third, we have demonstrated that interactions between features are reflected in liftings and that semantics can be changed by reordering monad transformers. Finally, we have implemented our interpreter in Gofer, whose constructor classes provide just the added power over Haskell's type classes to allow precise and convenient expression of our ideas. This implementation includes a method for constructing extensible unions and a form of subtyping that is interesting in its own right.},
+	pages = {333--343},
+	booktitle = {Proceedings of the 22Nd {ACM} {SIGPLAN}-{SIGACT} Symposium on Principles of Programming Languages},
+	publisher = {{ACM}},
+	author = {Liang, Sheng and Hudak, Paul and Jones, Mark},
+	date = {1995}
+}
+
+
+
+@article{lambek_mathematics_1958,
+	title = {The Mathematics of Sentence Structure},
+	volume = {65},
+	issn = {0002-9890},
+	url = {https://www.jstor.org/stable/2310058},
+	doi = {10.2307/2310058},
+	pages = {154--170},
+	number = {3},
+	journaltitle = {The American Mathematical Monthly},
+	author = {Lambek, Joachim},
+	urldate = {2018-09-14},
+        year = {1958}
+}
+
+@article{orlov_relevence_1928,
+ author = {Orlov, Ivan},
+ title = {The Logic of Compatibility of Propositions},
+ journaltitle = {Matematicheskii Sbornik},
+ year = {1928}
+}
+
+@inproceedings{reynolds_separation_2002,
+ author = {Reynolds, John C.},
+ title = {Separation Logic: A Logic for Shared Mutable Data Structures},
+ booktitle = {Proceedings of the 17th Annual IEEE Symposium on Logic in Computer Science},
+ year = {2002}
+}
+
+
+@article{grishin_affine_1974,
+    author = {Grishin, V},
+    year = {1974},
+    title = {A nonstandard logic and its application to set theory},
+    language = {Russian},
+    journaltitle = {Studies in Formalized Languages and Nonclassical Logics}
+}

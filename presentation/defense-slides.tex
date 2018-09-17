@@ -10,6 +10,7 @@
 \usepackage{bussproofs, semantic, framed}
 \usepackage{array}
 \usepackage{hyperref}
+%\usepackage{hanging}
 
 \usepackage{graphicx}
 \usepackage{cellspace}
@@ -20,13 +21,22 @@
 \usepackage{caption, subcaption, wrapfig}
 \usepackage{textcomp, scrextend}
 %\usepackage{xcolor}
-\usepackage{babel}
+\usepackage[english]{babel}
 \usepackage{url}
 \usepackage{setspace}
 \usepackage{esint}
-\usepackage{natbib}
+% \usepackage{natbib}
+\usepackage[backend=bibtex,
+            style = numeric-comp,
+            sorting = none,
+            natbib = true,
+            doi = false,
+            isbn = false,
+            url = false,
+            %location = false,
+            %publisher = false,
+            hyperref = true]{biblatex}
 
-% \usepackage{minted}
 \definecolor{ltblue}{rgb}{0,0.4,0.4}
 \definecolor{dkblue}{rgb}{0,0.1,0.6}
 \definecolor{dkgreen}{rgb}{0,0.4,0}
@@ -59,15 +69,14 @@
   {\signed{\usebox\mybox}\end{quote}}
 
 
-\usepackage[capitalize, nameinlink]{cleveref}
-\crefformat{section}{\S#2#1#3} % see manual of cleveref, section 8.2.1
-\crefformat{subsection}{\S#2#1#3}
-\crefformat{subsubsection}{\S#2#1#3}
+% \usepackage[capitalize, nameinlink]{cleveref}
+% \crefformat{section}{\S#2#1#3} % see manual of cleveref, section 8.2.1
+% \crefformat{subsection}{\S#2#1#3}
+% \crefformat{subsubsection}{\S#2#1#3}
 
-
-\newcommand\fnurl[2]{%
-  \href{#2}{#1}\footnote{\url{#2}}%
-}
+% \newcommand\fnurl[2]{%
+%   \href{#2}{#1}\footnote{\url{#2}}%
+% }
 \mode<presentation>{\usetheme{Madrid}}
 
 
@@ -97,8 +106,11 @@
 \newcommand{\Pair}[1]{\langle #1 \rangle}
 \newcommand{\qub}{QuB\xspace}
 
-\usepackage{halloweenmath}
 \usepackage[normalem]{ulem}
+
+% \bibliographystyle{plain}
+\addbibresource{citations}
+
 
 \title{\qub{}}
 \subtitle{A Resource Aware Functional Programming Language}
@@ -107,17 +119,17 @@
 \institute[KU]{The University of Kansas}
 % disable useless navigation symbols
 \setbeamertemplate{navigation symbols}{}
-
+%\setbeamertemplate{footnote}{\insertfootnotetext}
 % disable the section information
 % \setbeamertemplate{headline}{}
 
 \begin{document}
 \frame\titlepage
 
-\begin{frame}
-  \frametitle{Table of Contents}
-  \tableofcontents
-\end{frame}
+% \begin{frame}
+%   \frametitle{Table of Contents}
+%   \tableofcontents
+% \end{frame}
 
 % Introduction and motivation
 % 5 mins
@@ -142,8 +154,7 @@
 \begin{frame}[allowframebreaks]
   \frametitle{References}
   \global\long\def\bibname{References}
-  \bibliographystyle{plain}
-  \bibliography{../Biblio/allcites}
+  \printbibliography
 \end{frame}
 
 \end{document}

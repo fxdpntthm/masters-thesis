@@ -280,6 +280,9 @@ tramp
 *.nav
 *.toc
 *.snm
+*-blx.bib
+*.bcf
+*.run.xml
 
 # reftex files
 *.rel
