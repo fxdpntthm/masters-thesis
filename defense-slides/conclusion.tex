@@ -21,7 +21,7 @@
 
      readLine  :: FileHandle $\sepimp$ IO (String, FileHandle)
 
-     writeFile :: String     $\sepimp$ FileHandle
+     writeLine :: FileHandle $\sepimp$ String
                              $\sepimp$ IO FileHandle
 
 
@@ -126,8 +126,8 @@
     \begin{haskell}
           readFromFile :: FilePath $\sepimp$ IO (Either String String)
           readFromFile fpath =
-          (do @fh@  <- openFile fpath
-             (s, @fh@)  <- readLine @fh@
+          do @fh@  <- openFile fpath
+             ((s, @fh@)  <- readLine @fh@
              let l = caps s
              () <- closeFile @fh@
              return \dollar Right l) `catch`
@@ -174,7 +174,7 @@
 
 \begin{frame}[fragile, c]
   \frametitle{Future Work}
-p  \begin{itemize}
+  \begin{itemize}
   \item Type inference algorithm $\M{}$ is incomplete
 
     Terms can have two types

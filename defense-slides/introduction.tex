@@ -39,13 +39,13 @@
 
      readLine   :: FileHandle -> IO (String, FileHandle)
 
-     writeFile  :: String     -> FileHandle
+     writeLine  :: FileHandle -> String
                               -> IO FileHandle
 
 
      upper      :: String     -> String
 
-     ($\gg\!=$) :: IO FileHandle -> (FileHandle -> IO b) -> IO b
+     ($\gg\!=$) :: IO a -> (a -> IO b) -> IO b
       \end{haskell}
     \end{tabular}
 \end{center}

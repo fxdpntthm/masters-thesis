@@ -236,7 +236,7 @@ fst (SeP a b) = a              {- Fails typecheck -}@
 snd (SeP a b) = b              {- Fails typecheck -}@
 
 swap :: SePair a b $\sepimp$ SePair b a
-swap (SeP a b) = SePair b a    {- Succeeds typecheck -}
+swap (SeP a b) = SeP b a       {- Succeeds typecheck -}
           \end{haskell}
         \end{tabular}
   \end{center}
