@@ -1,16 +1,13 @@
-## Compilation instructions
+### Compilation instructions
+
+
+## Thesis compilation
 
 `$ make clean thesis`
 
-internally make runs
+## Defense slides
 
-`pdflatex thesis-ku.tex`
-
-`bibtex thesis-ku`
-
-`pdflatex thesis-ku.tex`
-
-`pdflatex thesis-ku.tex`
+`$ make clean slides`
 
 ## Dependencies
 If you are running it for the first time,
@@ -25,8 +22,10 @@ Extra packages that you would have to install:
 - `framed`
 - `minted`
 - `cmll`
+- `beamer`
 
 You would need to set up python, pip, pygmentize to use minted.
 
 This was created using a template approved by KU graduate school
 downloaded from http://crmda.ku.edu/latex
+

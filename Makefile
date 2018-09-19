@@ -13,4 +13,4 @@ slides:
 	pdflatex --shell-escape defense-slides/defense-slides.tex
 
 clean:
-	rm -rf *.aux *.log *.pdf *.bbl *.out *. *.blg *.dvi *.pyg *.snm *.toc _minted-defense-slides _minted-thesis-ku *.nav *.vrb auto/ *-blx.bib *.bcf *.run.xml *.lof
+	rm -rf *.aux *.log *.bbl *.out *. *.blg *.dvi *.pyg *.snm *.toc _minted-defense-slides _minted-thesis-ku *.nav *.vrb auto/ *-blx.bib *.bcf *.run.xml *.lof
