@@ -1,6 +1,6 @@
 %% LyX 2.2.0 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
-\documentclass[12pt,english]{kuthesis}
+\documentclass[12pt,english]{thesis/kuthesis}
 \usepackage{mathptmx}
 \usepackage{MnSymbol}
 \renewcommand{\sfdefault}{lmss}
@@ -206,22 +206,22 @@
 
 \end{romanpages}
 
-\include{Chapter1/Introduction}       % Extended abstract, contributions
-\include{Chapter2/BackgroundWork}     % HM type system, algorithm M, linear logic, BI, qualified types, Quill
-\include{Chapter3/Examples}           % file handles and exceptions
-\include{Chapter4/Language}           % Core language syntax and Types, contexts and related definitions
-\include{Chapter5/TypeSystem}         % typing rules, syntax directed typing rules and modified Algorithm M
-\include{Chapter6/Datastructure}      % kinds with user defined datatypes. sharing pair, separating pair.
-\include{Chapter7/Futurework}         % What next?
+\include{thesis/Chapter1/Introduction}       % Extended abstract, contributions
+\include{thesis/Chapter2/BackgroundWork}     % HM type system, algorithm M, linear logic, BI, qualified types, Quill
+\include{thesis/Chapter3/Examples}           % file handles and exceptions
+\include{thesis/Chapter4/Language}           % Core language syntax and Types, contexts and related definitions
+\include{thesis/Chapter5/TypeSystem}         % typing rules, syntax directed typing rules and modified Algorithm M
+\include{thesis/Chapter6/Datastructure}      % kinds with user defined datatypes. sharing pair, separating pair.
+\include{thesis/Chapter7/Futurework}         % What next?
 
 \global\long\def\bibname{References}
 
 \bibliographystyle{apalike}
-\bibliography{Biblio/allcites}
+\bibliography{thesis/Biblio/allcites}
 
 \appendix
-\include{Appendix/Derivations}
-\include{Appendix/Proofs}
+\include{thesis/Appendix/Derivations}
+\include{thesis/Appendix/Proofs}
 \end{document}
 
 %%% Local Variables:

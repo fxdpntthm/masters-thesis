@@ -1,24 +1,16 @@
+.PHONY: clean
+
 thesis:
-	pdflatex -shell-escape thesis-ku.tex
+	pdflatex -shell-escape thesis/thesis-ku.tex
 	bibtex thesis-ku
-	pdflatex -shell-escape thesis-ku.tex
-	pdflatex -shell-escape thesis-ku.tex
-
-clean:
-	rm -rf *.aux *.bbl *.log *.lot *.out *.toc *.pyg _minted-thesis-ku auto
-MASTER_FILE=defense-slides
-TARGET_FILE=defense-slides
-SLIDES=defense-slides
-
-
-# install: pdf
-# 	cp $(MASTER_FILE).pdf $(TARGET_FILE).pdf
+	pdflatex -shell-escape thesis/thesis-ku.tex
+	pdflatex -shell-escape thesis/thesis-ku.tex
 
 slides:
-	pdflatex --shell-escape $(SLIDES).tex
-	bibtex $(SLIDES)
-	pdflatex --shell-escape $(SLIDES).tex
-	pdflatex --shell-escape $(SLIDES).tex
+	pdflatex --shell-escape defense-slides/defense-slides.tex
+	bibtex defense-slides
+	pdflatex --shell-escape defense-slides/defense-slides.tex
+	pdflatex --shell-escape defense-slides/defense-slides.tex
 
 clean:
-	rm -rf *.aux *.log *.pdf *.bbl *.out *. *.blg *.dvi *.pyg *.snm *.toc _minted-defense-slides *.nav *.vrb auto/ *-blx.bib *.bcf *.run.xml
+	rm -rf *.aux *.log *.pdf *.bbl *.out *. *.blg *.dvi *.pyg *.snm *.toc _minted-defense-slides _minted-thesis-ku *.nav *.vrb auto/ *-blx.bib *.bcf *.run.xml *.lof
