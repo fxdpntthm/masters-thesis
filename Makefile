@@ -1,4 +1,4 @@
-.PHONY: clean
+.PHONY: clean thesis
 
 thesis:
 	pdflatex -shell-escape thesis/thesis-ku.tex
